@@ -1,0 +1,294 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>بي كير | المنصة الأذكى والأرخص لتأمين السيارات في السعودية</title>
+  <meta name="description" content="المنصة الأذكى لمقارنة عروض أكثر من 20 شركة تأمين. احصل على أرخص تأمين سيارات مع إصدار فوري وربط مباشر بنجم." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&family=Readex+Pro:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- HEADER PLACEHOLDER -->
+<div id="app-header" data-variant="home"></div>
+
+<!-- ===================================================
+     HERO — الصندوق الأزرق
+=================================================== -->
+<section class="hero-section" id="hero">
+
+  <div class="hero-blue-box">
+    <img src="assets/images/imgi_4_left.svg"  alt="" class="hero-deco hero-deco--left"  aria-hidden="true" />
+    <img src="assets/images/imgi_5_right.svg" alt="" class="hero-deco hero-deco--right" aria-hidden="true" />
+    <div class="container hero-text-wrap">
+      <h1 class="hero-title">المنصة الأذكى لمقارنة عروض تأمين السيارات في السعودية</h1>
+      <p class="hero-subtitle">المنصة الأذكى لمقارنة عروض أكثر من 20 شركة تأمين. احصل على أرخص تأمين سيارات مع إصدار فوري وربط مباشر بنجم.</p>
+    </div>
+  </div>
+
+  <div class="container hero-card-wrap">
+    <div class="hero-card">
+
+      <!-- تبويبات الخدمات -->
+      <nav class="service-tabs" aria-label="الخدمات">
+        <button class="service-tab active" data-service="vehicles">
+          <img src="assets/images/download (7).svg" alt="" class="stab-icon stab-icon--car" aria-hidden="true" />
+          <span>مركبات</span>
+          <span class="stab-bar"></span>
+        </button>
+        <button class="service-tab" data-service="medical" onclick="window.open('https://medical.bcare.com.sa/','_blank')">
+          <img src="assets/images/download (6).svg" alt="" class="stab-icon stab-icon--heart" aria-hidden="true" />
+          <span>طبي</span>
+          <span class="stab-bar"></span>
+        </button>
+        <button class="service-tab" data-service="mm" onclick="window.open('https://mm.bcare.com.sa/','_blank')">
+          <img src="assets/images/download (3).svg" alt="" class="stab-icon stab-icon--steth" aria-hidden="true" />
+          <span>اخطاء طبية</span>
+          <span class="stab-bar"></span>
+        </button>
+        <button class="service-tab" data-service="travel" onclick="window.open('https://travel.bcare.com.sa/','_blank')">
+          <img src="assets/images/download (2).svg" alt="" class="stab-icon stab-icon--plane" aria-hidden="true" />
+          <span>سفر</span>
+          <span class="stab-bar"></span>
+        </button>
+        <button class="service-tab" data-service="helpers" onclick="window.open('https://helpers.bcare.com.sa/','_blank')">
+          <img src="assets/images/download (1).svg" alt="" class="stab-icon stab-icon--house" aria-hidden="true" />
+          <span>العمالة المنزلية</span>
+          <span class="stab-bar"></span>
+        </button>
+      </nav>
+
+      <!-- نموذج العروض -->
+      <div class="quote-form-wrap" id="form-section">
+
+        <div class="purpose-tabs" role="tablist">
+          <button class="purpose-tab" id="ptab-transfer" role="tab" data-purpose="2">نقل ملكية</button>
+          <button class="purpose-tab active" id="ptab-new" role="tab" data-purpose="1">تأمين جديد</button>
+        </div>
+
+        <form class="quote-form" id="quote-form" novalidate autocomplete="off">
+
+          <!-- حقل البائع (نقل الملكية فقط) -->
+          <div class="form-group form-group--animated" id="field-seller" data-hidden="true">
+            <label class="form-label" for="seller-id">رقم هوية البائع</label>
+            <input type="text" id="seller-id" name="ownerNationalId"
+                   class="form-input" placeholder="رقم هوية البائع"
+                   maxlength="10" inputmode="numeric" />
+            <div class="field-error" id="seller-error"></div>
+          </div>
+
+          <!-- رقم الهوية / الإقامة -->
+          <div class="form-group">
+            <label class="form-label" for="national-id" id="national-id-label">رقم الهوية / الإقامة</label>
+            <input type="text" id="national-id" name="nationalId"
+                   class="form-input" placeholder="رقم الهوية / الإقامة"
+                   maxlength="10" inputmode="numeric" />
+            <div class="field-error" id="national-id-error"></div>
+          </div>
+
+          <!-- راديو: نوع التسجيل -->
+          <div class="form-group" id="field-reg-type">
+            <div class="radio-row">
+              <!-- استمارة أولاً (يظهر يمين في RTL) -->
+              <label class="radio-option">
+                <input type="radio" name="vehicleIdType" value="1" id="radio-serial" checked />
+                <span class="radio-btn">
+                  <span class="radio-dot"></span>
+                  <span class="radio-text">استمارة</span>
+                </span>
+              </label>
+              <!-- بطاقة جمركية ثانياً (يظهر يسار) -->
+              <label class="radio-option">
+                <input type="radio" name="vehicleIdType" value="2" id="radio-customs" />
+                <span class="radio-btn">
+                  <span class="radio-dot"></span>
+                  <span class="radio-text">بطاقة جمركية</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- استمارة: الرقم التسلسلي -->
+          <div class="form-group" id="field-serial">
+            <label class="form-label" for="seq-number">
+              الرقم التسلسلي
+              <span class="info-icon" tabindex="0" aria-label="ما هو الرقم التسلسلي؟">
+                <span class="material-icons">info</span>
+                <span class="tooltip-box">الرقم التسلسلي موجود على استمارة تسجيل المركبة</span>
+              </span>
+            </label>
+            <input type="text" id="seq-number" name="sequenceNumber"
+                   class="form-input" placeholder="الرقم التسلسلي"
+                   maxlength="10" inputmode="numeric" />
+            <div class="field-error" id="seq-error"></div>
+          </div>
+
+          <!-- بطاقة جمركية: سنة الصنع + الرقم الجمركي -->
+          <div class="form-row form-group--animated" id="field-customs-row" data-hidden="true">
+            <div class="form-group form-group--half">
+              <label class="form-label" for="customs-number">
+                الرقم الجمركي
+                <span class="info-icon" tabindex="0">
+                  <span class="material-icons">info</span>
+                  <span class="tooltip-box">الرقم الجمركي موجود على البطاقة الجمركية للمركبة</span>
+                </span>
+              </label>
+              <input type="text" id="customs-number" name="customsNumber"
+                     class="form-input" placeholder="الرقم الجمركي"
+                     maxlength="10" inputmode="numeric" />
+              <div class="field-error" id="customs-error"></div>
+            </div>
+            <div class="form-group form-group--half">
+              <label class="form-label" for="mfg-year">سنة صنع المركبة</label>
+              <div class="select-wrapper">
+                <select id="mfg-year" name="manufacturingYear" class="form-input form-select">
+                  <option value="">سنة صنع المرك...</option>
+                </select>
+                <span class="material-icons select-chevron">expand_more</span>
+              </div>
+              <div class="field-error" id="mfg-year-error"></div>
+            </div>
+          </div>
+
+          <!-- رمز التحقق -->
+          <div class="form-group">
+            <label class="form-label" for="captcha-input">رمز التحقق</label>
+            <div class="captcha-row" id="captcha-row">
+              <div class="captcha-display">
+                <canvas id="captcha-canvas" width="110" height="44" aria-hidden="true"></canvas>
+                <button type="button" class="captcha-refresh" id="captcha-refresh" aria-label="تحديث رمز التحقق">
+                  <span class="material-icons">autorenew</span>
+                </button>
+              </div>
+              <input type="text" id="captcha-input" name="captchaInput"
+                     class="form-input captcha-input-field"
+                     placeholder="" maxlength="8"
+                     autocomplete="off" autocorrect="off" spellcheck="false" />
+            </div>
+            <div class="field-error" id="captcha-error"></div>
+          </div>
+
+          <!-- الموافقة -->
+          <div class="form-group consent-group">
+            <label class="consent-label">
+              <input type="checkbox" id="accept-terms" name="acceptTerms" class="consent-checkbox" />
+              <span class="consent-text">أوافق على منح شركة عناية الوسيط الحق في الاستعلام من شركة نجم و/أو مركز المعلومات الوطني عن بياناتي</span>
+            </label>
+          </div>
+
+          <!-- زر إظهار العروض -->
+          <button type="submit" class="btn-submit" id="submit-btn" disabled>
+            إظهار العروض
+          </button>
+
+          <!-- مصرح من -->
+          <div class="authorized-row">
+            <span class="authorized-lbl">مصرح من:</span>
+            <img src="assets/images/imgi_41_saudi.svg" alt="هيئة التأمين" class="sama-logo" />
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- شريط شركات التأمين -->
+  <div class="insurers-strip">
+    <div class="insurers-track">
+      <img src="assets/images/imgi_9_23arbic.svg"           alt="23 شركة تأمين" class="ins-count" />
+      <img src="assets/images/imgi_10_AICC.svg"             alt="AICC" />
+      <img src="assets/images/imgi_11_TUIC.svg"             alt="TUIC" />
+      <img src="assets/images/imgi_12_Walaa.svg"            alt="ولاء" />
+      <img src="assets/images/imgi_13_Salama.svg"           alt="سلامة" />
+      <img src="assets/images/imgi_14_Aljazira-Takaful.svg" alt="الجزيرة تكافل" />
+      <img src="assets/images/imgi_15_Amana.svg"            alt="أمانة" />
+      <img src="assets/images/imgi_16_AXA.svg"              alt="AXA" />
+      <img src="assets/images/imgi_17_MedGulf.svg"          alt="MedGulf" />
+      <img src="assets/images/imgi_18_GGI.svg"              alt="GGI" />
+      <img src="assets/images/imgi_19_ACIG.svg"             alt="ACIG" />
+      <img src="assets/images/imgi_20_ArabianShield.svg"    alt="الدرع العربي" />
+      <img src="assets/images/imgi_21_UCA.svg"              alt="UCA" />
+      <img src="assets/images/imgi_22_AlRajhi.svg"          alt="الراجحي" />
+      <img src="assets/images/imgi_23_Allianz.svg"          alt="Allianz" />
+      <img src="assets/images/imgi_24_Tawuniya.svg"         alt="التعاونية" />
+      <img src="assets/images/imgi_10_AICC.svg"             alt="AICC" />
+      <img src="assets/images/imgi_11_TUIC.svg"             alt="TUIC" />
+      <img src="assets/images/imgi_12_Walaa.svg"            alt="ولاء" />
+      <img src="assets/images/imgi_13_Salama.svg"           alt="سلامة" />
+      <img src="assets/images/imgi_16_AXA.svg"              alt="AXA" />
+      <img src="assets/images/imgi_23_Allianz.svg"          alt="Allianz" />
+      <img src="assets/images/imgi_24_Tawuniya.svg"         alt="التعاونية" />
+    </div>
+  </div>
+
+</section>
+
+<!-- قسم "طريقك آمن مع بي كير" -->
+<section class="features-section" id="features-section">
+  <div class="container">
+    <h2 class="section-title">طريقك آمـن مع بي كير</h2>
+    <div class="features-grid">
+      <div class="feature-card"><img src="assets/images/imgi_25_insureOneMin.svg" alt="تأمينك في دقيقة" /><h3>تأمينك في دقيقة</h3><p>نقارن لك كل عروض الأسعار بشكل فوري من كل شركات التأمين</p></div>
+      <div class="feature-card"><img src="assets/images/imgi_26_sprateInsure.svg" alt="فصّل تأمينك" /><h3>فصّل تأمينك</h3><p>أنواع تأمين متعددة: تأمين ضد الغير، تأمين مميز، تأمين شامل وقيمة تحمل متنوعة</p></div>
+      <div class="feature-card"><img src="assets/images/imgi_27_priceLess.svg" alt="أسعار أقل" /><h3>أسعار أقل</h3><p>عندنا فريق يراقب كل صغيرة وكبيرة في السوق ويضمن أن سعرك الأقل والمناسب لك</p></div>
+      <div class="feature-card"><img src="assets/images/imgi_28_sechleInsure.svg" alt="جدول تأمينك" /><h3>جدول تأمينك</h3><p>نرسل لك إشعارات تذكيرية لتجديد تأمينك وتقدر تجدول تاريخ بدايته</p></div>
+      <div class="feature-card"><img src="assets/images/imgi_29_wind.svg" alt="هب ريح" /><h3>هب ريح</h3><p>نربط وثيقتك في أسرع وقت مع نظام المرور ونجم</p></div>
+      <div class="feature-card"><img src="assets/images/imgi_30_discounts.svg" alt="خصومات تضبطك" /><h3>خصومات تضبطك</h3><p>خصومات لبعض القطاعات الحكومية وشبه الحكومية والخاصة</p></div>
+      <div class="feature-card"><img src="assets/images/imgi_31_benfit.svg" alt="منافع تحميك" /><h3>منافع تحميك</h3><p>خطط تأمين متنوعة مع المرونة في تحديد المنافع الإضافية اللي تناسبك</p></div>
+      <div class="feature-card"><img src="assets/images/imgi_32_oneWay.svg" alt="مكان واحد" /><h3>مكان واحد</h3><p>تدير كل وثائقك إدارة إلكترونية كاملة من مكان واحد وتجددها في أي وقت</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- قسم "خصومات وريف" -->
+<section class="discounts-section" id="discounts-section">
+  <div class="container">
+    <h2 class="section-title">خصومات وريف</h2>
+    <p class="section-subtitle">خصومات وعروض مباشرة من مختلف المتاجر العالمية والمحلية لعملاء بي كير (أفراد، شركات)</p>
+    <div class="discounts-grid">
+      <div class="discount-card"><div class="discount-logo-box"><img src="assets/images/imgi_33_RoshRayhaan.jpg" alt="روش ريحان" /></div><div class="discount-info"><p class="discount-name">روش ريحان</p><p class="discount-val">خصم 15%</p></div></div>
+      <div class="discount-card"><div class="discount-logo-box"><img src="assets/images/imgi_34_none.svg" alt="نون" /></div><div class="discount-info"><p class="discount-name">نون</p><p class="discount-val">خصم 15%</p></div></div>
+      <div class="discount-card"><div class="discount-logo-box"><img src="assets/images/imgi_35_perfectWight.png" alt="الوزن المثالي" /></div><div class="discount-info"><p class="discount-name">الوزن المثالي</p><p class="discount-val">خصم 50%</p></div></div>
+      <div class="discount-card"><div class="discount-logo-box"><img src="assets/images/imgi_36_drive7.png" alt="درايف7" /></div><div class="discount-info"><p class="discount-name">درايف7</p><p class="discount-val">خصم 20%</p></div></div>
+      <div class="discount-card"><div class="discount-logo-box"><img src="assets/images/imgi_37_swater.jpg" alt="سويتر" /></div><div class="discount-info"><p class="discount-name">سويتر</p><p class="discount-val">خصم 20%</p></div></div>
+      <div class="discount-card"><div class="discount-logo-box"><img src="assets/images/imgi_38_sivvi.svg" alt="سيفي" /></div><div class="discount-info"><p class="discount-name">سيفي</p><p class="discount-val">خصم 10%</p></div></div>
+      <div class="discount-card"><div class="discount-logo-box"><img src="assets/images/imgi_39_Physiotherabia.jpg" alt="فيزيوثيرابيا" /></div><div class="discount-info"><p class="discount-name">فيزيوثيرابيا</p><p class="discount-val">خصم 20%</p></div></div>
+      <div class="discount-card"><div class="discount-logo-box"><img src="assets/images/imgi_40_Group 6444.svg" alt="نوفميد" /></div><div class="discount-info"><p class="discount-name">نوفميد</p><p class="discount-val">خصم 15%</p></div></div>
+    </div>
+    <div class="discounts-more"><button class="btn-more" id="btn-more-discounts">عرض المزيد من الخصومات</button></div>
+  </div>
+</section>
+
+<!-- قسم "ليش بي كير خيارك الأول" -->
+<section class="why-section" id="why-section">
+  <div class="container">
+    <h2 class="section-title">ليش بي كير خيارك الأول في التأمين؟</h2>
+    <div class="why-grid">
+      <div class="why-card"><img src="assets/images/download (1).svg" alt="منك وفيك" /><h3>منك وفيك</h3></div>
+      <div class="why-card"><img src="assets/images/imgi_43_payments_FILL0_wght400_GRAD0_opsz48.svg" alt="عروض تفهمك" /><h3>عروض تفهمك</h3></div>
+      <div class="why-card"><img src="assets/images/imgi_45_tachometer-alt-fastest.svg" alt="سعر يرضيك" /><h3>سعر يرضيك</h3></div>
+      <div class="why-card"><img src="assets/images/download (7).svg" alt="إصدار سريع" /><h3>إصدار سريع</h3></div>
+      <div class="why-card"><img src="assets/images/imgi_48_PaymentMethods1.svg" alt="نقسط تأمينك" /><h3>نقّسط تأمينك</h3></div>
+      <div class="why-card"><img src="assets/images/download (4).svg" alt="نفزع لك" /><h3>نفزع لك</h3></div>
+    </div>
+    <div class="why-cta">
+      <a href="#form-section" class="btn-primary">
+        <span class="material-icons">headset_mic</span>
+        راسلنا
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER PLACEHOLDER -->
+<div id="app-footer"></div>
+
+<script src="js/layout.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

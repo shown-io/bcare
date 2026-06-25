@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>بي كير | قيمة المركبة وتاريخ بداية التأمين</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&family=Readex+Pro:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/inquiry.css" />
+</head>
+<body class="inquiry-page">
+
+<div id="app-header" data-variant="inquiry"></div>
+
+<main class="inq-main">
+  <div class="inq-container">
+    <div class="inq-card">
+
+      <div class="inq-card-header">
+        <h1 class="inq-card-title">قيمة المركبة و تاريخ بداية التأمين</h1>
+      </div>
+
+      <form class="inq-form" id="inq-form" novalidate autocomplete="off">
+
+        <!-- قيمة المركبة: placeholder يمين، ﷼ يسار -->
+        <div class="inq-form-group">
+          <label class="inq-label" for="vehicle-value">قيمة المركبة</label>
+          <div class="inq-input-wrap">
+            <input
+              type="text"
+              id="vehicle-value"
+              name="vehicleValue"
+              class="inq-input inq-input--price"
+              placeholder="قيمة المركبة"
+              inputmode="numeric"
+              maxlength="12"
+            />
+            <span class="inq-suffix">﷼</span>
+          </div>
+          <div class="inq-error-banner hidden" id="min-value-banner">أقل قيمة للمركبة 10,000 ريال سعودي</div>
+          <div class="inq-error" id="vehicle-value-error"></div>
+        </div>
+
+        <!-- شهر الميلاد (يمين) | سنة الميلاد (يسار) -->
+        <div class="inq-row">
+
+          <!-- شهر الميلاد — custom dropdown مثل السنة -->
+          <div class="inq-form-group">
+            <label class="inq-label" for="month-trigger">شهر الميلاد</label>
+            <div class="year-dd" id="month-dd">
+              <button type="button" class="inq-input year-dd__trigger" id="month-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="month-display">شهر الميل...</span>
+                <span class="material-icons year-dd__arrow">expand_more</span>
+              </button>
+              <div class="year-dd__panel hidden" id="month-panel" role="listbox">
+                <ul class="year-dd__list" id="month-list"></ul>
+              </div>
+            </div>
+            <input type="hidden" id="birth-month" name="birthMonth" />
+            <div class="inq-error" id="birth-month-error"></div>
+          </div>
+
+          <!-- سنة الميلاد — ثاني (يسار) — custom dropdown مع بحث -->
+          <div class="inq-form-group">
+            <label class="inq-label" for="year-trigger">سنة الميلاد</label>
+            <div class="year-dd" id="year-dd">
+              <button type="button" class="inq-input year-dd__trigger" id="year-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="year-display">سنة الميل...</span>
+                <span class="material-icons year-dd__arrow">expand_more</span>
+              </button>
+              <div class="year-dd__panel hidden" id="year-panel" role="listbox">
+                <input
+                  type="text"
+                  class="year-dd__search"
+                  id="year-search"
+                  placeholder="سنة الميل..."
+                  inputmode="numeric"
+                  maxlength="4"
+                  autocomplete="off"
+                />
+                <ul class="year-dd__list" id="year-list"></ul>
+              </div>
+            </div>
+            <input type="hidden" id="birth-year" name="birthYear" />
+            <div class="inq-error" id="birth-year-error"></div>
+          </div>
+
+        </div>
+
+        <!-- تاريخ بداية التأمين: تقويم مخصص -->
+        <div class="inq-form-group">
+          <label class="inq-label" for="policy-start">تاريخ بداية التأمين</label>
+          <div class="inq-date-wrap" id="date-trigger" role="button" tabindex="0">
+            <input
+              type="text"
+              id="policy-start"
+              name="policyStartDate"
+              class="inq-input inq-input--date"
+              readonly
+            />
+            <span class="inq-cal-icon">
+              <span class="material-icons">calendar_today</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- الأزرار الثلاثة: الخصومات(يمين) | سائق(وسط) | معلومات(يسار) -->
+        <div class="inq-action-row">
+          <!-- الخصومات — أول (يمين) -->
+          <button type="button" class="inq-action-btn" onclick="openModal('modal-discounts')">
+            <span class="inq-action-icon"><span class="material-icons">local_offer</span></span>
+            <span class="inq-action-lbl">الخصومات</span>
+          </button>
+          <!-- إضافة سائق — ثاني (وسط) -->
+          <button type="button" class="inq-action-btn" onclick="openModal('modal-driver')">
+            <span class="inq-action-icon"><span class="material-icons">drive_eta</span></span>
+            <span class="inq-action-lbl">إضافة سائق</span>
+          </button>
+          <!-- معلومات أخرى — ثالث (يسار) -->
+          <button type="button" class="inq-action-btn" onclick="openModal('modal-info')">
+            <span class="inq-action-icon"><span class="material-icons">description</span></span>
+            <span class="inq-action-lbl">معلومات أخرى</span>
+          </button>
+        </div>
+
+        <!-- الخلف (يمين) | إظهار العروض (يسار) -->
+        <div class="inq-submit-row">
+          <button type="button" class="inq-btn-back" onclick="window.location.href='index.html'">
+            الخلف
+          </button>
+          <button type="submit" class="inq-btn-submit" id="inq-submit-btn">
+            إظهار العروض
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</main>
+
+<!-- التقويم الميلادي المخصص -->
+<div class="cal-overlay hidden" id="cal-overlay">
+  <div class="cal-picker" id="cal-picker">
+    <div class="cal-header">
+      <button type="button" class="cal-nav-btn" id="cal-prev">&#8249;</button>
+      <button type="button" class="cal-title-btn" id="cal-title"></button>
+      <button type="button" class="cal-nav-btn" id="cal-next">&#8250;</button>
+    </div>
+    <div class="cal-body" id="cal-body"></div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="inq-modal-overlay" id="modal-discounts" onclick="closeModal(this)">
+  <div class="inq-modal" onclick="event.stopPropagation()">
+    <div class="inq-modal-header">
+      <span class="material-icons inq-modal-icon">local_offer</span>
+      <h3>الخصومات</h3>
+      <button class="inq-modal-close" onclick="closeModal(document.getElementById('modal-discounts'))"><span class="material-icons">close</span></button>
+    </div>
+    <div class="inq-modal-body">
+      <p>سيتم إضافة قسم الخصومات قريباً.</p>
+      <p class="inq-modal-hint">يمكنك تطبيق الخصومات المتاحة لك كموظف حكومي أو من القطاع الخاص.</p>
+    </div>
+    <button class="inq-modal-confirm" onclick="closeModal(document.getElementById('modal-discounts'))">حسناً</button>
+  </div>
+</div>
+
+<div class="inq-modal-overlay" id="modal-driver" onclick="closeModal(this)">
+  <div class="inq-modal" onclick="event.stopPropagation()">
+    <div class="inq-modal-header">
+      <span class="material-icons inq-modal-icon">drive_eta</span>
+      <h3>إضافة سائق</h3>
+      <button class="inq-modal-close" onclick="closeModal(document.getElementById('modal-driver'))"><span class="material-icons">close</span></button>
+    </div>
+    <div class="inq-modal-body">
+      <p>سيتم إضافة ميزة إضافة السائق قريباً.</p>
+      <p class="inq-modal-hint">يمكنك إضافة سائق إضافي عند اختيار التأمين الشامل ليشمله التأمين.</p>
+    </div>
+    <button class="inq-modal-confirm" onclick="closeModal(document.getElementById('modal-driver'))">حسناً</button>
+  </div>
+</div>
+
+<div class="inq-modal-overlay" id="modal-info" onclick="closeModal(this)">
+  <div class="inq-modal" onclick="event.stopPropagation()">
+    <div class="inq-modal-header">
+      <span class="material-icons inq-modal-icon">description</span>
+      <h3>معلومات أخرى</h3>
+      <button class="inq-modal-close" onclick="closeModal(document.getElementById('modal-info'))"><span class="material-icons">close</span></button>
+    </div>
+    <div class="inq-modal-body">
+      <p>سيتم إضافة المعلومات الإضافية قريباً.</p>
+      <p class="inq-modal-hint">تشمل معلومات إضافية عن المركبة ومعلومات الاستخدام والغرض من التأمين.</p>
+    </div>
+    <button class="inq-modal-confirm" onclick="closeModal(document.getElementById('modal-info'))">حسناً</button>
+  </div>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="js/layout.js"></script>
+<script src="js/inquiry.js"></script>
+</body>
+</html>

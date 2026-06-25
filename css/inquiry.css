@@ -1,0 +1,469 @@
+/* =====================================================
+   بي كير — inquiry.css  v3
+   صفحة "قيمة المركبة وتاريخ بداية التأمين"
+===================================================== */
+
+.inquiry-page{background:var(--gray-50)}
+
+.inq-main{
+  min-height:calc(100vh - 66px - 200px);
+  padding:clamp(.75rem,3vw,1.25rem) 0 clamp(1.5rem,4vw,2.5rem);
+}
+
+.inq-container{
+  width:100%;
+  max-width:440px;
+  margin-inline:auto;
+  padding-inline:clamp(.75rem,4vw,1rem);
+}
+
+/* ─── بطاقة ──────────────────────────────────────── */
+.inq-card{
+  background:var(--white);
+  border-radius:var(--r-md);
+  box-shadow:var(--shadow-md);
+  overflow:visible;
+}
+
+.inq-card-header{
+  background:var(--blue);
+  border-radius:var(--r-md) var(--r-md) 0 0;
+  padding:.7rem 1rem;
+}
+.inq-card-title{
+  color:var(--white);
+  font-size:clamp(.88rem,2.2vw,1rem);
+  font-weight:700;text-align:center;margin:0;
+}
+
+/* ─── النموذج ────────────────────────────────────── */
+.inq-form{
+  padding:clamp(.875rem,3vw,1.25rem);
+  display:flex;flex-direction:column;gap:.75rem;
+}
+
+.inq-form-group{display:flex;flex-direction:column;gap:.25rem}
+
+.inq-label{
+  font-size:.82rem;font-weight:600;
+  color:var(--gray-800);text-align:right;
+}
+
+/* ─── حقل مشترك ──────────────────────────────────── */
+.inq-input{
+  width:100%;
+  padding:.58rem .85rem;
+  border:1.5px solid var(--border);
+  border-radius:var(--r-sm);
+  font-size:max(.875rem,16px);
+  font-family:var(--font);
+  color:var(--gray-800);background:var(--white);
+  outline:none;direction:rtl;text-align:right;
+  -webkit-appearance:none;appearance:none;
+  transition:border-color .2s,box-shadow .2s;
+  line-height:1.4;
+}
+.inq-input:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(20,99,148,.10);
+}
+.inq-input.inq-error-state{
+  border-color:var(--red)!important;
+  background:var(--red-bg)!important;
+}
+.inq-input::placeholder{color:var(--gray-400)}
+
+/* ─── قيمة المركبة (﷼ يسار) ──────────────────────── */
+.inq-input-wrap{position:relative;display:flex;align-items:center}
+.inq-input--price{
+  flex:1;padding-left:2rem;padding-right:.85rem;
+  text-align:right;direction:rtl;
+}
+.inq-suffix{
+  position:absolute;left:.65rem;top:50%;transform:translateY(-50%);
+  color:var(--gray-400);font-size:.88rem;pointer-events:none;font-weight:500;
+}
+
+/* ─── تاريخ التأمين (أيقونة يسار) ───────────────── */
+.inq-date-wrap{
+  position:relative;display:flex;align-items:center;
+  cursor:pointer;
+}
+.inq-input--date{
+  flex:1;
+  padding-left:2.4rem;padding-right:.85rem;
+  color:var(--blue);font-weight:600;text-align:right;
+  cursor:pointer;direction:ltr;
+  -webkit-appearance:none;appearance:none;
+}
+.inq-cal-icon{
+  position:absolute;left:.6rem;top:50%;transform:translateY(-50%);
+  color:var(--gold);pointer-events:none;display:flex;align-items:center;
+  z-index:1;
+}
+.inq-cal-icon .material-icons{font-size:1.1rem}
+
+/* ═══════════════════════════════════════════════════
+   التقويم الميلادي المخصص — مطابق للأصل
+═══════════════════════════════════════════════════ */
+.cal-overlay{
+  position:fixed;inset:0;z-index:3000;
+  background:rgba(0,0,0,.35);
+  display:flex;align-items:center;justify-content:center;
+  padding:1rem;
+  animation:fadeIn .15s ease;
+}
+.cal-overlay.hidden{display:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.cal-picker{
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 8px 40px rgba(0,0,0,.18);
+  width:100%;max-width:360px;
+  padding:1.25rem 1rem 1rem;
+  direction:ltr;
+  font-family:'Roboto','Readex Pro',sans-serif;
+  animation:slideUp .18s ease;
+}
+@keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── رأس التقويم ── */
+.cal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1rem;
+}
+.cal-nav-btn{
+  width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  background:none;border:none;cursor:pointer;
+  font-size:1.5rem;color:#555;
+  border-radius:50%;transition:background .15s;line-height:1;
+}
+.cal-nav-btn:hover{background:#f0f4f8}
+
+.cal-title-btn{
+  font-size:.95rem;font-weight:700;color:#1e293b;
+  background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;gap:.3rem;
+  border-radius:6px;padding:.25rem .5rem;
+  transition:background .15s;font-family:inherit;
+}
+.cal-title-btn:hover{background:#f0f4f8}
+.cal-title-arrow{font-size:.7rem;color:#64748b}
+
+/* ── وضع الأيام ── */
+.cal-weekdays{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  margin-bottom:.35rem;
+}
+.cal-wday{
+  text-align:center;font-size:.78rem;font-weight:600;
+  color:#64748b;padding:.25rem 0;
+}
+.cal-days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+
+.cal-month-name{
+  text-align:right;
+  font-size:.78rem;font-weight:600;color:#94a3b8;
+  letter-spacing:.06em;margin-bottom:.4rem;
+  padding-right:.25rem;
+}
+
+.cal-day{
+  display:flex;align-items:center;justify-content:center;
+  height:38px;font-size:.88rem;color:#1e293b;
+  border-radius:50%;cursor:pointer;
+  border:none;background:none;
+  font-family:inherit;
+  transition:background .12s,color .12s;
+  width:100%;
+}
+.cal-day:hover:not(.cal-day--empty):not(.cal-day--disabled):not(.cal-day--selected){
+  background:#f0f4f8;
+}
+.cal-day--today{
+  border:1.5px solid #94a3b8;font-weight:600;
+}
+.cal-day--selected{
+  background:var(--blue)!important;
+  color:#fff!important;font-weight:700;
+  border:none!important;border-radius:50px!important;
+}
+.cal-day--empty{cursor:default;pointer-events:none}
+.cal-day--disabled{color:#cbd5e1;cursor:not-allowed}
+.cal-day--bold{font-weight:700}
+
+/* ── وضع الشهور (4×3) ── */
+.cal-months-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:.5rem;padding:.5rem 0;
+}
+/* السنة فوق الشهور */
+.cal-year-label{
+  text-align:right;font-size:.85rem;font-weight:600;
+  color:#1e293b;margin-bottom:.5rem;
+  padding-right:.25rem;
+}
+.cal-month-btn{
+  padding:.55rem .2rem;font-size:.82rem;font-weight:500;
+  color:#64748b;border:none;background:none;cursor:pointer;
+  border-radius:8px;text-align:center;
+  transition:background .12s,color .12s;
+  font-family:inherit;
+}
+.cal-month-btn:hover{background:#f0f4f8;color:#1e293b}
+.cal-month-btn.active{
+  background:var(--blue);color:#fff;
+  font-weight:700;border-radius:50px;
+}
+.cal-month-btn.current-month{color:#1e293b;font-weight:700}
+
+/* ── وضع السنوات (4×N) ── */
+.cal-years-range{
+  text-align:right;font-size:.82rem;font-weight:600;
+  color:#64748b;margin-bottom:.5rem;padding-right:.25rem;
+}
+.cal-years-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:.5rem;padding:.25rem 0;
+}
+.cal-year-btn{
+  padding:.55rem .2rem;font-size:.88rem;font-weight:400;
+  color:#64748b;border:none;background:none;cursor:pointer;
+  border-radius:8px;text-align:center;
+  transition:background .12s,color .12s;
+  font-family:inherit;
+}
+.cal-year-btn:hover{background:#f0f4f8;color:#1e293b}
+.cal-year-btn.active{
+  background:var(--blue);color:#fff;
+  font-weight:700;border-radius:50px;
+}
+.cal-year-btn.current-year{color:#1e293b;font-weight:700}
+
+/* ─── select عادي (شهر الميلاد) ─────────────────── */
+.inq-select-wrap{position:relative}
+.inq-select{padding-left:2rem;cursor:pointer}
+.inq-chevron{
+  position:absolute;left:.45rem;top:50%;transform:translateY(-50%);
+  color:var(--gray-400);pointer-events:none;font-size:1.1rem;
+}
+
+/* ─── صف شهر + سنة ──────────────────────────────── */
+.inq-row{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:.6rem;align-items:start;
+}
+
+/* ─── Custom Dropdown — سنة الميلاد ─────────────── */
+.year-dd{position:relative;width:100%}
+
+.year-dd__trigger{
+  width:100%;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.58rem .85rem .58rem .5rem;
+  border:1.5px solid var(--border);
+  border-radius:var(--r-sm);
+  background:var(--white);
+  font-size:max(.875rem,16px);
+  font-family:var(--font);
+  color:var(--gray-400);
+  cursor:pointer;text-align:right;
+  transition:border-color .2s,box-shadow .2s;
+  line-height:1.4;
+}
+.year-dd__trigger.has-value{color:var(--gray-800)}
+.year-dd__trigger.open,
+.year-dd__trigger:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(20,99,148,.10);
+  outline:none;
+}
+.year-dd__trigger.inq-error-state{
+  border-color:var(--red)!important;
+  background:var(--red-bg)!important;
+}
+.year-dd__arrow{
+  font-size:1.1rem;color:var(--gray-400);
+  transition:transform .2s;flex-shrink:0;
+  pointer-events:none;
+}
+.year-dd__trigger.open .year-dd__arrow{transform:rotate(180deg)}
+
+/* panel القائمة */
+.year-dd__panel{
+  position:absolute;
+  top:calc(100% + 4px);
+  right:0;left:0;
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:var(--r-sm);
+  box-shadow:var(--shadow-md);
+  z-index:500;
+  overflow:hidden;
+  direction:rtl;
+}
+.year-dd__panel.hidden{display:none}
+
+/* حقل البحث داخل القائمة */
+.year-dd__search{
+  width:100%;
+  padding:.55rem .75rem;
+  border:none;
+  border-bottom:1.5px solid var(--border);
+  font-size:max(.875rem,16px);
+  font-family:var(--font);
+  color:var(--gray-800);
+  outline:none;
+  direction:rtl;text-align:right;
+  background:var(--gray-50);
+}
+.year-dd__search::placeholder{color:var(--gray-400)}
+.year-dd__search:focus{background:var(--white)}
+
+/* قائمة السنوات */
+.year-dd__list{
+  list-style:none;
+  max-height:180px;
+  overflow-y:auto;
+  margin:0;padding:.25rem 0;
+}
+.year-dd__list::-webkit-scrollbar{width:4px}
+.year-dd__list::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:2px}
+
+.year-dd__item{
+  padding:.6rem .85rem;
+  font-size:.9rem;color:var(--gray-800);
+  cursor:pointer;transition:background .12s;
+  text-align:right;
+}
+.year-dd__item:hover{background:var(--gray-50)}
+.year-dd__item.selected{
+  background:rgba(20,99,148,.08);
+  color:var(--blue);font-weight:600;
+}
+.year-dd__item.no-results{
+  color:var(--gray-400);cursor:default;
+  font-size:.82rem;text-align:center;padding:.75rem;
+}
+
+/* ─── رسائل الخطأ ────────────────────────────────── */
+.inq-error{
+  font-size:.76rem;font-weight:600;
+  color:var(--red);min-height:.85rem;line-height:1.4;
+}
+.inq-error-banner{
+  background:var(--red-bg);border-radius:var(--r-sm);
+  padding:.4rem .7rem;
+  font-size:.78rem;font-weight:600;color:var(--red);
+}
+.inq-error-banner.hidden{display:none}
+
+/* ─── الأزرار الثلاثة ────────────────────────────── */
+.inq-action-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:.5rem;margin-top:.1rem;
+}
+.inq-action-btn{
+  display:flex;flex-direction:column;align-items:center;gap:.35rem;
+  padding:.65rem .3rem;
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:var(--r-md);
+  cursor:pointer;transition:var(--trans);font-family:var(--font);
+}
+.inq-action-btn:hover{
+  border-color:var(--gold);
+  box-shadow:0 3px 10px rgba(250,166,46,.15);
+  transform:translateY(-1px);
+}
+.inq-action-icon{
+  width:38px;height:38px;
+  background:rgba(250,166,46,.12);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.inq-action-icon .material-icons{font-size:1.15rem;color:var(--gold)}
+.inq-action-lbl{
+  font-size:.72rem;font-weight:600;
+  color:var(--gray-800);text-align:center;
+  line-height:1.3;
+}
+
+/* ─── أزرار إظهار / خلف ──────────────────────────── */
+.inq-submit-row{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:.5rem;margin-top:.1rem;
+}
+.inq-btn-submit{
+  padding:.72rem .5rem;
+  background:var(--gold);color:var(--white);
+  font-size:.9rem;font-weight:700;
+  border-radius:var(--r-sm);border:none;cursor:pointer;
+  font-family:var(--font);
+  box-shadow:0 3px 10px rgba(250,166,46,.3);
+  transition:var(--trans);
+}
+.inq-btn-submit:hover{background:var(--gold-dark);transform:translateY(-1px)}
+.inq-btn-submit:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed;box-shadow:none}
+
+.inq-btn-back{
+  padding:.72rem .5rem;
+  background:var(--gray-100);color:var(--gray-500);
+  font-size:.9rem;font-weight:600;
+  border-radius:var(--r-sm);border:1.5px solid var(--gray-200);
+  cursor:pointer;font-family:var(--font);transition:var(--trans);
+}
+.inq-btn-back:hover{background:var(--gray-200);color:var(--gray-700)}
+
+/* ─── Modals ─────────────────────────────────────── */
+.inq-modal-overlay{
+  position:fixed;inset:0;z-index:2000;
+  background:rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center;
+  padding:1rem;
+  opacity:0;visibility:hidden;
+  transition:opacity .25s,visibility .25s;
+}
+.inq-modal-overlay.active{opacity:1;visibility:visible}
+.inq-modal{
+  background:var(--white);border-radius:var(--r-lg);
+  width:100%;max-width:340px;padding:1.25rem;
+  box-shadow:var(--shadow-lg);
+  transform:translateY(14px);transition:transform .25s;
+}
+.inq-modal-overlay.active .inq-modal{transform:translateY(0)}
+.inq-modal-header{
+  display:flex;align-items:center;gap:.5rem;
+  margin-bottom:.875rem;padding-bottom:.75rem;
+  border-bottom:1px solid var(--border);
+}
+.inq-modal-icon{color:var(--gold);font-size:1.3rem}
+.inq-modal-header h3{flex:1;font-size:.95rem;font-weight:700;color:var(--blue);margin:0}
+.inq-modal-close{
+  display:flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;
+  background:var(--gray-100);color:var(--gray-500);
+  transition:var(--trans);cursor:pointer;
+}
+.inq-modal-close:hover{background:var(--red-bg);color:var(--red)}
+.inq-modal-close .material-icons{font-size:.95rem}
+.inq-modal-body{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+.inq-modal-body p{font-size:.875rem;color:var(--gray-800);line-height:1.6}
+.inq-modal-hint{font-size:.8rem;color:var(--gray-500);font-style:italic}
+.inq-modal-confirm{
+  width:100%;padding:.65rem;
+  background:var(--blue);color:var(--white);
+  font-size:.875rem;font-weight:700;
+  border-radius:var(--r-sm);border:none;cursor:pointer;
+  font-family:var(--font);transition:var(--trans);
+}
+.inq-modal-confirm:hover{background:var(--blue-dark)}
+
+/* ─── Responsive ─────────────────────────────────── */
+@media (max-width:360px){
+  .inq-action-lbl{font-size:.68rem}
+  .inq-action-icon{width:34px;height:34px}
+  .inq-action-icon .material-icons{font-size:1rem}
+}
