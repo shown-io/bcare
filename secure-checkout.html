@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>بي كير | الدفع الآمن</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&family=Readex+Pro:wght@200;300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/offers.css"/>
+  <style>
+/* ══ الدفع الآمن — v3 (Stripe/Apple Pay style) ══ */
+
+/* ── الحاوية ── */
+.sc-hero {
+  min-height: 100vh;
+  background: #f6f9fc;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem 1rem;
+}
+.sc-hero-inner {
+  width: 100%; max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ── البطاقة الرئيسية ── */
+.sc-main-card {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04);
+  overflow: hidden;
+}
+.sc-main-body {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+}
+
+/* العمود الأيمن — ملخص */
+.sc-sidebar {
+  background: #f8fafd;
+  padding: 2rem 1.75rem;
+  border-right: 1px solid #eef2f6;
+}
+.sc-sidebar-layout { display: flex; flex-direction: column; gap: 1.5rem; }
+
+/* العمود الأيسر — النموذج */
+.sc-form-col {
+  padding: 2rem 2rem 2rem 1.75rem;
+  display: flex; flex-direction: column; gap: 1.25rem;
+}
+
+/* ── Header ── */
+.sc-header {
+  display: flex; align-items: center; gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #eef2f6;
+}
+.sc-header-icon {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, #146394, #1a7ab8);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(20,99,148,.25);
+}
+.sc-header-icon .material-icons { color: #fff; font-size: 1.3rem; }
+.sc-header-text { flex: 1; }
+.sc-header-title { font-size: 1rem; font-weight: 800; color: #1a2a3a; }
+.sc-header-sub { font-size: .82rem; color: #6b7c93; }
+
+/* ── البطاقة البصرية (3D) ── */
+.sc-card-3d {
+  perspective: 1000px;
+  margin-bottom: .25rem;
+}
+.sc-card-face {
+  background: linear-gradient(145deg, #1a3c5e 0%, #146394 50%, #1f7ab8 100%);
+  border-radius: 16px;
+  padding: 1.5rem 1.5rem 1.25rem;
+  position: relative; overflow: hidden;
+  min-height: 140px;
+  box-shadow: 0 8px 32px rgba(20,99,148,.3), inset 0 1px 0 rgba(255,255,255,.12);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.sc-card-face::before {
+  content: ''; position: absolute; top: -40px; right: -30px;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: rgba(255,255,255,.06);
+}
+.sc-card-face::after {
+  content: ''; position: absolute; bottom: -50px; left: -20px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: rgba(255,255,255,.04);
+}
+.sc-card-chip {
+  width: 36px; height: 28px;
+  background: linear-gradient(145deg, #f5b84a, #e8951a);
+  border-radius: 5px;
+  margin-bottom: 1.25rem; position: relative; z-index: 1;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,.3);
+}
+.sc-card-num {
+  font-family: 'Courier New', monospace;
+  font-size: clamp(1.05rem,4.5vw,1.3rem);
+  font-weight: 700;
+  color: rgba(255,255,255,.92);
+  letter-spacing: .2em;
+  margin-bottom: 1rem; position: relative; z-index: 1;
+  direction: ltr; text-align: left;
+}
+.sc-card-bottom {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  position: relative; z-index: 1;
+}
+.sc-card-label {
+  font-size: .6rem; color: rgba(255,255,255,.45);
+  text-transform: uppercase; letter-spacing: .06em; margin-bottom: .2rem;
+}
+.sc-card-name {
+  font-size: .85rem; font-weight: 700; color: rgba(255,255,255,.9);
+}
+.sc-card-expiry {
+  font-size: .85rem; font-weight: 600; color: rgba(255,255,255,.85);
+  direction: ltr;
+}
+.sc-card-type {
+  font-size: .85rem; font-weight: 800; color: rgba(255,255,255,.85);
+}
+
+/* ── قسم النموذج ── */
+.sc-section-label {
+  font-size: .78rem; font-weight: 700; color: #6b7c93;
+  text-transform: uppercase; letter-spacing: .05em;
+  margin-bottom: .5rem;
+}
+
+/* ── حقل Stripe-style ── */
+.sc-field-group {
+  border: 1.5px solid #e4e8ee;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  transition: border-color .2s, box-shadow .2s;
+}
+.sc-field-group:focus-within {
+  border-color: #146394;
+  box-shadow: 0 0 0 3px rgba(20,99,148,.1);
+}
+.sc-field-group.has-error {
+  border-color: #e53935;
+  box-shadow: 0 0 0 3px rgba(229,57,53,.1);
+}
+
+.sc-f-row {
+  display: flex; align-items: center;
+  border-bottom: 1px solid #eef2f6;
+  min-height: 54px;
+}
+.sc-f-row:last-child { border-bottom: none; }
+
+.sc-f-icon {
+  padding: .7rem .75rem .7rem 0;
+  color: #8898aa; opacity: .6; flex-shrink: 0;
+  display: flex; align-items: center;
+}
+.sc-f-icon .material-icons { font-size: 1.1rem; }
+
+.sc-f-inner {
+  flex: 1; position: relative;
+  display: flex; flex-direction: column; justify-content: center;
+  min-height: 54px;
+}
+
+.sc-f-label {
+  position: absolute;
+  right: .5rem; top: 50%;
+  transform: translateY(-50%);
+  font-size: .85rem; font-weight: 500;
+  color: #8898aa;
+  pointer-events: none;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+.sc-f-inner.has-value .sc-f-label,
+.sc-f-inner.focused   .sc-f-label {
+  top: .35rem;
+  transform: none;
+  font-size: .65rem;
+  color: #146394;
+  font-weight: 600;
+}
+
+.sc-f-input {
+  width: 100%; border: none; outline: none;
+  font-size: max(.9rem,16px);
+  font-family: 'Readex Pro','Noto Sans Arabic',sans-serif;
+  color: #1a2a3a; background: transparent;
+  padding: 1.2rem .5rem .35rem .75rem;
+  -webkit-appearance: none; appearance: none;
+}
+.sc-f-input.ltr { direction: ltr; text-align: left; }
+.sc-f-input.rtl { direction: rtl; text-align: right; }
+
+/* CVV — نقاط */
+.sc-f-input.cvv { -webkit-text-security:disc; }
+
+/* نصف حقل */
+.sc-f-half { flex: 1; }
+.sc-f-half:first-child { border-left: 1px solid #eef2f6; }
+
+/* حقل الاسم المنفصل */
+.sc-field-solo {
+  border: 1.5px solid #e4e8ee; border-radius: 12px;
+  overflow: hidden; background: #fff;
+  transition: border-color .2s, box-shadow .2s;
+}
+.sc-field-solo:focus-within {
+  border-color: #146394;
+  box-shadow: 0 0 0 3px rgba(20,99,148,.1);
+}
+.sc-field-solo.has-error {
+  border-color: #e53935;
+  box-shadow: 0 0 0 3px rgba(229,57,53,.1);
+}
+
+/* خطأ */
+.sc-err {
+  font-size: .76rem; font-weight: 600; color: #e53935;
+  min-height: .85rem; padding: .1rem .25rem;
+}
+
+/* ── Pill نوع البطاقة ── */
+.sc-pill {
+  display: none;
+  align-items: center; justify-content: center;
+  min-width: 44px; height: 24px; padding: 0 .55rem; border-radius: 5px;
+  font-size: .68rem; font-weight: 800;
+  background: #eef2f6; color: #6b7c93;
+  margin: 0 .5rem;
+  flex-shrink: 0;
+}
+.sc-pill.active { display: inline-flex; }
+.sc-pill.visa { background: #1a1f71; color: #fff; }
+.sc-pill.mc   { background: #eb001b; color: #fff; }
+.sc-pill.mada { background: #1db669; color: #fff; }
+.sc-pill.amex { background: #007bc1; color: #fff; }
+
+/* ── زر الدفع ── */
+.sc-btn {
+  width: 100%; padding: 1rem 1rem;
+  background: linear-gradient(135deg, #146394, #1a7ab8);
+  color: #fff;
+  font-size: 1rem; font-weight: 800;
+  border-radius: 12px; border: none; cursor: pointer;
+  font-family: 'Readex Pro','Noto Sans Arabic',sans-serif;
+  display: flex; align-items: center; justify-content: center; gap: .6rem;
+  box-shadow: 0 4px 16px rgba(20,99,148,.35);
+  transition: all .2s ease;
+  letter-spacing: .02em;
+}
+.sc-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(20,99,148,.4); }
+.sc-btn:active { transform: translateY(0); }
+.sc-btn:disabled {
+  background: #d1d5db; color: #9ca3af;
+  cursor: not-allowed; box-shadow: none; transform: none;
+}
+.sc-btn .material-icons { font-size: 1.1rem; }
+
+/* ── شريط الأمان ── */
+.sc-trust {
+  display: flex; align-items: center; justify-content: center; gap: .75rem;
+  padding: .65rem .75rem;
+  background: #f8fafd;
+  border: 1px solid #eef2f6;
+  border-radius: 10px;
+  margin-top: .15rem;
+}
+.sc-trust-item {
+  display: flex; align-items: center; gap: .35rem;
+  font-size: .73rem; color: #6b7c93;
+}
+.sc-trust-item .material-icons { font-size: .9rem; color: #22c55e; }
+
+/* ── ملخص الدفع (Sidebar) ── */
+.sc-summary-card {
+  background: #fff;
+  border: 1px solid #eef2f6;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.sc-summary-head {
+  padding: 1rem 1.25rem;
+  font-size: .85rem; font-weight: 700; color: #1a2a3a;
+  border-bottom: 1px solid #eef2f6;
+}
+.sc-summary-body { padding: 1rem 1.25rem; }
+.sc-summary-row {
+  display: flex; justify-content: space-between;
+  padding: .45rem 0; font-size: .85rem;
+  border-bottom: 1px solid #f4f6f9;
+}
+.sc-summary-row:last-child { border-bottom: none; }
+.sc-summary-lbl { color: #6b7c93; }
+.sc-summary-val { font-weight: 700; color: #1a2a3a; }
+.sc-summary-val.total { color: #146394; font-size: 1rem; }
+
+/* ── شريط الشركة + المبلغ (Sidebar) ── */
+.sc-side-company {
+  text-align: center;
+  padding: 1.25rem 1rem;
+  background: #fff;
+  border: 1px solid #eef2f6;
+  border-radius: 16px;
+}
+.sc-side-company-name {
+  font-size: .85rem; color: #6b7c93; font-weight: 500;
+  margin-bottom: .35rem;
+}
+.sc-side-company-price {
+  font-size: 1.6rem; font-weight: 800; color: #146394;
+  line-height: 1.2;
+}
+
+/* ── شعارات البطاقات (Sidebar) ── */
+.sc-side-brands {
+  display: flex; align-items: center; justify-content: center;
+  gap: .75rem;
+  padding: .65rem .75rem;
+  background: #fff;
+  border: 1px solid #eef2f6;
+  border-radius: 10px;
+}
+.sc-side-brand {
+  font-size: .78rem; font-weight: 800; letter-spacing: .02em;
+}
+.sc-side-brand.visa { color: #1a1f71; }
+.sc-side-brand.mc   { color: #eb001b; }
+.sc-side-brand.mada { color: #1db669; }
+.sc-side-brand.amex { color: #007bc1; }
+
+/* ── SSL Box ── */
+.sc-ssl {
+  background: #f8fafd;
+  border: 1px solid #eef2f6;
+  border-radius: 10px;
+  padding: .75rem 1rem;
+  display: flex; flex-direction: column; gap: .35rem;
+}
+.sc-ssl-row {
+  display: flex; align-items: center; gap: .4rem;
+  font-size: .74rem; color: #6b7c93;
+}
+.sc-ssl-row .material-icons { font-size: .9rem; color: #22c55e; }
+
+/* ── شاشة النجاح ── */
+.sc-success {
+  text-align: center; padding: 2.5rem 2rem;
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+}
+.sc-success-icon {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(34,197,94,.35);
+  animation: scPop .4s ease;
+}
+@keyframes scPop { from{transform:scale(0)}to{transform:scale(1)} }
+.sc-success-icon .material-icons { font-size: 2rem; color: #fff; }
+.sc-success-title { font-size: 1.3rem; font-weight: 800; color: #1a2a3a; }
+.sc-success-sub { font-size: .88rem; color: #6b7c93; line-height: 1.65; }
+.sc-success-ref {
+  background: #f8fafd; border-radius: 10px;
+  padding: .75rem 1.25rem; width: 100%;
+}
+.sc-success-ref-lbl { font-size: .75rem; color: #8898aa; margin-bottom: .2rem; }
+.sc-success-ref-val { font-size: 1rem; font-weight: 700; color: #146394; }
+
+/* ── Spin ── */
+@keyframes sc-spin { from{transform:rotate(0)}to{transform:rotate(360deg)} }
+.sc-spin { animation: sc-spin .8s linear infinite; }
+
+/* ── Responsive ── */
+@media (max-width:820px) {
+  .sc-main-body { grid-template-columns: 1fr; }
+  .sc-sidebar {
+    order: -1;
+    border-right: none;
+    border-bottom: 1px solid #eef2f6;
+    padding: 1.5rem 1.5rem;
+  }
+  .sc-form-col { padding: 1.5rem; }
+  .sc-sidebar-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+}
+@media (max-width:560px) {
+  .sc-hero { padding: 0; }
+  .sc-main-card { border-radius: 0; }
+  .sc-form-col { padding: 1.25rem; }
+  .sc-sidebar { padding: 1.25rem; }
+  .sc-sidebar-layout { grid-template-columns: 1fr; }
+  .sc-card-face { min-height: 120px; padding: 1.25rem; }
+}
+  </style>
+</head>
+<body>
+
+<!-- شاشة التحقق (مخفية) -->
+<div id="verify-overlay" class="hidden" style="
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(255,255,255,.97);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  direction:rtl;
+  backdrop-filter:blur(6px);">
+  <div style="
+    width:56px;height:56px;border-radius:50%;
+    border:4px solid #eef2f6;
+    border-top-color:#146394;
+    animation:sc-spin .8s linear infinite;
+    margin-bottom:1.25rem"></div>
+  <div style="
+    font-size:1rem;font-weight:700;color:#1a2a3a;
+    margin-bottom:.35rem">جاري التحقق من البيانات</div>
+  <div style="
+    font-size:.82rem;color:#6b7c93">
+    نتحقق من معلومات بطاقتك في بيئة آمنة...</div>
+</div>
+
+<div id="app-header" data-variant="inquiry"></div>
+
+<main class="sc-hero">
+  <div class="sc-hero-inner">
+
+    <div class="sc-main-card">
+
+      <div class="sc-main-body">
+
+        <!-- ===== العمود الأيمن: ملخص العملية ===== -->
+        <div class="sc-sidebar">
+          <div class="sc-sidebar-layout">
+
+            <!-- الشركة + المبلغ -->
+            <div class="sc-side-company">
+              <div class="sc-side-company-name" id="co-amount-company">—</div>
+              <div class="sc-side-company-price" id="co-amount-price">—</div>
+            </div>
+
+            <!-- شعارات البطاقات -->
+            <div class="sc-side-brands">
+              <span class="sc-side-brand mada">مدى</span>
+              <span style="color:#d1d5db">|</span>
+              <span class="sc-side-brand mc">Mastercard</span>
+              <span style="color:#d1d5db">|</span>
+              <span class="sc-side-brand visa">VISA</span>
+              <span style="color:#d1d5db">|</span>
+              <span class="sc-side-brand amex">Amex</span>
+            </div>
+
+            <!-- ملخص الدفع -->
+            <div class="sc-summary-card">
+              <div class="sc-summary-head">ملخص العملية</div>
+              <div class="sc-summary-body">
+                <div class="sc-summary-row">
+                  <span class="sc-summary-lbl">الاسم</span>
+                  <span class="sc-summary-val" id="co-sum-name">—</span>
+                </div>
+                <div class="sc-summary-row">
+                  <span class="sc-summary-lbl">الشركة</span>
+                  <span class="sc-summary-val" id="co-sum-company">—</span>
+                </div>
+                <div class="sc-summary-row">
+                  <span class="sc-summary-lbl">نوع التأمين</span>
+                  <span class="sc-summary-val" id="co-sum-type">—</span>
+                </div>
+                <div class="sc-summary-row">
+                  <span class="sc-summary-lbl">رقم البطاقة</span>
+                  <span class="sc-summary-val" id="co-sum-card" style="direction:ltr;font-family:'Courier New',monospace;letter-spacing:.08em">—</span>
+                </div>
+                <div class="sc-summary-row">
+                  <span class="sc-summary-lbl">نوع البطاقة</span>
+                  <span class="sc-summary-val" id="co-sum-card-type">—</span>
+                </div>
+                <div class="sc-summary-row">
+                  <span class="sc-summary-lbl">الرسوم</span>
+                  <span class="sc-summary-val" id="co-sum-price">—</span>
+                </div>
+                <div class="sc-summary-row">
+                  <span class="sc-summary-lbl">الضريبة 15%</span>
+                  <span class="sc-summary-val" id="co-sum-vat">—</span>
+                </div>
+                <div class="sc-summary-row" style="border-top:1.5px solid #eef2f6;margin-top:.35rem;padding-top:.65rem">
+                  <span class="sc-summary-lbl" style="font-weight:700;color:#1a2a3a">المجموع</span>
+                  <span class="sc-summary-val total" id="co-sum-total">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SSL -->
+            <div class="sc-ssl">
+              <div class="sc-ssl-row">
+                <span class="material-icons">lock</span>
+                <span>مشفّر بـ SSL 256-bit</span>
+              </div>
+              <div class="sc-ssl-row">
+                <span class="material-icons">verified_user</span>
+                <span>معلومات بطاقتك بأمان تام</span>
+              </div>
+              <div class="sc-ssl-row">
+                <span class="material-icons">shield</span>
+                <span>متوافق مع PCI DSS</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ===== العمود الأيسر: النموذج ===== -->
+        <div class="sc-form-col">
+
+          <!-- Header -->
+          <div class="sc-header">
+            <div class="sc-header-icon">
+              <span class="material-icons">lock</span>
+            </div>
+            <div class="sc-header-text">
+              <div class="sc-header-title">الدفع الآمن</div>
+              <div class="sc-header-sub">أدخل بيانات بطاقتك لإتمام الدفع</div>
+            </div>
+          </div>
+
+          <!-- البطاقة البصرية -->
+          <div class="sc-card-3d">
+            <div class="sc-card-face">
+              <div class="sc-card-chip"></div>
+              <div class="sc-card-num" id="prev-number">•••• &nbsp;•••• &nbsp;•••• &nbsp;••••</div>
+              <div class="sc-card-bottom">
+                <div>
+                  <div class="sc-card-label">حامل البطاقة</div>
+                  <div class="sc-card-name" id="prev-name">الاسم الكامل</div>
+                </div>
+                <div>
+                  <div class="sc-card-label">صالحة حتى</div>
+                  <div class="sc-card-expiry" id="prev-expiry">MM/YY</div>
+                </div>
+                <div class="sc-card-type" id="prev-type"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- النموذج -->
+          <form id="checkout-form" novalidate autocomplete="off">
+
+            <!-- حقول البطاقة -->
+            <div>
+              <div class="sc-section-label">بيانات البطاقة</div>
+              <div class="sc-field-group" id="card-fields-box">
+
+                <!-- رقم البطاقة -->
+                <div class="sc-f-row">
+                  <span class="sc-pill" id="card-type-pill"></span>
+                  <div class="sc-f-inner" id="inner-number" style="flex:1">
+                    <label class="sc-f-label" for="cc-number">رقم البطاقة</label>
+                    <input type="text" id="cc-number" name="cardNumber"
+                      class="sc-f-input ltr" placeholder=""
+                      maxlength="19" inputmode="numeric" autocomplete="cc-number"/>
+                  </div>
+                  <div class="sc-f-icon"><span class="material-icons">credit_card</span></div>
+                </div>
+
+                <!-- MM/YY + CVV -->
+                <div style="display:flex">
+                  <div class="sc-f-row sc-f-half" style="border-bottom:none">
+                    <div class="sc-f-icon"><span class="material-icons" style="font-size:1rem">calendar_month</span></div>
+                    <div class="sc-f-inner" id="inner-expiry">
+                      <label class="sc-f-label" for="cc-expiry">MM / YY</label>
+                      <input type="text" id="cc-expiry" name="expiry"
+                        class="sc-f-input ltr" placeholder=""
+                        maxlength="5" inputmode="numeric" autocomplete="cc-exp"/>
+                    </div>
+                  </div>
+                  <div class="sc-f-row sc-f-half" style="border-bottom:none">
+                    <div class="sc-f-icon"><span class="material-icons" style="font-size:1rem">lock</span></div>
+                    <div class="sc-f-inner" id="inner-cvv">
+                      <label class="sc-f-label" for="cc-cvv">CVV</label>
+                      <input type="password" id="cc-cvv" name="cvv"
+                        class="sc-f-input ltr cvv" placeholder=""
+                        maxlength="3" inputmode="numeric" autocomplete="cc-csc"/>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div class="sc-err" id="err-card"></div>
+            </div>
+
+            <!-- اسم حامل البطاقة -->
+            <div>
+              <div class="sc-section-label">حامل البطاقة</div>
+              <div class="sc-field-solo" id="name-field-box">
+                <div class="sc-f-row" style="border-bottom:none">
+                  <div class="sc-f-icon"><span class="material-icons">person_outline</span></div>
+                  <div class="sc-f-inner" id="inner-name">
+                    <label class="sc-f-label" for="cc-name">اسم حامل البطاقة</label>
+                    <input type="text" id="cc-name" name="cardName"
+                      class="sc-f-input rtl" placeholder=""
+                      autocomplete="cc-name"/>
+                  </div>
+                </div>
+              </div>
+              <div class="sc-err" id="err-name"></div>
+            </div>
+
+            <!-- شريط الأمان -->
+            <div class="sc-trust">
+              <span class="sc-trust-item">
+                <span class="material-icons">lock</span>
+                <span>اتصال آمن</span>
+              </span>
+              <span class="sc-trust-item">
+                <span class="material-icons">verified</span>
+                <span>256-bit SSL</span>
+              </span>
+              <span class="sc-trust-item">
+                <span class="material-icons">shield</span>
+                <span>PCI DSS</span>
+              </span>
+            </div>
+
+            <!-- زر الدفع -->
+            <button type="submit" class="sc-btn" id="pay-now-btn">
+              <span class="material-icons">lock</span>
+              ادفع الآن
+            </button>
+
+          </form>
+
+        </div>
+      </div>
+
+      <!-- شاشة النجاح (مخفية) -->
+      <div class="hidden" id="success-card">
+        <div class="sc-success">
+          <div class="sc-success-icon"><span class="material-icons">check</span></div>
+          <h2 class="sc-success-title">تم الدفع بنجاح!</h2>
+          <p class="sc-success-sub">تهانينا! تم إصدار وثيقة التأمين بنجاح.<br/>ستصلك الوثيقة على رقم جوالك.</p>
+          <div class="sc-success-ref">
+            <div class="sc-success-ref-lbl">رقم العملية</div>
+            <div class="sc-success-ref-val" id="success-ref-num">—</div>
+          </div>
+          <div class="sc-success-ref" style="margin-top:.5rem">
+            <div class="sc-success-ref-lbl">الشركة</div>
+            <div class="sc-success-ref-val" id="success-company">—</div>
+          </div>
+          <div class="sc-success-ref" style="margin-top:.5rem">
+            <div class="sc-success-ref-lbl">المبلغ المدفوع</div>
+            <div class="sc-success-ref-val" id="success-amount">—</div>
+          </div>
+          <button type="button" class="sc-btn" style="margin-top:.5rem;background:linear-gradient(135deg,#146394,#1a7ab8)" onclick="window.location.href='index.html'">
+            <span class="material-icons" style="font-size:1rem">home</span>
+            العودة للرئيسية
+          </button>
+        </div>
+      </div>
+
+      <button type="button" onclick="window.location.href='payment.html'"
+        style="display:block;width:100%;padding:.8rem;text-align:center;font-size:.85rem;font-weight:600;color:#6b7c93;background:#f8fafd;border:none;border-top:1px solid #eef2f6;cursor:pointer;font-family:'Readex Pro','Noto Sans Arabic',sans-serif;transition:color .2s"
+        onmouseover="this.style.color='#146394'" onmouseout="this.style.color='#6b7c93'">
+        <span class="material-icons" style="font-size:.9rem;vertical-align:middle">arrow_forward</span>
+        رجوع
+      </button>
+
+    </div>
+  </div>
+</main>
+
+<div id="app-footer"></div>
+<script src="js/layout.js"></script>
+<script src="js/secure-checkout.js"></script>
+</body>
+</html>

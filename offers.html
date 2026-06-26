@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>بي كير | عروض التأمين</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&family=Readex+Pro:wght@200;300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/offers.css"/>
+</head>
+<body class="offers-page">
+
+<div id="app-header" data-variant="inquiry"></div>
+
+<main class="off-main">
+  <div class="offers-wide-container">
+
+    <!-- شريط ملخص المركبة -->
+    <div class="vehicle-summary">
+      <h2>العروض المتاحة حسب تفاصيل مركبتك</h2>
+      <div class="vehicle-summary-grid" id="vehicle-summary-grid">
+        <div class="vsummary-item"><span class="vsummary-label">ماركة ونوع المركبة</span><span class="vsummary-value" id="vs-brand">—</span></div>
+        <div class="vsummary-item"><span class="vsummary-label">القيمة التقديرية</span><span class="vsummary-value" id="vs-value">—</span></div>
+        <div class="vsummary-item"><span class="vsummary-label">الغرض من الاستخدام</span><span class="vsummary-value" id="vs-purpose">—</span></div>
+        <div class="vsummary-item"><span class="vsummary-label">مكان إصلاح المركبة</span><span class="vsummary-value" id="vs-repair">—</span></div>
+      </div>
+    </div>
+
+    <!-- بانر التنبيه -->
+    <div class="offers-banner">
+      بموجب تعليمات البنك المركزي السعودي، يحق لحامل الوثيقة إلغاء الوثيقة واسترداد كامل المبلغ المدفوع خلال 15 يوماً من تاريخ الشراء، بشرط عدم حدوث أي مطالبات خلال هذه الفترة.
+    </div>
+
+    <!-- تبويبان -->
+    <div class="offers-tabs">
+      <button class="offers-tab active" id="tab-tpl"  data-tab="tpl">تأمين ضد الغير</button>
+      <button class="offers-tab"        id="tab-comp" data-tab="comp">تأمين شامل</button>
+    </div>
+
+    <!-- بطاقات العروض -->
+    <div id="offers-list"></div>
+
+    <!-- زر رجوع -->
+    <button type="button" class="off-btn-secondary" style="width:100%;margin-top:.5rem" onclick="window.location.href='policy-details.html'">
+      <span class="material-icons" style="font-size:1rem;vertical-align:middle">arrow_forward</span>
+      رجوع
+    </button>
+
+  </div>
+</main>
+
+<div id="app-footer"></div>
+<script src="js/layout.js"></script>
+<script src="js/offers.js"></script>
+</body>
+</html>
