@@ -10,6 +10,199 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="stylesheet" href="css/offers.css"/>
+  <style>
+/* ══ صفحة الدفع الآمن — Stripe style ══ */
+
+/* بطاقة بصرية */
+.sc-card-visual {
+  background: linear-gradient(135deg,#0e4f76 0%,#146394 50%,#1a7ab8 100%);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem 1rem;
+  margin-bottom: 1.25rem;
+  position: relative; overflow: hidden; min-height: 120px;
+  box-shadow: 0 8px 24px rgba(14,79,118,.35);
+}
+.sc-card-visual::before {
+  content:''; position:absolute; top:-30px; left:-20px;
+  width:140px; height:140px; border-radius:50%;
+  background:rgba(255,255,255,.07);
+}
+.sc-card-visual::after {
+  content:''; position:absolute; bottom:-40px; right:-10px;
+  width:160px; height:160px; border-radius:50%;
+  background:rgba(255,255,255,.05);
+}
+.sc-card-chip {
+  width: 32px; height: 24px; border-radius: 5px;
+  background: linear-gradient(135deg,#faa62e,#e8951a);
+  margin-bottom: .875rem; position:relative; z-index:1;
+}
+.sc-card-number {
+  font-size: clamp(1rem,4.5vw,1.2rem); font-weight: 700;
+  color: rgba(255,255,255,.9); letter-spacing: .18em;
+  font-family: 'Courier New',monospace; margin-bottom: .875rem;
+  position:relative; z-index:1;
+}
+.sc-card-bottom {
+  display:flex; justify-content:space-between; align-items:flex-end;
+  position:relative; z-index:1;
+}
+.sc-card-label { font-size:.6rem; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.2rem; }
+.sc-card-value { font-size:.82rem; font-weight:700; color:rgba(255,255,255,.92); letter-spacing:.04em; }
+.sc-card-brand { font-size:.9rem; font-weight:900; color:rgba(255,255,255,.9); letter-spacing:.02em; }
+
+/* مجموعة حقول البطاقة (Stripe-style: حقول داخل إطار واحد) */
+.sc-form-box {
+  border: 1.5px solid var(--border); border-radius: 12px;
+  overflow: hidden; background: var(--white);
+  box-shadow: 0 2px 8px rgba(20,99,148,.06);
+  margin-bottom: .875rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+.sc-form-box:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(20,99,148,.10);
+}
+.sc-form-box.has-error { border-color: var(--red); }
+
+.sc-field {
+  position: relative; display: flex; align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.sc-field:last-child { border-bottom: none; }
+.sc-field-half { flex: 1; }
+.sc-field-half:first-child { border-left: 1px solid var(--border); }
+
+.sc-field-icon {
+  padding: .7rem .75rem .7rem 0;
+  color: var(--blue); opacity: .6; flex-shrink: 0;
+  display: flex; align-items: center;
+}
+.sc-field-icon .material-icons { font-size: 1.1rem; }
+
+.sc-field-label {
+  position: absolute; right: 2.4rem; top: .55rem;
+  font-size: .68rem; font-weight: 600; color: var(--gray-400);
+  pointer-events: none; transition: .15s;
+}
+.sc-field-label-inline { right: 2.4rem; top: 50%; transform: translateY(-50%); font-size: .82rem; color: var(--gray-400); }
+
+.sc-input {
+  width: 100%; border: none; outline: none;
+  font-size: max(.9rem,16px); font-family: var(--font);
+  color: var(--gray-800); background: transparent;
+  padding: .85rem .5rem .35rem .75rem;
+  direction: ltr; text-align: left;
+  -webkit-appearance: none; appearance: none;
+}
+.sc-input::placeholder { color: transparent; }
+.sc-input:placeholder-shown ~ .sc-field-label { top: 50%; transform: translateY(-50%); font-size: .82rem; }
+.sc-input:focus ~ .sc-field-label,
+.sc-input:not(:placeholder-shown) ~ .sc-field-label { top: .45rem; transform: none; font-size: .68rem; }
+
+/* حقل الاسم — RTL */
+.sc-input-rtl {
+  direction: rtl; text-align: right;
+  padding: .85rem .5rem .35rem .5rem;
+}
+.sc-input-rtl::placeholder { color: transparent; }
+.sc-field-label-rtl {
+  position: absolute; right: 2.4rem; top: 50%; transform: translateY(-50%);
+  font-size: .82rem; font-weight: 500; color: var(--gray-400);
+  pointer-events: none; transition: .15s;
+}
+.sc-input-rtl:focus ~ .sc-field-label-rtl,
+.sc-input-rtl:not(:placeholder-shown) ~ .sc-field-label-rtl { top: .45rem; transform: none; font-size: .68rem; }
+
+/* حقل مستقل (الاسم) */
+.sc-standalone-box {
+  border: 1.5px solid var(--border); border-radius: 12px;
+  overflow: hidden; background: var(--white);
+  box-shadow: 0 2px 8px rgba(20,99,148,.06);
+  margin-bottom: .875rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+.sc-standalone-box:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(20,99,148,.10); }
+.sc-standalone-box.has-error { border-color: var(--red); }
+
+/* رسائل الخطأ */
+.sc-error {
+  font-size: .76rem; font-weight: 600; color: var(--red);
+  min-height: .85rem; padding: .1rem .25rem;
+}
+
+/* بطاقة النوع badge */
+.sc-card-type-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 22px; padding: 0 .5rem; border-radius: 4px;
+  font-size: .72rem; font-weight: 800;
+  background: var(--gray-100); color: var(--gray-600);
+  position: absolute; left: .6rem; top: 50%; transform: translateY(-50%);
+  transition: var(--trans);
+}
+.sc-card-type-pill.visa    { background: #1a1f71; color: #fff; }
+.sc-card-type-pill.mc      { background: #eb001b; color: #fff; }
+.sc-card-type-pill.mada    { background: #1db669; color: #fff; }
+.sc-card-type-pill.amex    { background: #007bc1; color: #fff; }
+
+/* زر الدفع */
+.sc-pay-btn {
+  width: 100%; padding: .95rem 1rem;
+  background: linear-gradient(135deg, var(--blue), var(--blue-light));
+  color: var(--white);
+  font-size: 1rem; font-weight: 800;
+  border-radius: 12px; border: none; cursor: pointer;
+  font-family: var(--font); transition: var(--trans);
+  display: flex; align-items: center; justify-content: center; gap: .5rem;
+  box-shadow: 0 4px 16px rgba(20,99,148,.35);
+  letter-spacing: .02em;
+  margin-top: .25rem;
+}
+.sc-pay-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(20,99,148,.45); }
+.sc-pay-btn:disabled {
+  background: var(--gray-200); color: var(--gray-400);
+  cursor: not-allowed; box-shadow: none; transform: none;
+}
+.sc-pay-btn .material-icons { font-size: 1.1rem; }
+
+/* شريط الأمان */
+.sc-trust-bar {
+  display: flex; align-items: center; justify-content: center; gap: .5rem;
+  padding: .6rem; background: var(--gray-50); border-radius: 8px;
+  font-size: .75rem; color: var(--gray-500); margin-top: .75rem;
+}
+.sc-trust-bar .material-icons { font-size: .95rem; color: #22c55e; }
+
+/* شريط أيكونات الدفع */
+.sc-brands-strip {
+  display: flex; align-items: center; justify-content: center;
+  gap: .75rem; padding: .65rem .75rem; margin-bottom: 1rem;
+  background: var(--gray-50); border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.sc-brand { font-size: .78rem; font-weight: 900; letter-spacing: .03em; }
+.sc-brand.visa    { color: #1a1f71; }
+.sc-brand.mc      { color: #eb001b; }
+.sc-brand.mada    { color: #1db669; }
+.sc-brand.amex    { color: #007bc1; }
+
+/* ملخص العملية */
+.sc-summary { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 1rem; }
+.sc-summary-header { background: var(--gray-50); padding: .6rem 1rem; text-align: center; font-size: .85rem; font-weight: 700; color: var(--blue); border-bottom: 1px solid var(--border); }
+.sc-summary-body { padding: .875rem 1rem; }
+.sc-summary-row { display:flex; justify-content:space-between; padding:.4rem 0; font-size:.85rem; border-bottom:1px solid var(--gray-50); }
+.sc-summary-row:last-child { border-bottom: none; }
+.sc-summary-lbl { color: var(--gray-500); }
+.sc-summary-val { font-weight: 700; color: var(--gray-800); }
+.sc-summary-val.big { color: var(--blue); font-size: 1rem; }
+
+.sc-ssl-box { background: var(--gray-50); border-radius: 8px; padding: .6rem .875rem; margin-top: .75rem; display:flex; flex-direction:column; gap:.3rem; }
+.sc-ssl-row { display:flex; align-items:center; gap:.4rem; font-size:.74rem; color:var(--gray-500); }
+.sc-ssl-row .material-icons { font-size:.9rem; color:#22c55e; flex-shrink:0; }
+
+@keyframes spin-sc { from{transform:rotate(0)}to{transform:rotate(360deg)} }
+.spin-icon { animation: spin-sc .8s linear infinite; }
+  </style>
 </head>
 <body class="offers-page">
 
@@ -18,15 +211,13 @@
 <main class="off-main">
   <div class="off-container">
 
-    <!-- شاشة النجاح (مخفية مبدئياً) -->
+    <!-- شاشة النجاح (مخفية) -->
     <div class="off-card hidden" id="success-card">
       <div class="off-card-body">
         <div class="success-screen">
-          <div class="success-icon">
-            <span class="material-icons">check</span>
-          </div>
-          <h2 class="success-title">تم الدفع بنجاح! 🎉</h2>
-          <p class="success-subtitle">تهانينا! تم إصدار وثيقة التأمين الخاصة بك بنجاح.<br/>ستصلك الوثيقة على بريدك الإلكتروني قريباً.</p>
+          <div class="success-icon"><span class="material-icons">check</span></div>
+          <h2 class="success-title">تم الدفع بنجاح!</h2>
+          <p class="success-subtitle">تهانينا! تم إصدار وثيقة التأمين بنجاح.<br/>ستصلك الوثيقة على بريدك الإلكتروني قريباً.</p>
           <div class="success-ref">
             <div class="success-ref-label">رقم العملية</div>
             <div class="success-ref-value" id="success-ref-num">—</div>
@@ -39,7 +230,7 @@
             <div class="success-ref-label">المبلغ المدفوع</div>
             <div class="success-ref-value" id="success-amount">—</div>
           </div>
-          <button type="button" class="off-btn-blue" style="width:100%;margin-top:.5rem" onclick="window.location.href='index.html'">
+          <button type="button" class="off-btn-blue" style="width:100%;margin-top:.75rem" onclick="window.location.href='index.html'">
             <span class="material-icons" style="font-size:1rem">home</span>
             العودة للرئيسية
           </button>
@@ -47,160 +238,146 @@
       </div>
     </div>
 
-    <!-- نموذج الدفع الآمن -->
-    <div id="checkout-card" class="off-card">
-      <div class="off-card-body">
+    <!-- نموذج الدفع -->
+    <div id="checkout-card">
 
-        <!-- رأس الدفع الآمن -->
-        <div class="checkout-header-box">
-          <div class="checkout-lock-icon">
-            <span class="material-icons">lock</span>
+      <!-- رأس الصفحة -->
+      <div style="text-align:center;padding:.5rem 0 1rem">
+        <div class="checkout-lock-icon" style="margin:0 auto .6rem">
+          <span class="material-icons">lock</span>
+        </div>
+        <h1 class="checkout-title">الدفع الآمن</h1>
+        <p class="checkout-subtitle">أدخل بيانات بطاقتك لإتمام الدفع</p>
+      </div>
+
+      <!-- ملخص المبلغ -->
+      <div class="checkout-amount-box">
+        <span class="checkout-amount-company" id="co-amount-company">—</span>
+        <span class="checkout-amount-price" id="co-amount-price">—</span>
+      </div>
+
+      <!-- شعارات البطاقات -->
+      <div class="sc-brands-strip">
+        <span class="sc-brand mada">مدى</span>
+        <span style="color:var(--border)">|</span>
+        <span class="sc-brand mc">Mastercard</span>
+        <span style="color:var(--border)">|</span>
+        <span class="sc-brand visa">VISA</span>
+        <span style="color:var(--border)">|</span>
+        <span class="sc-brand amex">Amex</span>
+      </div>
+
+      <!-- البطاقة البصرية -->
+      <div class="sc-card-visual">
+        <div class="sc-card-chip"></div>
+        <div class="sc-card-number" id="prev-number">•••• &nbsp;•••• &nbsp;•••• &nbsp;••••</div>
+        <div class="sc-card-bottom">
+          <div>
+            <div class="sc-card-label">حامل البطاقة</div>
+            <div class="sc-card-value" id="prev-name">الاسم الكامل</div>
           </div>
-          <h1 class="checkout-title">الدفع الآمن</h1>
-          <p class="checkout-subtitle">أدخل بيانات بطاقتك لإتمام الدفع</p>
-        </div>
-
-        <!-- ملخص المبلغ -->
-        <div class="checkout-amount-box">
-          <span class="checkout-amount-company" id="co-amount-company">—</span>
-          <span class="checkout-amount-price" id="co-amount-price">—</span>
-        </div>
-
-        <!-- شعارات البطاقات -->
-        <div class="card-brands">
-          <span class="card-brand-badge mada">مدى</span>
-          <span style="color:var(--gray-200);font-size:1rem">|</span>
-          <span class="card-brand-badge mc">●● MC</span>
-          <span style="color:var(--gray-200);font-size:1rem">|</span>
-          <span class="card-brand-badge">VISA</span>
-        </div>
-
-        <!-- معاينة البطاقة -->
-        <div class="card-preview" id="card-preview">
-          <div class="card-preview-number" id="prev-number">•••• •••• •••• ••••</div>
-          <div class="card-preview-bottom">
-            <div>
-              <div style="font-size:.6rem;color:rgba(255,255,255,.55);margin-bottom:.15rem">حامل البطاقة</div>
-              <div class="card-preview-name" id="prev-name">الاسم الكامل</div>
-            </div>
-            <div>
-              <div style="font-size:.6rem;color:rgba(255,255,255,.55);margin-bottom:.15rem">صالحة حتى</div>
-              <div class="card-preview-expiry" id="prev-expiry">MM/YY</div>
-            </div>
-            <div class="card-preview-type" id="prev-type"></div>
+          <div>
+            <div class="sc-card-label">صالحة حتى</div>
+            <div class="sc-card-value" id="prev-expiry">MM/YY</div>
           </div>
+          <div class="sc-card-brand" id="prev-type"></div>
         </div>
+      </div>
 
-        <!-- نموذج البطاقة -->
-        <form class="off-form" id="checkout-form" novalidate autocomplete="off">
+      <form id="checkout-form" novalidate autocomplete="off">
+
+        <!-- ── بطاقة حقول البطاقة (Stripe-style) ── -->
+        <div class="sc-form-box" id="card-fields-box">
 
           <!-- رقم البطاقة -->
-          <div class="off-group">
-            <label class="off-label" for="cc-number">
-              <span class="material-icons" style="font-size:.95rem;vertical-align:middle;color:var(--blue)">credit_card</span>
-              رقم البطاقة
-            </label>
-            <div class="card-input-wrap">
+          <div class="sc-field">
+            <div class="sc-field-icon"><span class="material-icons">credit_card</span></div>
+            <div style="flex:1;position:relative">
               <input type="text" id="cc-number" name="cardNumber"
-                class="off-input card-number-input" placeholder="1234 5678 9012 3456"
+                class="sc-input" placeholder=" "
                 maxlength="19" inputmode="numeric" autocomplete="cc-number"/>
-              <span class="card-type-badge" id="card-type-badge"></span>
+              <label class="sc-field-label" for="cc-number">رقم البطاقة</label>
             </div>
-            <div class="off-error" id="err-cc-number"></div>
+            <span class="sc-card-type-pill" id="card-type-pill"></span>
           </div>
 
-          <!-- اسم حامل البطاقة (يُملأ تلقائياً) -->
-          <div class="off-group">
-            <label class="off-label" for="cc-name">
-              <span class="material-icons" style="font-size:.95rem;vertical-align:middle;color:var(--blue)">person_outline</span>
-              اسم حامل البطاقة
-            </label>
-            <input type="text" id="cc-name" name="cardName"
-              class="off-input" placeholder="الاسم كما هو مدوّن على البطاقة"
-              autocomplete="cc-name"/>
-            <div class="off-error" id="err-cc-name"></div>
-          </div>
-
-          <!-- شهر + سنة الانتهاء -->
-          <div class="off-row-2">
-            <div class="off-group">
-              <label class="off-label" for="cc-month">
-                <span class="material-icons" style="font-size:.95rem;vertical-align:middle;color:var(--blue)">calendar_month</span>
-                شهر الانتهاء
-              </label>
-              <input type="text" id="cc-month" name="expMonth"
-                class="off-input" placeholder="الشهر" maxlength="2" inputmode="numeric"/>
-              <div class="off-error" id="err-cc-month"></div>
+          <!-- تاريخ الانتهاء + CVV في صف واحد -->
+          <div style="display:flex">
+            <!-- تاريخ الانتهاء MM/YY — حقل واحد -->
+            <div class="sc-field sc-field-half">
+              <div class="sc-field-icon"><span class="material-icons" style="font-size:1rem">calendar_month</span></div>
+              <div style="flex:1;position:relative">
+                <input type="text" id="cc-expiry" name="expiry"
+                  class="sc-input" placeholder=" "
+                  maxlength="5" inputmode="numeric" autocomplete="cc-exp"/>
+                <label class="sc-field-label" for="cc-expiry">MM / YY</label>
+              </div>
             </div>
-            <div class="off-group">
-              <label class="off-label" for="cc-year">
-                <span class="material-icons" style="font-size:.95rem;vertical-align:middle;color:var(--blue)">calendar_today</span>
-                سنة الانتهاء
-              </label>
-              <input type="text" id="cc-year" name="expYear"
-                class="off-input" placeholder="السنة" maxlength="4" inputmode="numeric"/>
-              <div class="off-error" id="err-cc-year"></div>
+            <!-- CVV -->
+            <div class="sc-field sc-field-half">
+              <div class="sc-field-icon"><span class="material-icons" style="font-size:1rem">lock</span></div>
+              <div style="flex:1;position:relative">
+                <input type="text" id="cc-cvv" name="cvv"
+                  class="sc-input" placeholder=" "
+                  maxlength="4" inputmode="numeric" autocomplete="cc-csc"/>
+                <label class="sc-field-label" for="cc-cvv">CVV</label>
+              </div>
             </div>
           </div>
 
-          <!-- CVV -->
-          <div class="off-group">
-            <label class="off-label" for="cc-cvv">
-              <span class="material-icons" style="font-size:.95rem;vertical-align:middle;color:var(--blue)">lock</span>
-              رمز الأمان (CVV)
-            </label>
-            <input type="text" id="cc-cvv" name="cvv"
-              class="off-input" placeholder="123" maxlength="4" inputmode="numeric"
-              autocomplete="cc-csc"/>
-            <div class="off-error" id="err-cc-cvv"></div>
-          </div>
+        </div>
+        <div class="sc-error" id="err-card"></div>
 
-          <!-- زر الدفع -->
-          <button type="submit" class="off-btn-blue" id="pay-now-btn" style="margin-top:.25rem">
-            <span class="material-icons" style="font-size:1rem">lock</span>
-            ادفع الآن
-          </button>
-
-          <div class="checkout-secure-line">
-            <span class="material-icons">verified_user</span>
-            عملية الدفع مشفّرة وآمنة بالكامل
-          </div>
-
-        </form>
-
-        <!-- ملخص العملية -->
-        <div class="checkout-summary-card">
-          <div class="checkout-summary-header">ملخص العملية</div>
-          <div class="checkout-summary-body">
-            <div class="checkout-summary-row">
-              <span class="checkout-summary-label">الشركة</span>
-              <span class="checkout-summary-value" id="co-sum-company">—</span>
-            </div>
-            <div class="checkout-summary-row">
-              <span class="checkout-summary-label">المبلغ المستحق</span>
-              <span class="checkout-summary-value total" id="co-sum-total">—</span>
-            </div>
-          </div>
-          <div class="ssl-box">
-            <div class="ssl-row">
-              <span class="material-icons">verified_user</span>
-              اتصال مشفّر بمعيار SSL 256-bit
-            </div>
-            <div class="ssl-row">
-              <span class="material-icons">lock</span>
-              لن يتم حفظ بيانات بطاقتك على خوادمنا
+        <!-- اسم حامل البطاقة (حقل مستقل) -->
+        <div class="sc-standalone-box" id="name-field-box">
+          <div class="sc-field" style="border-bottom:none">
+            <div class="sc-field-icon"><span class="material-icons">person_outline</span></div>
+            <div style="flex:1;position:relative">
+              <input type="text" id="cc-name" name="cardName"
+                class="sc-input sc-input-rtl" placeholder=" "
+                autocomplete="cc-name"/>
+              <label class="sc-field-label-rtl" for="cc-name">اسم حامل البطاقة</label>
             </div>
           </div>
         </div>
+        <div class="sc-error" id="err-name"></div>
 
-        <!-- زر رجوع -->
-        <button type="button" class="off-btn-secondary" style="width:100%;margin-top:.875rem" onclick="window.location.href='payment.html'">
-          رجوع
+        <!-- زر الدفع -->
+        <button type="submit" class="sc-pay-btn" id="pay-now-btn">
+          <span class="material-icons">lock</span>
+          ادفع الآن
         </button>
 
-      </div>
-    </div>
+        <!-- شريط الأمان -->
+        <div class="sc-trust-bar">
+          <span class="material-icons">verified_user</span>
+          عملية الدفع مشفّرة وآمنة بالكامل
+        </div>
 
+      </form>
+
+      <!-- ملخص العملية -->
+      <div class="sc-summary">
+        <div class="sc-summary-header">ملخص العملية</div>
+        <div class="sc-summary-body">
+          <div class="sc-summary-row">
+            <span class="sc-summary-lbl">الشركة</span>
+            <span class="sc-summary-val" id="co-sum-company">—</span>
+          </div>
+          <div class="sc-summary-row">
+            <span class="sc-summary-lbl">المبلغ المستحق</span>
+            <span class="sc-summary-val big" id="co-sum-total">—</span>
+          </div>
+        </div>
+        <div class="sc-ssl-box">
+          <div class="sc-ssl-row"><span class="material-icons">verified_user</span>اتصال مشفّر بمعيار SSL 256-bit</div>
+          <div class="sc-ssl-row"><span class="material-icons">lock</span>لن يتم حفظ بيانات بطاقتك على خوادمنا</div>
+        </div>
+      </div>
+
+      <button type="button" class="off-btn-secondary" style="width:100%;margin-top:.875rem" onclick="window.location.href='payment.html'">رجوع</button>
+
+    </div>
   </div>
 </main>
 

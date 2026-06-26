@@ -10,6 +10,66 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="stylesheet" href="css/offers.css"/>
+  <style>
+    /* ── تحسينات خاصة بصفحة تفاصيل الوثيقة ── */
+    .pd-section-title {
+      font-size: .78rem; font-weight: 700;
+      color: var(--blue); text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: .5rem 0 .35rem;
+      border-bottom: 1.5px solid var(--border);
+      margin-bottom: .75rem; margin-top: .25rem;
+    }
+    .pd-input-icon-wrap {
+      position: relative; display: flex; align-items: center;
+    }
+    .pd-input-icon {
+      position: absolute; right: .75rem; top: 50%; transform: translateY(-50%);
+      color: var(--blue); pointer-events: none; font-size: 1.1rem; opacity: .7;
+    }
+    .pd-input-icon-wrap .off-input { padding-right: 2.5rem; }
+    .pd-input-icon-wrap .off-input[readonly] {
+      background: var(--gray-50); color: var(--gray-500);
+    }
+    /* select مع أيقونة يمين */
+    .pd-sel-wrap { position: relative; }
+    .pd-sel-icon {
+      position: absolute; right: .75rem; top: 50%; transform: translateY(-50%);
+      color: var(--blue); pointer-events: none; font-size: 1.1rem; opacity: .65;
+    }
+    .pd-sel-wrap .off-input { padding-right: 2.5rem; padding-left: 2rem; }
+    .pd-sel-wrap .off-sel-arrow { left: .5rem; }
+    /* راديو محسّن */
+    .pd-radio-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: .5rem;
+    }
+    .pd-radio-opt {
+      position: relative; cursor: pointer;
+    }
+    .pd-radio-opt input[type="radio"] {
+      position: absolute; opacity: 0; width: 0; height: 0;
+    }
+    .pd-radio-btn {
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      padding: .65rem .75rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      background: var(--white);
+      font-size: .88rem; font-weight: 600; color: var(--gray-500);
+      transition: var(--trans);
+    }
+    .pd-radio-opt input:checked ~ .pd-radio-btn {
+      background: var(--blue); border-color: var(--blue); color: var(--white);
+    }
+    .pd-radio-dot {
+      width: 14px; height: 14px; min-width: 14px; border-radius: 50%;
+      border: 2px solid var(--gray-300); transition: var(--trans); flex-shrink: 0;
+    }
+    .pd-radio-opt input:checked ~ .pd-radio-btn .pd-radio-dot {
+      border-color: var(--gold); background: var(--gold);
+      box-shadow: 0 0 0 2px rgba(250,166,46,.3);
+    }
+  </style>
 </head>
 <body class="offers-page">
 
@@ -25,76 +85,54 @@
       <div class="off-card-body">
         <form class="off-form" id="policy-form" novalidate autocomplete="off">
 
-          <!-- رقم الهوية (read-only من sessionStorage) -->
+          <!-- ── بيانات المؤمَّن عليه ── -->
+          <div class="pd-section-title">بيانات المؤمَّن عليه</div>
+
+          <!-- رقم الهوية (read-only) -->
           <div class="off-group">
             <label class="off-label">رقم الهوية / الإقامة</label>
-            <input type="text" id="pd-national-id" class="off-input" readonly placeholder="رقم الهوية / الإقامة"/>
+            <div class="pd-input-icon-wrap">
+              <span class="material-icons pd-input-icon">badge</span>
+              <input type="text" id="pd-national-id" class="off-input" readonly placeholder="يُجلب تلقائياً"/>
+            </div>
           </div>
 
           <!-- الاسم الكامل -->
           <div class="off-group">
             <label class="off-label" for="pd-fullname">الاسم الكامل</label>
-            <input type="text" id="pd-fullname" name="fullName" class="off-input" placeholder="أدخل الاسم الكامل"/>
-            <div class="off-error" id="err-fullname"></div>
-          </div>
-
-          <!-- تاريخ الميلاد (هجري) -->
-          <div class="off-group">
-            <label class="off-label">تاريخ الميلاد (هجري)</label>
-            <div class="off-row-3">
-              <!-- اليوم -->
-              <div class="off-group" style="gap:.15rem">
-                <label class="off-label" style="font-size:.73rem;color:var(--gray-400)">اليوم</label>
-                <div class="off-select-wrap">
-                  <select id="pd-birth-day" name="birthDay" class="off-input off-select" style="padding:.55rem .4rem .55rem 1.8rem;font-size:max(.8rem,16px)">
-                    <option value="">اليوم</option>
-                  </select>
-                  <span class="material-icons off-sel-arrow" style="font-size:.9rem">expand_more</span>
-                </div>
-                <div class="off-error" id="err-birth-day"></div>
-              </div>
-              <!-- الشهر -->
-              <div class="off-group" style="gap:.15rem">
-                <label class="off-label" style="font-size:.73rem;color:var(--gray-400)">الشهر</label>
-                <div class="off-select-wrap">
-                  <select id="pd-birth-month" name="birthMonth" class="off-input off-select" style="padding:.55rem .4rem .55rem 1.8rem;font-size:max(.8rem,16px)">
-                    <option value="">الشهر</option>
-                  </select>
-                  <span class="material-icons off-sel-arrow" style="font-size:.9rem">expand_more</span>
-                </div>
-                <div class="off-error" id="err-birth-month"></div>
-              </div>
-              <!-- السنة -->
-              <div class="off-group" style="gap:.15rem">
-                <label class="off-label" style="font-size:.73rem;color:var(--gray-400)">السنة</label>
-                <div class="off-select-wrap">
-                  <select id="pd-birth-year" name="birthYear" class="off-input off-select" style="padding:.55rem .4rem .55rem 1.8rem;font-size:max(.8rem,16px)">
-                    <option value="">السنة</option>
-                  </select>
-                  <span class="material-icons off-sel-arrow" style="font-size:.9rem">expand_more</span>
-                </div>
-                <div class="off-error" id="err-birth-year"></div>
-              </div>
+            <div class="pd-input-icon-wrap">
+              <span class="material-icons pd-input-icon">person_outline</span>
+              <input type="text" id="pd-fullname" name="fullName" class="off-input" placeholder="أدخل الاسم الكامل"/>
             </div>
+            <div class="off-error" id="err-fullname"></div>
           </div>
 
           <!-- رقم الجوال -->
           <div class="off-group">
             <label class="off-label" for="pd-mobile">رقم الجوال</label>
-            <input type="text" id="pd-mobile" name="mobile" class="off-input" placeholder="05xxxxxxxx" maxlength="10" inputmode="numeric"/>
+            <div class="pd-input-icon-wrap">
+              <span class="material-icons pd-input-icon">phone_iphone</span>
+              <input type="text" id="pd-mobile" name="mobile" class="off-input" placeholder="05xxxxxxxx" maxlength="10" inputmode="numeric"/>
+            </div>
             <div class="off-error" id="err-mobile"></div>
           </div>
+
+          <!-- ── بيانات التأمين ── -->
+          <div class="pd-section-title" style="margin-top:.5rem">بيانات التأمين</div>
 
           <!-- نوع التأمين -->
           <div class="off-group">
             <label class="off-label" for="pd-ins-type">نوع التأمين</label>
-            <div class="off-select-wrap">
-              <select id="pd-ins-type" name="insuranceType" class="off-input off-select">
-                <option value="">اختر</option>
-                <option value="third-party">ضد الغير</option>
-                <option value="comprehensive">شامل</option>
-              </select>
-              <span class="material-icons off-sel-arrow">expand_more</span>
+            <div class="pd-sel-wrap">
+              <span class="material-icons pd-sel-icon">security</span>
+              <div class="off-select-wrap">
+                <select id="pd-ins-type" name="insuranceType" class="off-input off-select">
+                  <option value="">اختر</option>
+                  <option value="third-party">ضد الغير</option>
+                  <option value="comprehensive">شامل</option>
+                </select>
+                <span class="material-icons off-sel-arrow">expand_more</span>
+              </div>
             </div>
             <div class="off-error" id="err-ins-type"></div>
           </div>
@@ -102,51 +140,69 @@
           <!-- الغرض من استخدام المركبة -->
           <div class="off-group">
             <label class="off-label" for="pd-purpose">الغرض من استخدام المركبة</label>
-            <div class="off-select-wrap">
-              <select id="pd-purpose" name="vehiclePurpose" class="off-input off-select">
-                <option value="">اختر</option>
-                <option value="personal">شخصي</option>
-                <option value="private-transport">نقل خاص</option>
-                <option value="rental">تأجير</option>
-                <option value="other">أخرى</option>
-              </select>
-              <span class="material-icons off-sel-arrow">expand_more</span>
+            <div class="pd-sel-wrap">
+              <span class="material-icons pd-sel-icon">directions_car</span>
+              <div class="off-select-wrap">
+                <select id="pd-purpose" name="vehiclePurpose" class="off-input off-select">
+                  <option value="">اختر</option>
+                  <option value="personal">شخصي</option>
+                  <option value="private-transport">نقل خاص</option>
+                  <option value="rental">تأجير</option>
+                  <option value="other">أخرى</option>
+                </select>
+                <span class="material-icons off-sel-arrow">expand_more</span>
+              </div>
             </div>
             <div class="off-error" id="err-purpose"></div>
           </div>
 
+          <!-- ── بيانات المركبة ── -->
+          <div class="pd-section-title" style="margin-top:.5rem">بيانات المركبة</div>
+
           <!-- ماركة ونوع المركبة -->
           <div class="off-group">
             <label class="off-label" for="pd-car-brand">ماركة ونوع المركبة</label>
-            <input type="text" id="pd-car-brand" name="carBrand" class="off-input" placeholder="مثال: تويوتا كامري"/>
+            <div class="pd-input-icon-wrap">
+              <span class="material-icons pd-input-icon">commute</span>
+              <input type="text" id="pd-car-brand" name="carBrand" class="off-input" placeholder="مثال: تويوتا كامري"/>
+            </div>
             <div class="off-error" id="err-car-brand"></div>
           </div>
 
           <!-- رقم لوحة السيارة -->
           <div class="off-group">
             <label class="off-label" for="pd-plate">رقم لوحة السيارة</label>
-            <input type="text" id="pd-plate" name="plateNumber" class="off-input" placeholder="مثال: أ ب ج 1234"/>
+            <div class="pd-input-icon-wrap">
+              <span class="material-icons pd-input-icon">pin</span>
+              <input type="text" id="pd-plate" name="plateNumber" class="off-input" placeholder="مثال: أ ب ج 1234"/>
+            </div>
             <div class="off-error" id="err-plate"></div>
           </div>
 
           <!-- مكان اصلاح المركبة -->
           <div class="off-group">
             <label class="off-label">مكان اصلاح المركبة</label>
-            <div class="off-radio-group" id="repair-group">
-              <label class="off-radio-opt selected" id="repair-agency-lbl">
-                <span class="off-radio-lbl">الوكالة</span>
+            <div class="pd-radio-row">
+              <label class="pd-radio-opt">
                 <input type="radio" name="repairPlace" value="agency" id="repair-agency" checked/>
+                <span class="pd-radio-btn">
+                  <span class="pd-radio-dot"></span>
+                  الوكالة
+                </span>
               </label>
-              <label class="off-radio-opt" id="repair-workshop-lbl">
-                <span class="off-radio-lbl">الورشة</span>
+              <label class="pd-radio-opt">
                 <input type="radio" name="repairPlace" value="workshop" id="repair-workshop"/>
+                <span class="pd-radio-btn">
+                  <span class="pd-radio-dot"></span>
+                  الورشة
+                </span>
               </label>
             </div>
             <div class="off-error" id="err-repair"></div>
           </div>
 
           <!-- أزرار -->
-          <div class="off-btn-row" style="margin-top:.5rem">
+          <div class="off-btn-row" style="margin-top:.75rem">
             <button type="button" class="off-btn-secondary" onclick="window.location.href='submit-inquiry.html'">رجوع</button>
             <button type="submit" class="off-btn-primary" id="pd-submit-btn">إظهار العروض</button>
           </div>

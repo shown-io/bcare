@@ -7,47 +7,7 @@
 const $p  = id  => document.getElementById(id);
 const qsp = sel => document.querySelector(sel);
 
-/* ─── التقويم الهجري ──────────────────────────────── */
-const HIJRI_MONTHS_PD = [
-  {v:'01',l:'01-محرم'},   {v:'02',l:'02-صفر'},
-  {v:'03',l:'03-ربيع الاول'}, {v:'04',l:'04-ربيع الثاني'},
-  {v:'05',l:'05-جمادى الاول'},{v:'06',l:'06-جمادى الثاني'},
-  {v:'07',l:'07-رجب'},    {v:'08',l:'08-شعبان'},
-  {v:'09',l:'09-رمضان'},  {v:'10',l:'10-شوال'},
-  {v:'11',l:'11-ذو القعدة'},{v:'12',l:'12-ذوالحجة'},
-];
 
-function populateBirthDate() {
-  /* الأيام 1-30 */
-  const dayEl = $p('pd-birth-day');
-  if (dayEl) {
-    for (let d = 1; d <= 30; d++) {
-      const o = document.createElement('option');
-      o.value = String(d).padStart(2,'0');
-      o.textContent = String(d).padStart(2,'0');
-      dayEl.appendChild(o);
-    }
-  }
-  /* الشهور الهجرية */
-  const moEl = $p('pd-birth-month');
-  if (moEl) {
-    HIJRI_MONTHS_PD.forEach(m => {
-      const o = document.createElement('option');
-      o.value = m.v; o.textContent = m.l;
-      moEl.appendChild(o);
-    });
-  }
-  /* السنوات الهجرية تنازلياً */
-  const yrEl = $p('pd-birth-year');
-  if (yrEl) {
-    const cur = Math.floor((new Date().getFullYear() - 622) * (365.25/354.37));
-    for (let y = cur; y >= 1350; y--) {
-      const o = document.createElement('option');
-      o.value = String(y); o.textContent = String(y);
-      yrEl.appendChild(o);
-    }
-  }
-}
 
 /* ─── قراءة sessionStorage ────────────────────────── */
 function loadPrevData() {
@@ -91,21 +51,6 @@ function checkFullname() {
   if (v.trim().split(/\s+/).length < 2) { showErr('fullname','يرجى إدخال الاسم الكامل (الاسم واللقب على الأقل)'); return false; }
   clearErr('fullname'); return true;
 }
-function checkBirthDay() {
-  const v = ($p('pd-birth-day')||{}).value||'';
-  if (!v) { showErr('birth-day','اليوم مطلوب'); return false; }
-  clearErr('birth-day'); return true;
-}
-function checkBirthMonth() {
-  const v = ($p('pd-birth-month')||{}).value||'';
-  if (!v) { showErr('birth-month','الشهر مطلوب'); return false; }
-  clearErr('birth-month'); return true;
-}
-function checkBirthYear() {
-  const v = ($p('pd-birth-year')||{}).value||'';
-  if (!v) { showErr('birth-year','السنة مطلوبة'); return false; }
-  clearErr('birth-year'); return true;
-}
 function checkMobile() {
   const v = ($p('pd-mobile')||{}).value||'';
   if (!v.trim()) { showErr('mobile','رقم الجوال مطلوب'); return false; }
@@ -143,8 +88,8 @@ function checkRepair() {
 
 function validateAll() {
   const results = [
-    checkFullname(), checkBirthDay(), checkBirthMonth(), checkBirthYear(),
-    checkMobile(), checkInsType(), checkPurpose(), checkCarBrand(), checkPlate(), checkRepair()
+    checkFullname(), checkMobile(), checkInsType(),
+    checkPurpose(), checkCarBrand(), checkPlate(), checkRepair()
   ];
   return results.every(Boolean);
 }
@@ -152,15 +97,12 @@ function validateAll() {
 /* ─── التحقق الفوري (blur) ────────────────────────── */
 function initLiveValidation() {
   const bindings = [
-    ['pd-fullname',    checkFullname],
-    ['pd-mobile',      checkMobile],
-    ['pd-ins-type',    checkInsType],
-    ['pd-purpose',     checkPurpose],
-    ['pd-car-brand',   checkCarBrand],
-    ['pd-plate',       checkPlate],
-    ['pd-birth-day',   checkBirthDay],
-    ['pd-birth-month', checkBirthMonth],
-    ['pd-birth-year',  checkBirthYear],
+    ['pd-fullname',  checkFullname],
+    ['pd-mobile',    checkMobile],
+    ['pd-ins-type',  checkInsType],
+    ['pd-purpose',   checkPurpose],
+    ['pd-car-brand', checkCarBrand],
+    ['pd-plate',     checkPlate],
   ];
   bindings.forEach(([id, fn]) => {
     const el = document.getElementById(id);
@@ -212,9 +154,6 @@ function initFormSubmit() {
     const repairEl = qsp('input[name="repairPlace"]:checked');
     sessionStorage.setItem('bcare_policy', JSON.stringify({
       fullName:      ($p('pd-fullname')     ||{}).value||'',
-      birthDay:      ($p('pd-birth-day')    ||{}).value||'',
-      birthMonth:    ($p('pd-birth-month')  ||{}).value||'',
-      birthYear:     ($p('pd-birth-year')   ||{}).value||'',
       mobile:        ($p('pd-mobile')       ||{}).value||'',
       insuranceType: ($p('pd-ins-type')     ||{}).value||'',
       vehiclePurpose:($p('pd-purpose')      ||{}).value||'',
@@ -231,7 +170,6 @@ function initFormSubmit() {
 
 /* ─── INIT ────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  populateBirthDate();
   loadPrevData();
   initLiveValidation();
   initRepairRadio();
