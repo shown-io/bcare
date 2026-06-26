@@ -131,12 +131,16 @@
           <div class="form-row form-group--animated" id="field-customs-row" data-hidden="true">
             <div class="form-group form-group--half">
               <label class="form-label" for="mfg-year">سنة صنع المركبة</label>
-              <div class="select-wrapper">
-                <select id="mfg-year" name="manufacturingYear" class="form-input form-select">
-                  <option value="">سنة صنع المرك...</option>
-                </select>
-                <span class="material-icons select-chevron">expand_more</span>
+              <div class="mfg-dd" id="mfg-dd">
+                <button type="button" class="form-input mfg-dd__trigger" id="mfg-year" aria-haspopup="listbox" aria-expanded="false">
+                  <span id="mfg-display">سنة الصنع</span>
+                  <span class="material-icons mfg-dd__arrow">expand_more</span>
+                </button>
+                <div class="mfg-dd__panel hidden" id="mfg-panel" role="listbox">
+                  <ul class="mfg-dd__list" id="mfg-list"></ul>
+                </div>
               </div>
+              <input type="hidden" id="mfg-year-val" name="manufacturingYear" />
               <div class="field-error" id="mfg-year-error"></div>
             </div>
             <div class="form-group form-group--half">

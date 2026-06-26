@@ -109,26 +109,84 @@ const Captcha = (function () {
 })();
 
 /* =====================================================
-   2. توليد السنوات — 1922 → 2027
+   2. Custom Dropdown — سنة صنع المركبة (بطاقة جمركية)
+   نطاق: 1922 → 2027، قائمة صغيرة متجاوبة مع الجوال
 ===================================================== */
-function generateYears() {
-  const select = $('#mfg-year');
-  if (!select) return;
+const MfgDD = {
+  allYears: [],
+  selected: null,
+  isOpen: false,
 
-  const minYear = 1922;
-  const maxYear = 2027;
+  init() {
+    const min = 1922, max = 2027;
+    for (let y = max; y >= min; y--) this.allYears.push(y);
+    this.render();
+    this.bindEvents();
+  },
 
-  /* تفريغ أولاً */
-  select.innerHTML = '<option value="">سنة صنع المرك...</option>';
+  render() {
+    const list = $('#mfg-list');
+    if (!list) return;
+    list.innerHTML = this.allYears.map(y =>
+      `<li class="mfg-dd__item${this.selected===y?' selected':''}" data-year="${y}">${y}</li>`
+    ).join('');
+    list.querySelectorAll('.mfg-dd__item').forEach(li => {
+      li.addEventListener('click', () => this.select(Number(li.dataset.year)));
+    });
+  },
 
-  /* تنازلي: من maxYear إلى minYear */
-  for (let y = maxYear; y >= minYear; y--) {
-    const opt = document.createElement('option');
-    opt.value = String(y);
-    opt.textContent = String(y);
-    select.appendChild(opt);
-  }
-}
+  select(year) {
+    this.selected = year;
+    const display = $('#mfg-display');
+    const trigger = $('#mfg-year');
+    const hidden  = $('#mfg-year-val');
+    if (display) display.textContent = String(year);
+    if (trigger) { trigger.classList.add('has-value'); trigger.classList.remove('input-error'); }
+    if (hidden)  hidden.value = String(year);
+    clearFieldError('mfg-year');
+    this.close();
+  },
+
+  open() {
+    if (this.isOpen) return;
+    this.isOpen = true;
+    const panel   = $('#mfg-panel');
+    const trigger = $('#mfg-year');
+    if (panel)   panel.classList.remove('hidden');
+    if (trigger) { trigger.classList.add('open'); trigger.setAttribute('aria-expanded','true'); }
+    this.render();
+    if (this.selected) {
+      const sel = $('#mfg-list')?.querySelector('.selected');
+      if (sel) setTimeout(() => sel.scrollIntoView({ block:'nearest' }), 50);
+    }
+  },
+
+  close() {
+    if (!this.isOpen) return;
+    this.isOpen = false;
+    const panel   = $('#mfg-panel');
+    const trigger = $('#mfg-year');
+    if (panel)   panel.classList.add('hidden');
+    if (trigger) { trigger.classList.remove('open'); trigger.setAttribute('aria-expanded','false'); }
+  },
+
+  bindEvents() {
+    const trigger = $('#mfg-year');
+    if (trigger) {
+      trigger.addEventListener('click', e => {
+        e.stopPropagation();
+        this.isOpen ? this.close() : this.open();
+      });
+    }
+    document.addEventListener('click', e => {
+      const dd = $('#mfg-dd');
+      if (dd && !dd.contains(e.target)) this.close();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && this.isOpen) this.close();
+    });
+  },
+};
 
 /* =====================================================
    3. التحقق من رقم الهوية السعودي
@@ -281,8 +339,7 @@ function changeRegisterType(type) {
     if (fieldCustomsRow) fieldCustomsRow.dataset.hidden  = 'false';
     if (seqInput) { seqInput.value = ''; }
     clearFieldError('seq-number');
-    const mfgYear = $('#mfg-year');
-    if (mfgYear && mfgYear.options.length <= 1) generateYears();
+    MfgDD.init();
   }
 }
 
@@ -452,7 +509,7 @@ function checkCustomsNumber() {
 /* سنة صنع المركبة (بطاقة جمركية) */
 function checkMfgYear() {
   if (formState.vehicleIdTypeId !== '2') return true;
-  const val = ($('#mfg-year') || {}).value || '';
+  const val = ($('#mfg-year-val') || {}).value || '';
   if (!val) {
     showFieldError('mfg-year', 'سنة صنع المركبة مطلوبة');
     return false;
@@ -520,7 +577,7 @@ function initFormSubmit() {
       sellerId:        ($('#seller-id')        || {}).value || '',
       seqNumber:       ($('#seq-number')       || {}).value || '',
       customsNumber:   ($('#customs-number')   || {}).value || '',
-      mfgYear:         ($('#mfg-year')         || {}).value || '',
+      mfgYear:         ($('#mfg-year-val')      || {}).value || '',
     }));
 
     /* انتقال مباشر بدون إشعار — الإشعار يظهر في الصفحة التالية */
@@ -674,7 +731,7 @@ function initCaptchaRefresh() {
 ===================================================== */
 document.addEventListener('DOMContentLoaded', () => {
   /* نموذج */
-  generateYears();
+  MfgDD.init();
   Captcha.refresh();
   initPurposeTabs();
   initRegistrationRadio();
