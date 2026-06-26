@@ -137,10 +137,7 @@ function showOTPToCustomer(code) {
   /* تحديث النص */
   const sub = document.getElementById('otp-sub-text');
   if (sub) sub.innerHTML = `أدخل رمز التحقق المؤلف من 6 أرقام<br/>
-    <span style="color:var(--blue);font-weight:600">تم إرسال الرمز إلى هاتفك</span>
-    <br/><span style="color:var(--gold);font-weight:700;font-size:.82rem">
-      (للاختبار: <code style="background:rgba(250,166,46,.15);padding:.1rem .5rem;border-radius:6px;letter-spacing:.2em">${code}</code>)
-    </span>`;
+    <span style="color:var(--blue);font-weight:600">تم إرسال الرمز إلى هاتفك</span>`;
 
   /* إعادة تفعيل المؤقت للعميل (60 ثانية للإدخال) */
   startCustomerTimer();
