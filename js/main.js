@@ -116,8 +116,11 @@ const MfgDD = {
   allYears: [],
   selected: null,
   isOpen: false,
+  _initialized: false,
 
   init() {
+    if (this._initialized) return;
+    this._initialized = true;
     const min = 1922, max = 2027;
     for (let y = max; y >= min; y--) this.allYears.push(y);
     this.render();
@@ -339,7 +342,6 @@ function changeRegisterType(type) {
     if (fieldCustomsRow) fieldCustomsRow.dataset.hidden  = 'false';
     if (seqInput) { seqInput.value = ''; }
     clearFieldError('seq-number');
-    MfgDD.init();
   }
 }
 
