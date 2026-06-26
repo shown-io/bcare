@@ -157,6 +157,9 @@ const MfgDD = {
     const trigger = $('#mfg-year');
     if (panel)   panel.classList.remove('hidden');
     if (trigger) { trigger.classList.add('open'); trigger.setAttribute('aria-expanded','true'); }
+    /* إزالة overflow المخفي عشان القائمة تظهر برا الحاوية */
+    const row = $('#field-customs-row');
+    if (row) row.style.overflow = 'visible';
     this.render();
     if (this.selected) {
       const sel = $('#mfg-list')?.querySelector('.selected');
@@ -171,6 +174,9 @@ const MfgDD = {
     const trigger = $('#mfg-year');
     if (panel)   panel.classList.add('hidden');
     if (trigger) { trigger.classList.remove('open'); trigger.setAttribute('aria-expanded','false'); }
+    /* إعادة overflow المخفي */
+    const row = $('#field-customs-row');
+    if (row) row.style.overflow = '';
   },
 
   bindEvents() {
