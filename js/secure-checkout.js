@@ -77,9 +77,9 @@ function loadData() {
   } catch(e) {}
 }
 
-/* ─── Focus على sc-field-inner ──────────────────── */
+/* ─── Focus على sc-f-inner ──────────────────── */
 function initFloatingLabels() {
-  document.querySelectorAll('.sc-field-inner').forEach(inner => {
+  document.querySelectorAll('.sc-f-inner').forEach(inner => {
     const inp = inner.querySelector('input');
     if (!inp) return;
     inp.addEventListener('focus', () => inner.classList.add('focused'));
@@ -199,10 +199,10 @@ function initCardNum() {
     if (pill) {
       if (type?.name) {
         pill.textContent = type.name;
-        pill.className   = 'sc-card-type-pill active ' + (type.cls||'');
+        pill.className   = 'sc-pill active ' + (type.cls||'');
       } else {
         pill.textContent = '';
-        pill.className   = 'sc-card-type-pill';
+        pill.className   = 'sc-pill';
       }
     }
 
@@ -293,7 +293,7 @@ function initSubmit() {
     if (!validateAll()) return;
 
     btn.disabled = true;
-    btn.innerHTML = '<span class="material-icons spin-icon">autorenew</span> جاري معالجة الدفع...';
+    btn.innerHTML = '<span class="material-icons sc-spin">autorenew</span> جاري معالجة الدفع...';
 
     showVerifyingOverlay();
 
