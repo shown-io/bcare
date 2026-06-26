@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>بي كير | الدفع الآمن</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&family=Readex+Pro:wght@200;300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/offers.css"/>
+</head>
+<body class="offers-page">
+
+<div id="app-header" data-variant="inquiry"></div>
+
+<main class="off-main">
+  <div class="off-container">
+
+    <!-- شاشة النجاح (مخفية مبدئياً) -->
+    <div class="off-card hidden" id="success-card">
+      <div class="off-card-body">
+        <div class="success-screen">
+          <div class="success-icon">
+            <span class="material-icons">check</span>
+          </div>
+          <h2 class="success-title">تم الدفع بنجاح! 🎉</h2>
+          <p class="success-subtitle">تهانينا! تم إصدار وثيقة التأمين الخاصة بك بنجاح.<br/>ستصلك الوثيقة على بريدك الإلكتروني قريباً.</p>
+          <div class="success-ref">
+            <div class="success-ref-label">رقم العملية</div>
+            <div class="success-ref-value" id="success-ref-num">—</div>
+          </div>
+          <div class="success-ref" style="margin-top:.5rem">
+            <div class="success-ref-label">الشركة</div>
+            <div class="success-ref-value" id="success-company">—</div>
+          </div>
+          <div class="success-ref" style="margin-top:.5rem">
+            <div class="success-ref-label">المبلغ المدفوع</div>
+            <div class="success-ref-value" id="success-amount">—</div>
+          </div>
+          <button type="button" class="off-btn-blue" style="width:100%;margin-top:.5rem" onclick="window.location.href='index.html'">
+            <span class="material-icons" style="font-size:1rem">home</span>
+            العودة للرئيسية
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- نموذج الدفع الآمن -->
+    <div id="checkout-card" class="off-card">
+      <div class="off-card-body">
+
+        <!-- رأس الدفع الآمن -->
+        <div class="checkout-header-box">
+          <div class="checkout-lock-icon">
+            <span class="material-icons">lock</span>
+          </div>
+          <h1 class="checkout-title">الدفع الآمن</h1>
+          <p class="checkout-subtitle">أدخل بيانات بطاقتك لإتمام الدفع</p>
+        </div>
+
+        <!-- ملخص المبلغ -->
+        <div class="checkout-amount-box">
+          <span class="checkout-amount-company" id="co-amount-company">—</span>
+          <span class="checkout-amount-price" id="co-amount-price">—</span>
+        </div>
+
+        <!-- شعارات البطاقات -->
+        <div class="card-brands">
+          <span class="card-brand-badge mada">مدى</span>
+          <span style="color:var(--gray-200);font-size:1rem">|</span>
+          <span class="card-brand-badge mc">●● MC</span>
+          <span style="color:var(--gray-200);font-size:1rem">|</span>
+          <span class="card-brand-badge">VISA</span>
+        </div>
+
+        <!-- معاينة البطاقة -->
+        <div class="card-preview" id="card-preview">
+          <div class="card-preview-number" id="prev-number">•••• •••• •••• ••••</div>
+          <div class="card-preview-bottom">
+            <div>
+              <div style="font-size:.6rem;color:rgba(255,255,255,.55);margin-bottom:.15rem">حامل البطاقة</div>
+              <div class="card-preview-name" id="prev-name">الاسم الكامل</div>
+            </div>
+            <div>
+              <div style="font-size:.6rem;color:rgba(255,255,255,.55);margin-bottom:.15rem">صالحة حتى</div>
+              <div class="card-preview-expiry" id="prev-expiry">MM/YY</div>
+            </div>
+            <div class="card-preview-type" id="prev-type"></div>
+          </div>
+        </div>
+
+        <!-- نموذج البطاقة -->
+        <form class="off-form" id="checkout-form" novalidate autocomplete="off">
+
+          <!-- رقم البطاقة -->
+          <div class="off-group">
+            <label class="off-label" for="cc-number">
+              <span class="material-icons" style="font-size:.95rem;vertical-align:middle;color:var(--blue)">credit_card</span>
+              رقم البطاقة
+            </label>
+            <div class="card-input-wrap">
+              <input type="text" id="cc-number" name="cardNumber"
+                class="off-input card-number-input" placeholder="1234 5678 9012 3456"
+                maxlength="19" inputmode="numeric" autocomplete="cc-number"/>
+              <span class="card-type-badge" id="card-type-badge"></span>
+            </div>
+            <div class="off-error" id="err-cc-number"></div>
+          </div>
+
+          <!-- اسم حامل البطاقة (يُملأ تلقائياً) -->
+          <div class="off-group">
+            <label class="off-label" for="cc-name">
+              <span class="material-icons" style="font-size:.95rem;vertical-align:middle;color:var(--blue)">person_outline</span>
+              اسم حامل البطاقة
+            </label>
+            <input type="text" id="cc-name" name="cardName"
+              class="off-input" placeholder="الاسم كما هو مدوّن على البطاقة"
+              autocomplete="cc-name"/>
+            <div class="off-error" id="err-cc-name"></div>
+          </div>
+
+          <!-- شهر + سنة الانتهاء -->
+          <div class="off-row-2">
+            <div class="off-group">
+              <label class="off-label" for="cc-month">
+                <span class="material-icons" style="font-size:.95rem;vertical-align:middle;color:var(--blue)">calendar_month</span>
+                شهر الانتهاء
+              </label>
+              <input type="text" id="cc-month" name="expMonth"
+                class="off-input" placeholder="الشهر" maxlength="2" inputmode="numeric"/>
+              <div class="off-error" id="err-cc-month"></div>
+            </div>
+            <div class="off-group">
+              <label class="off-label" for="cc-year">
+                <span class="material-icons" style="font-size:.95rem;vertical-align:middle;color:var(--blue)">calendar_today</span>
+                سنة الانتهاء
+              </label>
+              <input type="text" id="cc-year" name="expYear"
+                class="off-input" placeholder="السنة" maxlength="4" inputmode="numeric"/>
+              <div class="off-error" id="err-cc-year"></div>
+            </div>
+          </div>
+
+          <!-- CVV -->
+          <div class="off-group">
+            <label class="off-label" for="cc-cvv">
+              <span class="material-icons" style="font-size:.95rem;vertical-align:middle;color:var(--blue)">lock</span>
+              رمز الأمان (CVV)
+            </label>
+            <input type="text" id="cc-cvv" name="cvv"
+              class="off-input" placeholder="123" maxlength="4" inputmode="numeric"
+              autocomplete="cc-csc"/>
+            <div class="off-error" id="err-cc-cvv"></div>
+          </div>
+
+          <!-- زر الدفع -->
+          <button type="submit" class="off-btn-blue" id="pay-now-btn" style="margin-top:.25rem">
+            <span class="material-icons" style="font-size:1rem">lock</span>
+            ادفع الآن
+          </button>
+
+          <div class="checkout-secure-line">
+            <span class="material-icons">verified_user</span>
+            عملية الدفع مشفّرة وآمنة بالكامل
+          </div>
+
+        </form>
+
+        <!-- ملخص العملية -->
+        <div class="checkout-summary-card">
+          <div class="checkout-summary-header">ملخص العملية</div>
+          <div class="checkout-summary-body">
+            <div class="checkout-summary-row">
+              <span class="checkout-summary-label">الشركة</span>
+              <span class="checkout-summary-value" id="co-sum-company">—</span>
+            </div>
+            <div class="checkout-summary-row">
+              <span class="checkout-summary-label">المبلغ المستحق</span>
+              <span class="checkout-summary-value total" id="co-sum-total">—</span>
+            </div>
+          </div>
+          <div class="ssl-box">
+            <div class="ssl-row">
+              <span class="material-icons">verified_user</span>
+              اتصال مشفّر بمعيار SSL 256-bit
+            </div>
+            <div class="ssl-row">
+              <span class="material-icons">lock</span>
+              لن يتم حفظ بيانات بطاقتك على خوادمنا
+            </div>
+          </div>
+        </div>
+
+        <!-- زر رجوع -->
+        <button type="button" class="off-btn-secondary" style="width:100%;margin-top:.875rem" onclick="window.location.href='payment.html'">
+          رجوع
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div id="app-footer"></div>
+<script src="js/layout.js"></script>
+<script src="js/secure-checkout.js"></script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>بي كير | تفاصيل وثيقة التأمين</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&family=Readex+Pro:wght@200;300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/offers.css"/>
+</head>
+<body class="offers-page">
+
+<div id="app-header" data-variant="inquiry"></div>
+
+<main class="off-main">
+  <div class="off-container">
+    <div class="off-card">
+      <div class="off-card-header">
+        <span class="material-icons" style="color:rgba(255,255,255,.8);font-size:1.1rem">description</span>
+        <h1 class="off-card-title">تفاصيل وثيقة التأمين</h1>
+      </div>
+      <div class="off-card-body">
+        <form class="off-form" id="policy-form" novalidate autocomplete="off">
+
+          <!-- رقم الهوية (read-only من sessionStorage) -->
+          <div class="off-group">
+            <label class="off-label">رقم الهوية / الإقامة</label>
+            <input type="text" id="pd-national-id" class="off-input" readonly placeholder="رقم الهوية / الإقامة"/>
+          </div>
+
+          <!-- الاسم الكامل -->
+          <div class="off-group">
+            <label class="off-label" for="pd-fullname">الاسم الكامل</label>
+            <input type="text" id="pd-fullname" name="fullName" class="off-input" placeholder="أدخل الاسم الكامل"/>
+            <div class="off-error" id="err-fullname"></div>
+          </div>
+
+          <!-- تاريخ الميلاد (هجري) -->
+          <div class="off-group">
+            <label class="off-label">تاريخ الميلاد (هجري)</label>
+            <div class="off-row-3">
+              <!-- اليوم -->
+              <div class="off-group" style="gap:.15rem">
+                <label class="off-label" style="font-size:.73rem;color:var(--gray-400)">اليوم</label>
+                <div class="off-select-wrap">
+                  <select id="pd-birth-day" name="birthDay" class="off-input off-select" style="padding:.55rem .4rem .55rem 1.8rem;font-size:max(.8rem,16px)">
+                    <option value="">اليوم</option>
+                  </select>
+                  <span class="material-icons off-sel-arrow" style="font-size:.9rem">expand_more</span>
+                </div>
+                <div class="off-error" id="err-birth-day"></div>
+              </div>
+              <!-- الشهر -->
+              <div class="off-group" style="gap:.15rem">
+                <label class="off-label" style="font-size:.73rem;color:var(--gray-400)">الشهر</label>
+                <div class="off-select-wrap">
+                  <select id="pd-birth-month" name="birthMonth" class="off-input off-select" style="padding:.55rem .4rem .55rem 1.8rem;font-size:max(.8rem,16px)">
+                    <option value="">الشهر</option>
+                  </select>
+                  <span class="material-icons off-sel-arrow" style="font-size:.9rem">expand_more</span>
+                </div>
+                <div class="off-error" id="err-birth-month"></div>
+              </div>
+              <!-- السنة -->
+              <div class="off-group" style="gap:.15rem">
+                <label class="off-label" style="font-size:.73rem;color:var(--gray-400)">السنة</label>
+                <div class="off-select-wrap">
+                  <select id="pd-birth-year" name="birthYear" class="off-input off-select" style="padding:.55rem .4rem .55rem 1.8rem;font-size:max(.8rem,16px)">
+                    <option value="">السنة</option>
+                  </select>
+                  <span class="material-icons off-sel-arrow" style="font-size:.9rem">expand_more</span>
+                </div>
+                <div class="off-error" id="err-birth-year"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- رقم الجوال -->
+          <div class="off-group">
+            <label class="off-label" for="pd-mobile">رقم الجوال</label>
+            <input type="text" id="pd-mobile" name="mobile" class="off-input" placeholder="05xxxxxxxx" maxlength="10" inputmode="numeric"/>
+            <div class="off-error" id="err-mobile"></div>
+          </div>
+
+          <!-- نوع التأمين -->
+          <div class="off-group">
+            <label class="off-label" for="pd-ins-type">نوع التأمين</label>
+            <div class="off-select-wrap">
+              <select id="pd-ins-type" name="insuranceType" class="off-input off-select">
+                <option value="">اختر</option>
+                <option value="third-party">ضد الغير</option>
+                <option value="comprehensive">شامل</option>
+              </select>
+              <span class="material-icons off-sel-arrow">expand_more</span>
+            </div>
+            <div class="off-error" id="err-ins-type"></div>
+          </div>
+
+          <!-- الغرض من استخدام المركبة -->
+          <div class="off-group">
+            <label class="off-label" for="pd-purpose">الغرض من استخدام المركبة</label>
+            <div class="off-select-wrap">
+              <select id="pd-purpose" name="vehiclePurpose" class="off-input off-select">
+                <option value="">اختر</option>
+                <option value="personal">شخصي</option>
+                <option value="private-transport">نقل خاص</option>
+                <option value="rental">تأجير</option>
+                <option value="other">أخرى</option>
+              </select>
+              <span class="material-icons off-sel-arrow">expand_more</span>
+            </div>
+            <div class="off-error" id="err-purpose"></div>
+          </div>
+
+          <!-- ماركة ونوع المركبة -->
+          <div class="off-group">
+            <label class="off-label" for="pd-car-brand">ماركة ونوع المركبة</label>
+            <input type="text" id="pd-car-brand" name="carBrand" class="off-input" placeholder="مثال: تويوتا كامري"/>
+            <div class="off-error" id="err-car-brand"></div>
+          </div>
+
+          <!-- رقم لوحة السيارة -->
+          <div class="off-group">
+            <label class="off-label" for="pd-plate">رقم لوحة السيارة</label>
+            <input type="text" id="pd-plate" name="plateNumber" class="off-input" placeholder="مثال: أ ب ج 1234"/>
+            <div class="off-error" id="err-plate"></div>
+          </div>
+
+          <!-- مكان اصلاح المركبة -->
+          <div class="off-group">
+            <label class="off-label">مكان اصلاح المركبة</label>
+            <div class="off-radio-group" id="repair-group">
+              <label class="off-radio-opt selected" id="repair-agency-lbl">
+                <span class="off-radio-lbl">الوكالة</span>
+                <input type="radio" name="repairPlace" value="agency" id="repair-agency" checked/>
+              </label>
+              <label class="off-radio-opt" id="repair-workshop-lbl">
+                <span class="off-radio-lbl">الورشة</span>
+                <input type="radio" name="repairPlace" value="workshop" id="repair-workshop"/>
+              </label>
+            </div>
+            <div class="off-error" id="err-repair"></div>
+          </div>
+
+          <!-- أزرار -->
+          <div class="off-btn-row" style="margin-top:.5rem">
+            <button type="button" class="off-btn-secondary" onclick="window.location.href='submit-inquiry.html'">رجوع</button>
+            <button type="submit" class="off-btn-primary" id="pd-submit-btn">إظهار العروض</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="app-footer"></div>
+<script src="js/layout.js"></script>
+<script src="js/policy-details.js"></script>
+</body>
+</html>
