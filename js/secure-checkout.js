@@ -77,6 +77,18 @@ function loadData() {
   } catch(e) {}
 }
 
+/* ─── Focus على sc-field-inner ──────────────────── */
+function initFloatingLabels() {
+  document.querySelectorAll('.sc-field-inner').forEach(inner => {
+    const inp = inner.querySelector('input');
+    if (!inp) return;
+    inp.addEventListener('focus', () => inner.classList.add('focused'));
+    inp.addEventListener('blur',  () => inner.classList.remove('focused'));
+    /* حالة أولية */
+    if (inp.value) inner.classList.add('has-value');
+  });
+}
+
 /* ─── تحديث البطاقة البصرية ─────────────────────── */
 function updatePrevNum(fmt) {
   const e = document.getElementById('prev-number');
@@ -170,19 +182,31 @@ function initCardNum() {
     updatePrevNum(fmt);
     updatePrevType(type?.name || '');
 
-    /* pill */
-    const pill = document.getElementById('card-type-pill');
-    if (pill) {
-      pill.textContent = type?.name || '';
-      pill.className   = 'sc-card-type-pill ' + (type?.cls||'');
-    }
+    /* pill — سيُحدَّث أسفل مع الملخص */
 
-    /* تحديث الملخص السفلي */
-    const clean4 = raw.slice(-4) || '****';
+    /* تحديث الملخص السفلي — آخر 4 أرقام */
+    const clean = raw.replace(/\D/g,'');
     const sumCard = document.getElementById('co-sum-card');
     const sumType = document.getElementById('co-sum-card-type');
-    if (sumCard) sumCard.textContent = raw.length >= 4 ? '**** **** **** '+clean4 : '****';
+    if (sumCard) sumCard.textContent = clean.length >= 4
+      ? '**** **** **** ' + clean.slice(-4)
+      : clean.length > 0 ? clean : '—';
     if (sumType) sumType.textContent = type?.name || '';
+
+    /* floating label */
+    updateInnerState('inner-number', fmt);
+
+    /* pill: يظهر فقط إذا عُرف نوع البطاقة */
+    const pill = document.getElementById('card-type-pill');
+    if (pill) {
+      if (type?.name) {
+        pill.textContent = type.name;
+        pill.className   = 'sc-card-type-pill active ' + (type.cls||'');
+      } else {
+        pill.textContent = '';
+        pill.className   = 'sc-card-type-pill';
+      }
+    }
 
     /* مسح خطأ */
     setCardErr('');
@@ -190,17 +214,28 @@ function initCardNum() {
   inp.addEventListener('blur', () => { checkNum(); checkExpiry(); checkCVV(); });
 }
 
+/* floating label helper */
+function updateInnerState(innerId, value) {
+  const inner = document.getElementById(innerId);
+  if (!inner) return;
+  if (value && String(value).trim()) {
+    inner.classList.add('has-value');
+  } else {
+    inner.classList.remove('has-value');
+  }
+}
+
 /* ─── حقل MM/YY موحّد ────────────────────────────── */
 function initExpiry() {
   const inp = document.getElementById('cc-expiry');
   if (!inp) return;
 
-  inp.addEventListener('input', () => {
-    /* تنسيق تلقائي: 1206 → 12/06 */
+    inp.addEventListener('input', () => {
     const raw = inp.value.replace(/\D/g,'').slice(0,4);
     inp.value = fmtExpiry(raw);
     updatePrevExpiry(inp.value);
     setCardErr('');
+    updateInnerState('inner-expiry', inp.value);
   });
   inp.addEventListener('blur', checkExpiry);
 }
@@ -209,7 +244,11 @@ function initExpiry() {
 function initCVV() {
   const inp = document.getElementById('cc-cvv');
   if (!inp) return;
-  inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g,''); setCardErr(''); });
+  inp.addEventListener('input', () => {
+    inp.value = inp.value.replace(/\D/g,'');
+    setCardErr('');
+    updateInnerState('inner-cvv', inp.value);
+  });
   inp.addEventListener('blur', checkCVV);
 }
 
@@ -217,8 +256,21 @@ function initCVV() {
 function initName() {
   const inp = document.getElementById('cc-name');
   if (!inp) return;
-  inp.addEventListener('input', () => { updatePrevName(inp.value); setNameErr(''); });
+  inp.addEventListener('input', () => {
+    updatePrevName(inp.value);
+    setNameErr('');
+    updateInnerState('inner-name', inp.value);
+  });
   inp.addEventListener('blur', checkName);
+  /* floating label عند التحميل (الاسم مُملوء مسبقاً) */
+  if (inp.value) updateInnerState('inner-name', inp.value);
+}
+
+/* ─── تحديث expiry inner state ──────────────────── */
+function initExpiryInner() {
+  const inp = document.getElementById('cc-expiry');
+  if (!inp) return;
+  inp.addEventListener('input', () => updateInnerState('inner-expiry', inp.value));
 }
 
 /* ─── إرسال النموذج ─────────────────────────────── */
@@ -267,8 +319,10 @@ function initSubmit() {
 /* ─── INIT ────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   loadData();
+  initFloatingLabels();
   initCardNum();
   initExpiry();
+  initExpiryInner();
   initCVV();
   initName();
   initSubmit();

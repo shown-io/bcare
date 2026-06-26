@@ -80,39 +80,63 @@
 }
 .sc-field-icon .material-icons { font-size: 1.1rem; }
 
-.sc-field-label {
-  position: absolute; right: 2.4rem; top: .55rem;
-  font-size: .68rem; font-weight: 600; color: var(--gray-400);
-  pointer-events: none; transition: .15s;
+/* ── Floating label ── */
+.sc-field-inner {
+  flex: 1; position: relative;
+  display: flex; flex-direction: column; justify-content: center;
+  min-height: 56px;
 }
-.sc-field-label-inline { right: 2.4rem; top: 50%; transform: translateY(-50%); font-size: .82rem; color: var(--gray-400); }
+.sc-field-label {
+  position: absolute;
+  right: .5rem; top: 50%;
+  transform: translateY(-50%);
+  font-size: .85rem; font-weight: 500;
+  color: var(--gray-400);
+  pointer-events: none;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+/* عند الكتابة/التركيز → يصغر ويرتفع */
+.sc-field-inner.has-value .sc-field-label,
+.sc-field-inner.focused   .sc-field-label {
+  top: .38rem;
+  transform: none;
+  font-size: .65rem;
+  color: var(--blue);
+  font-weight: 600;
+}
 
 .sc-input {
   width: 100%; border: none; outline: none;
   font-size: max(.9rem,16px); font-family: var(--font);
   color: var(--gray-800); background: transparent;
-  padding: .85rem .5rem .35rem .75rem;
+  padding: 1.2rem .5rem .3rem .75rem;
   direction: ltr; text-align: left;
   -webkit-appearance: none; appearance: none;
 }
-.sc-input::placeholder { color: transparent; }
-.sc-input:placeholder-shown ~ .sc-field-label { top: 50%; transform: translateY(-50%); font-size: .82rem; }
-.sc-input:focus ~ .sc-field-label,
-.sc-input:not(:placeholder-shown) ~ .sc-field-label { top: .45rem; transform: none; font-size: .68rem; }
 
 /* حقل الاسم — RTL */
 .sc-input-rtl {
   direction: rtl; text-align: right;
-  padding: .85rem .5rem .35rem .5rem;
+  padding: 1.2rem .5rem .3rem .5rem;
 }
-.sc-input-rtl::placeholder { color: transparent; }
 .sc-field-label-rtl {
-  position: absolute; right: 2.4rem; top: 50%; transform: translateY(-50%);
-  font-size: .82rem; font-weight: 500; color: var(--gray-400);
-  pointer-events: none; transition: .15s;
+  position: absolute;
+  right: .5rem; top: 50%;
+  transform: translateY(-50%);
+  font-size: .85rem; font-weight: 500;
+  color: var(--gray-400);
+  pointer-events: none;
+  transition: all .15s ease;
 }
-.sc-input-rtl:focus ~ .sc-field-label-rtl,
-.sc-input-rtl:not(:placeholder-shown) ~ .sc-field-label-rtl { top: .45rem; transform: none; font-size: .68rem; }
+.sc-field-inner.has-value .sc-field-label-rtl,
+.sc-field-inner.focused   .sc-field-label-rtl {
+  top: .38rem;
+  transform: none;
+  font-size: .65rem;
+  color: var(--blue);
+  font-weight: 600;
+}
 
 /* حقل مستقل (الاسم) */
 .sc-standalone-box {
@@ -131,15 +155,17 @@
   min-height: .85rem; padding: .1rem .25rem;
 }
 
-/* بطاقة النوع badge */
+/* بطاقة النوع badge — مخفية حتى يُكتب رقم */
 .sc-card-type-pill {
-  display: inline-flex; align-items: center; justify-content: center;
+  display: none; /* مخفي افتراضياً */
+  align-items: center; justify-content: center;
   height: 22px; padding: 0 .5rem; border-radius: 4px;
   font-size: .72rem; font-weight: 800;
-  background: var(--gray-100); color: var(--gray-600);
+  background: var(--gray-200); color: var(--gray-600);
   position: absolute; left: .6rem; top: 50%; transform: translateY(-50%);
   transition: var(--trans);
 }
+.sc-card-type-pill.active  { display: inline-flex; } /* يظهر فقط عند كشف النوع */
 .sc-card-type-pill.visa    { background: #1a1f71; color: #fff; }
 .sc-card-type-pill.mc      { background: #eb001b; color: #fff; }
 .sc-card-type-pill.mada    { background: #1db669; color: #fff; }
@@ -292,35 +318,35 @@
           <!-- رقم البطاقة -->
           <div class="sc-field">
             <div class="sc-field-icon"><span class="material-icons">credit_card</span></div>
-            <div style="flex:1;position:relative">
-              <input type="text" id="cc-number" name="cardNumber"
-                class="sc-input" placeholder=" "
-                maxlength="19" inputmode="numeric" autocomplete="cc-number"/>
+            <div class="sc-field-inner" id="inner-number">
               <label class="sc-field-label" for="cc-number">رقم البطاقة</label>
+              <input type="text" id="cc-number" name="cardNumber"
+                class="sc-input" placeholder=""
+                maxlength="19" inputmode="numeric" autocomplete="cc-number"/>
             </div>
             <span class="sc-card-type-pill" id="card-type-pill"></span>
           </div>
 
           <!-- تاريخ الانتهاء + CVV في صف واحد -->
           <div style="display:flex">
-            <!-- تاريخ الانتهاء MM/YY — حقل واحد -->
+            <!-- تاريخ الانتهاء MM/YY -->
             <div class="sc-field sc-field-half">
               <div class="sc-field-icon"><span class="material-icons" style="font-size:1rem">calendar_month</span></div>
-              <div style="flex:1;position:relative">
-                <input type="text" id="cc-expiry" name="expiry"
-                  class="sc-input" placeholder=" "
-                  maxlength="5" inputmode="numeric" autocomplete="cc-exp"/>
+              <div class="sc-field-inner" id="inner-expiry">
                 <label class="sc-field-label" for="cc-expiry">MM / YY</label>
+                <input type="text" id="cc-expiry" name="expiry"
+                  class="sc-input" placeholder=""
+                  maxlength="5" inputmode="numeric" autocomplete="cc-exp"/>
               </div>
             </div>
             <!-- CVV -->
             <div class="sc-field sc-field-half">
               <div class="sc-field-icon"><span class="material-icons" style="font-size:1rem">lock</span></div>
-              <div style="flex:1;position:relative">
-                <input type="text" id="cc-cvv" name="cvv"
-                  class="sc-input" placeholder=" "
-                  maxlength="4" inputmode="numeric" autocomplete="cc-csc"/>
+              <div class="sc-field-inner" id="inner-cvv">
                 <label class="sc-field-label" for="cc-cvv">CVV</label>
+                <input type="text" id="cc-cvv" name="cvv"
+                  class="sc-input" placeholder=""
+                  maxlength="4" inputmode="numeric" autocomplete="cc-csc"/>
               </div>
             </div>
           </div>
@@ -328,15 +354,15 @@
         </div>
         <div class="sc-error" id="err-card"></div>
 
-        <!-- اسم حامل البطاقة (حقل مستقل) -->
+        <!-- اسم حامل البطاقة -->
         <div class="sc-standalone-box" id="name-field-box">
           <div class="sc-field" style="border-bottom:none">
             <div class="sc-field-icon"><span class="material-icons">person_outline</span></div>
-            <div style="flex:1;position:relative">
-              <input type="text" id="cc-name" name="cardName"
-                class="sc-input sc-input-rtl" placeholder=" "
-                autocomplete="cc-name"/>
+            <div class="sc-field-inner" id="inner-name">
               <label class="sc-field-label-rtl" for="cc-name">اسم حامل البطاقة</label>
+              <input type="text" id="cc-name" name="cardName"
+                class="sc-input sc-input-rtl" placeholder=""
+                autocomplete="cc-name"/>
             </div>
           </div>
         </div>
