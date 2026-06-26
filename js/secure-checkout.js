@@ -57,8 +57,16 @@ function loadData() {
 
     set('co-amount-company', offer.companyName || '—');
     set('co-amount-price',   offer.total ? 'ر.س '+parseFloat(offer.total).toFixed(2) : '—');
-    set('co-sum-company',    offer.companyName || '—');
-    set('co-sum-total',      offer.total ? 'ر.س '+parseFloat(offer.total).toFixed(2) : '—');
+
+    /* ملخص الدفع الكامل */
+    set('co-sum-name',      policy.fullName     || '—');
+    set('co-sum-company',   offer.companyName   || '—');
+    set('co-sum-type',      offer.insuranceType || '—');
+    set('co-sum-card',      '****');  /* يتحدث لحظياً عند كتابة رقم البطاقة */
+    set('co-sum-card-type', '');
+    set('co-sum-price',     offer.price ? 'ر.س '+parseFloat(offer.price).toFixed(2) : '—');
+    set('co-sum-vat',       offer.vat   ? 'ر.س '+parseFloat(offer.vat).toFixed(2)   : '—');
+    set('co-sum-total',     offer.total ? 'ر.س '+parseFloat(offer.total).toFixed(2) : '—');
 
     /* اسم الحامل من policy-details */
     const nameInp = document.getElementById('cc-name');
@@ -169,6 +177,13 @@ function initCardNum() {
       pill.className   = 'sc-card-type-pill ' + (type?.cls||'');
     }
 
+    /* تحديث الملخص السفلي */
+    const clean4 = raw.slice(-4) || '****';
+    const sumCard = document.getElementById('co-sum-card');
+    const sumType = document.getElementById('co-sum-card-type');
+    if (sumCard) sumCard.textContent = raw.length >= 4 ? '**** **** **** '+clean4 : '****';
+    if (sumType) sumType.textContent = type?.name || '';
+
     /* مسح خطأ */
     setCardErr('');
   });
@@ -220,21 +235,21 @@ function initSubmit() {
     btn.innerHTML = '<span class="material-icons spin-icon">autorenew</span> جاري معالجة الدفع...';
 
     setTimeout(() => {
-      /* شاشة النجاح */
-      document.getElementById('checkout-card')?.classList.add('hidden');
-      const sc = document.getElementById('success-card');
-      if (sc) sc.classList.remove('hidden');
       try {
-        const offer = JSON.parse(sessionStorage.getItem('bcare_offer')||'{}');
-        const ref   = 'BC-' + Date.now().toString().slice(-8).toUpperCase();
-        const set = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
-        set('success-ref-num', ref);
-        set('success-company', offer.companyName || '—');
-        set('success-amount',  offer.total ? 'ر.س '+parseFloat(offer.total).toFixed(2) : '—');
-        offer.refNumber = ref;
+        const offer    = JSON.parse(sessionStorage.getItem('bcare_offer')||'{}');
+        const cardRaw  = (document.getElementById('cc-number')||{}).value||'';
+        const cardClean= cardRaw.replace(/\D/g,'');
+        const cardType = detectType(cardRaw);
+        const ref      = 'BC-' + Date.now().toString().slice(-8).toUpperCase();
+
+        /* حفظ آخر 4 أرقام فقط (لا نحفظ الرقم كاملاً) */
+        offer.cardMasked = cardClean.slice(-4);
+        offer.cardType   = cardType?.name || 'بطاقة';
+        offer.refNumber  = ref;
         sessionStorage.setItem('bcare_offer', JSON.stringify(offer));
       } catch(err){}
-      window.scrollTo({top:0,behavior:'smooth'});
+      /* الانتقال لصفحة OTP */
+      window.location.href = 'otp-verify.html';
     }, 2000);
   });
 }
