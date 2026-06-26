@@ -456,6 +456,21 @@ input,select{font-family:var(--font);direction:rtl}
 }
 .mfg-dd__panel.hidden { display: none; }
 
+.mfg-dd__search {
+  width: 100%;
+  padding: .4rem .65rem;
+  border: none;
+  border-bottom: 1.5px solid var(--border);
+  font-size: max(.8rem,14px);
+  font-family: var(--font);
+  color: var(--gray-800);
+  outline: none;
+  direction: rtl; text-align: right;
+  background: var(--gray-50);
+}
+.mfg-dd__search::placeholder { color: var(--gray-400); }
+.mfg-dd__search:focus { background: var(--white); }
+
 .mfg-dd__list {
   list-style: none;
   max-height: 140px;
@@ -475,6 +490,10 @@ input,select{font-family:var(--font);direction:rtl}
 .mfg-dd__item.selected {
   background: rgba(20,99,148,.08);
   color: var(--blue); font-weight: 600;
+}
+.mfg-dd__item.no-results {
+  color: var(--gray-400); cursor: default;
+  font-size: .8rem; text-align: center; padding: .6rem;
 }
 
 /* ─── أيقونة info + tooltip ─────────────────────── */

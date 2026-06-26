@@ -127,13 +127,18 @@ const MfgDD = {
     this.bindEvents();
   },
 
-  render() {
+  render(years) {
     const list = $('#mfg-list');
     if (!list) return;
-    list.innerHTML = this.allYears.map(y =>
+    if (!years || years.length === 0) years = this.allYears;
+    if (!years.length) {
+      list.innerHTML = '<li class="mfg-dd__item no-results">لا توجد نتائج</li>';
+      return;
+    }
+    list.innerHTML = years.map(y =>
       `<li class="mfg-dd__item${this.selected===y?' selected':''}" data-year="${y}">${y}</li>`
     ).join('');
-    list.querySelectorAll('.mfg-dd__item').forEach(li => {
+    list.querySelectorAll('.mfg-dd__item:not(.no-results)').forEach(li => {
       li.addEventListener('click', () => this.select(Number(li.dataset.year)));
     });
   },
@@ -155,12 +160,13 @@ const MfgDD = {
     this.isOpen = true;
     const panel   = $('#mfg-panel');
     const trigger = $('#mfg-year');
+    const search  = $('#mfg-search');
     if (panel)   panel.classList.remove('hidden');
     if (trigger) { trigger.classList.add('open'); trigger.setAttribute('aria-expanded','true'); }
-    /* إزالة overflow المخفي عشان القائمة تظهر برا الحاوية */
     const row = $('#field-customs-row');
     if (row) row.style.overflow = 'visible';
     this.render();
+    if (search) { search.value = ''; setTimeout(() => search.focus(), 60); }
     if (this.selected) {
       const sel = $('#mfg-list')?.querySelector('.selected');
       if (sel) setTimeout(() => sel.scrollIntoView({ block:'nearest' }), 50);
@@ -187,6 +193,30 @@ const MfgDD = {
         this.isOpen ? this.close() : this.open();
       });
     }
+
+    /* البحث بالكتابة */
+    const search = $('#mfg-search');
+    if (search) {
+      search.addEventListener('input', () => {
+        const q = search.value.replace(/\D/g,'');
+        const filtered = q
+          ? this.allYears.filter(y => String(y).includes(q))
+          : this.allYears;
+        this.render(filtered);
+      });
+      search.addEventListener('click', e => e.stopPropagation());
+      search.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          const first = $('#mfg-list')?.querySelector('.mfg-dd__item:not(.no-results)');
+          if (first) first.click();
+        }
+        if (e.key === 'Escape') this.close();
+      });
+      search.addEventListener('keypress', e => {
+        if (!/\d/.test(e.key) && !['Backspace','Delete','Tab'].includes(e.key)) e.preventDefault();
+      });
+    }
+
     document.addEventListener('click', e => {
       const dd = $('#mfg-dd');
       if (dd && !dd.contains(e.target)) this.close();
