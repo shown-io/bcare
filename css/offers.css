@@ -91,21 +91,21 @@
 }
 .off-card-header {
   background: var(--blue);
-  padding: .75rem 1.25rem;
-  display: flex; align-items: center; gap: .5rem;
+  padding: .55rem 1rem;
+  display: flex; align-items: center; gap: .4rem;
 }
 .off-card-title {
-  color: var(--white); font-size: clamp(.9rem,2.2vw,1rem);
+  color: var(--white); font-size: clamp(.82rem,2vw,.92rem);
   font-weight: 700; margin: 0;
 }
-.off-card-body { padding: clamp(.875rem,3vw,1.25rem); }
+.off-card-body { padding: clamp(.75rem,2.5vw,1rem); }
 
 /* ─── حقول النموذج ───────────────────────────────── */
-.off-form { display: flex; flex-direction: column; gap: .875rem; }
-.off-group { display: flex; flex-direction: column; gap: .28rem; }
+.off-form { display: flex; flex-direction: column; gap: .75rem; }
+.off-group { display: flex; flex-direction: column; gap: .2rem; }
 .off-label {
-  font-size: .83rem; font-weight: 600;
-  color: var(--gray-800); text-align: right;
+  font-size: .82rem; font-weight: 600;
+  color: var(--blue); text-align: right;
 }
 .off-input {
   width: 100%; padding: .6rem .875rem;
@@ -127,7 +127,7 @@
 .off-select { padding-left: 2rem; cursor: pointer; }
 .off-sel-arrow {
   position: absolute; left: .5rem; top: 50%; transform: translateY(-50%);
-  color: var(--gray-400); pointer-events: none; font-size: 1.1rem;
+  color: var(--blue); pointer-events: none; font-size: 1.1rem; opacity: .6;
 }
 
 /* ─── صف عناصر (مثل تاريخ الميلاد 3 أعمدة) ──────── */
