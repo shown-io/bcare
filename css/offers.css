@@ -164,7 +164,7 @@
   box-shadow: 0 8px 24px rgba(0,0,0,.12);
   margin-top: 4px;
   max-height: 220px;
-  overflow: visible;
+  overflow: hidden;
   display: flex; flex-direction: column;
   animation: cddSlide .15s ease;
 }
@@ -185,6 +185,7 @@
   overflow-y: auto; flex: 1;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 .cdd-item {
   padding: .55rem .75rem;
