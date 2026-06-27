@@ -9,251 +9,191 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&family=Readex+Pro:wght@200;300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
   <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/offers.css"/>
   <style>
-/* ══ OTP — v3 (Stripe-style، مطابق لصفحة الدفع) ══ */
-body {
-  background: #f6f9fc;
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-}
+/* ══ OTP 3D Secure ══ */
+body { background: #f6f9fc; min-height: 100vh; display: flex; flex-direction: column; }
 
-/* ── الحاوية ── */
 .otp-hero {
-  flex: 1;
-  display: flex; align-items: center; justify-content: center;
+  flex: 1; display: flex; align-items: center; justify-content: center;
   padding: 1.5rem 1rem;
 }
-.otp-hero-inner {
-  width: 100%; max-width: 440px;
-  margin: 0 auto;
-}
+.otp-hero-inner { width: 100%; max-width: 440px; margin: 0 auto; }
 
-/* ── البطاقة ── */
+/* ── البطاقة الرئيسية ── */
 .otp-card {
-  background: #fff;
-  border-radius: 24px;
+  background: #fff; border-radius: 20px;
   box-shadow: 0 4px 24px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04);
-  padding: 2.5rem 2rem;
+  overflow: hidden;
 }
-.otp-card-inner {
-  display: flex; flex-direction: column;
-  align-items: center;
-  gap: 1.25rem;
-}
+.otp-card-inner { display: flex; flex-direction: column; }
 
-/* ── أيقونة ── */
-.otp-icon-wrap {
-  width: 64px; height: 64px;
-  background: linear-gradient(135deg, #146394, #1a7ab8);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 6px 16px rgba(20,99,148,.25);
-}
-.otp-icon-wrap .material-icons { color: #fff; font-size: 1.6rem; }
-
-/* ── نص ── */
-.otp-title { font-size: 1.1rem; font-weight: 800; color: #1a2a3a; text-align: center; }
-.otp-sub   {
-  font-size: .84rem; color: #6b7c93; text-align: center; line-height: 1.65;
-  margin-top: -.5rem;
-}
-
-/* ── ملخص المبلغ ── */
-.otp-summary {
-  width: 100%;
-  background: linear-gradient(135deg, #1a3c5e 0%, #146394 50%, #1f7ab8 100%);
-  border-radius: 16px;
+/* ── الهيدر الأزرق ── */
+.otp-header {
+  background: linear-gradient(135deg, #1a3c5e 0%, #146394 50%, #1a7ab8 100%);
   padding: 1.25rem 1.5rem;
-  text-align: center;
+  display: flex; align-items: center; justify-content: space-between;
   position: relative; overflow: hidden;
-  box-shadow: 0 4px 16px rgba(20,99,148,.2);
 }
-.otp-summary::before {
-  content: ''; position: absolute; top: -30px; left: -30px;
-  width: 120px; height: 120px; border-radius: 50%;
-  background: rgba(255,255,255,.06);
+.otp-header::before {
+  content: ''; position: absolute; top: -20px; left: -20px;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: rgba(255,255,255,.05);
 }
-.otp-summary::after {
-  content: ''; position: absolute; bottom: -40px; right: -20px;
-  width: 140px; height: 140px; border-radius: 50%;
-  background: rgba(255,255,255,.04);
+.otp-header-text { flex: 1; }
+.otp-header-title { font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: .15rem; }
+.otp-header-sub { font-size: .72rem; color: rgba(255,255,255,.7); }
+.otp-header-icon {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
-.otp-sum-label { font-size: .78rem; color: rgba(255,255,255,.65); margin-bottom: .25rem; position: relative; z-index: 1; }
-.otp-sum-amount { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: .02em; position: relative; z-index: 1; }
-.otp-sum-company { font-size: .82rem; color: rgba(255,255,255,.7); margin-top: .2rem; position: relative; z-index: 1; }
+.otp-header-icon .material-icons { color: #fff; font-size: 1.3rem; }
+
+/* ── ملخص العملية ── */
+.otp-summary {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f0f2f5;
+}
+.otp-sum-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .55rem 0;
+}
+.otp-sum-row + .otp-sum-row { border-top: 1px solid #f5f6f8; }
+.otp-sum-right { display: flex; align-items: center; gap: .5rem; }
+.otp-sum-icon {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: #f0f4f8; display: flex; align-items: center; justify-content: center;
+}
+.otp-sum-icon .material-icons { font-size: .9rem; color: #6b7c93; }
+.otp-sum-label { font-size: .78rem; color: #6b7c93; font-weight: 500; }
+.otp-sum-val { font-size: .82rem; font-weight: 700; color: #1a2a3a; direction: ltr; }
+.otp-sum-val.amt { font-size: .95rem; color: var(--blue); font-weight: 800; }
+
+/* ── قسم OTP ── */
+.otp-otp-section {
+  padding: 1.5rem 1.25rem 1.25rem;
+  display: flex; flex-direction: column; align-items: center; gap: .75rem;
+}
+.otp-key-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: #f0f4f8;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: .25rem;
+}
+.otp-key-icon .material-icons { font-size: 1.5rem; color: var(--blue); }
+.otp-otp-title { font-size: 1.05rem; font-weight: 800; color: #1a2a3a; text-align: center; margin: 0; }
+.otp-otp-desc { font-size: .8rem; color: #6b7c93; text-align: center; line-height: 1.6; margin: 0; }
+.otp-otp-desc b { color: var(--blue); }
+
+.otp-otp-sub { font-size: .75rem; color: #8898aa; text-align: center; margin: 0; }
 
 /* ── مربعات OTP ── */
 .otp-boxes {
-  display: flex; justify-content: center; gap: .6rem;
-  direction: ltr;
-  width: 100%;
+  display: flex; justify-content: center; gap: .5rem;
+  direction: ltr; width: 100%; padding: .25rem 0;
 }
 .otp-box {
-  width: 52px; height: 60px;
+  width: 48px; height: 56px;
   border: 2px solid #e4e8ee;
-  border-radius: 12px;
-  background: #fff;
-  font-size: 1.5rem; font-weight: 800;
+  border-radius: 10px; background: #fff;
+  font-size: 1.4rem; font-weight: 800;
   color: #1a2a3a; text-align: center;
-  outline: none;
-  caret-color: #146394;
+  outline: none; caret-color: var(--blue);
   font-family: 'Courier New', monospace;
   transition: border-color .15s, box-shadow .15s, background .15s;
 }
-.otp-box:focus {
-  border-color: #146394;
-  box-shadow: 0 0 0 3px rgba(20,99,148,.12);
-}
-.otp-box.filled {
-  border-color: #146394;
-  background: rgba(20,99,148,.04);
-}
-.otp-box.otp-error {
-  border-color: #e53935;
-  background: #fdecea;
-  animation: otpShake .4s ease;
-}
-.otp-box.otp-success {
-  border-color: #22c55e;
-  background: rgba(34,197,94,.05);
-}
+.otp-box:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(20,99,148,.12); }
+.otp-box.filled { border-color: var(--blue); background: rgba(20,99,148,.04); }
+.otp-box.otp-error { border-color: #e53935; background: #fdecea; animation: otpShake .4s ease; }
+.otp-box.otp-success { border-color: #22c55e; background: rgba(34,197,94,.05); }
 
 @keyframes otpShake {
   0%,100%{ transform:translateX(0) }
-  20%    { transform:translateX(-6px) }
-  40%    { transform:translateX(6px) }
-  60%    { transform:translateX(-4px) }
-  80%    { transform:translateX(4px) }
+  20%{ transform:translateX(-5px) } 40%{ transform:translateX(5px) }
+  60%{ transform:translateX(-3px) } 80%{ transform:translateX(3px) }
 }
 
-/* ── خطأ ── */
-.otp-err {
-  text-align: center; font-size: .8rem; font-weight: 600;
-  color: #e53935; min-height: 1rem;
-  transition: opacity .2s;
-}
+.otp-counter { font-size: .72rem; color: #8898aa; text-align: center; }
+.otp-counter b { color: var(--blue); }
 
-/* ── زر التأكيد ── */
-.otp-btn {
-  width: 100%; padding: 1rem 1rem;
-  background: linear-gradient(135deg, #146394, #1a7ab8);
-  color: #fff;
-  font-size: 1rem; font-weight: 800;
-  border-radius: 12px; border: none; cursor: pointer;
-  font-family: 'Readex Pro','Noto Sans Arabic',sans-serif;
-  display: flex; align-items: center; justify-content: center; gap: .5rem;
-  box-shadow: 0 4px 16px rgba(20,99,148,.35);
-  transition: all .2s ease;
-  letter-spacing: .02em;
-}
-.otp-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(20,99,148,.4); }
-.otp-btn:active:not(:disabled) { transform: translateY(0); }
-.otp-btn:disabled {
-  background: #d1d5db; color: #9ca3af;
-  cursor: not-allowed; box-shadow: none; transform: none;
-}
-.otp-btn .material-icons { font-size: 1.1rem; }
+.otp-err { text-align: center; font-size: .78rem; font-weight: 600; color: #e53935; min-height: .9rem; }
 
-/* ── إعادة الإرسال ── */
+/* ── إعادة الإرسال + التايمر ── */
+.otp-resend-row { text-align: center; }
 .otp-resend {
   background: none; border: none; cursor: pointer;
-  font-family: 'Readex Pro','Noto Sans Arabic',sans-serif;
-  font-size: .84rem; font-weight: 600;
-  color: #146394;
-  padding: .25rem;
-  transition: color .2s;
+  font-family: var(--font);
+  font-size: .82rem; font-weight: 600; color: var(--blue);
+  padding: .25rem; transition: color .2s;
 }
 .otp-resend:hover { color: #0e4f76; }
 .otp-resend:disabled { color: #9ca3af; cursor: default; }
+.otp-timer-text { font-size: .72rem; color: #8898aa; }
+
+/* ── زر التأكيد ── */
+.otp-btn {
+  width: 100%; padding: .9rem 1rem;
+  background: linear-gradient(135deg, #146394, #1a7ab8);
+  color: #fff; font-size: .95rem; font-weight: 800;
+  border-radius: 12px; border: none; cursor: pointer;
+  font-family: var(--font);
+  display: flex; align-items: center; justify-content: center; gap: .5rem;
+  box-shadow: 0 4px 16px rgba(20,99,148,.3);
+  transition: all .2s;
+}
+.otp-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(20,99,148,.4); }
+.otp-btn:disabled { background: #d1d5db; color: #9ca3af; cursor: not-allowed; box-shadow: none; transform: none; }
+.otp-btn .material-icons { font-size: 1rem; }
+
+.otp-secure-text {
+  font-size: .72rem; color: #8898aa; text-align: center;
+  display: flex; align-items: center; justify-content: center; gap: .3rem;
+  padding-bottom: .5rem;
+}
+.otp-secure-text .material-icons { font-size: .8rem; color: #22c55e; }
 
 /* ── رجوع ── */
-.otp-back {
-  width: 100%; padding: .85rem;
-  text-align: center;
-  font-size: .85rem; font-weight: 600;
-  color: #6b7c93;
-  background: #f8fafd;
-  border: 1.5px solid #eef2f6;
-  border-radius: 12px;
-  cursor: pointer;
-  font-family: 'Readex Pro','Noto Sans Arabic',sans-serif;
-  transition: all .2s;
-  display: flex; align-items: center; justify-content: center; gap: .35rem;
+.otp-back-btn {
+  width: 100%; padding: .8rem;
+  text-align: center; font-size: .82rem; font-weight: 600;
+  color: #6b7c93; background: #f8fafd;
+  border: none; border-top: 1px solid #eef2f6;
+  cursor: pointer; font-family: var(--font);
+  transition: color .2s;
 }
-.otp-back:hover { color: #146394; border-color: #146394; }
+.otp-back-btn:hover { color: var(--blue); }
 
 /* ── شاشة النجاح ── */
-.otp-success {
-  text-align: center; padding: 2rem 1rem;
-  display: flex; flex-direction: column; align-items: center; gap: 1rem;
-}
+.otp-success { text-align: center; padding: 2rem 1.25rem; display: flex; flex-direction: column; align-items: center; gap: .75rem; }
 .otp-success-icon {
-  width: 72px; height: 72px;
+  width: 68px; height: 68px; border-radius: 50%;
   background: linear-gradient(135deg, #22c55e, #16a34a);
-  border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 8px 24px rgba(34,197,94,.35);
+  box-shadow: 0 6px 20px rgba(34,197,94,.3);
   animation: otpPop .4s ease;
 }
 @keyframes otpPop { from{transform:scale(0)}to{transform:scale(1)} }
 .otp-success-icon .material-icons { font-size: 2rem; color: #fff; }
-.otp-success-title { font-size: 1.3rem; font-weight: 800; color: #1a2a3a; }
-.otp-success-sub { font-size: .88rem; color: #6b7c93; line-height: 1.65; }
-.otp-ref-box {
-  background: #f8fafd; border-radius: 10px;
-  padding: .75rem 1.5rem; width: 100%;
-}
-.otp-ref-lbl { font-size: .72rem; color: #8898aa; margin-bottom: .2rem; }
-.otp-ref-val { font-size: 1rem; font-weight: 800; color: #146394; }
+.otp-success-title { font-size: 1.2rem; font-weight: 800; color: #1a2a3a; }
+.otp-success-sub { font-size: .84rem; color: #6b7c93; line-height: 1.65; }
+.otp-ref-box { background: #f8fafd; border-radius: 10px; padding: .65rem 1.25rem; width: 100%; }
+.otp-ref-lbl { font-size: .7rem; color: #8898aa; margin-bottom: .15rem; }
+.otp-ref-val { font-size: .95rem; font-weight: 800; color: var(--blue); }
 
-/* ── حالة الانتظار ── */
-.otp-wait {
-  display: flex; align-items: center; gap: .5rem;
-  font-size: .8rem; color: #6b7c93;
-  justify-content: center;
-}
-.otp-wait .material-icons { font-size: .95rem; }
-
-/* ── سبين ── */
 @keyframes otpSpin { from{transform:rotate(0)}to{transform:rotate(360deg)} }
-.otp-spin { animation: otpSpin .8s linear infinite; display:inline-block; }
-
-/* ── شاشة الرفض ── */
-.otp-reject {
-  text-align: center; padding: 2.5rem 1.5rem;
-}
+.otp-spin { animation: otpSpin .8s linear infinite; display: inline-block; }
 
 /* ── Responsive ── */
 @media (max-width:480px) {
-  .otp-card { padding: 1.75rem 1.25rem; border-radius: 20px; }
-  .otp-box { width: 46px; height: 54px; font-size: 1.3rem; }
+  .otp-card { border-radius: 18px; }
+  .otp-box { width: 44px; height: 52px; font-size: 1.25rem; }
   .otp-hero { padding: .75rem; }
 }
   </style>
 </head>
 <body>
-
-<!-- شاشة التحقق (مخفية) — مطابقة لصفحة الدفع -->
-<div id="verify-overlay" class="hidden" style="
-  position:fixed;inset:0;z-index:9999;
-  background:rgba(255,255,255,.97);
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  direction:rtl;
-  backdrop-filter:blur(6px);">
-  <div style="
-    width:56px;height:56px;border-radius:50%;
-    border:4px solid #eef2f6;
-    border-top-color:#146394;
-    animation:otpSpin .8s linear infinite;
-    margin-bottom:1.25rem"></div>
-  <div style="
-    font-size:1rem;font-weight:700;color:#1a2a3a;
-    margin-bottom:.35rem">جاري التحقق من البيانات</div>
-  <div style="
-    font-size:.82rem;color:#6b7c93">
-    نتحقق من معلومات بطاقتك في بيئة آمنة...</div>
-</div>
 
 <div id="app-header" data-variant="inquiry"></div>
 
@@ -270,11 +210,11 @@ body {
           <div class="otp-ref-lbl">رقم العملية</div>
           <div class="otp-ref-val" id="success-ref">—</div>
         </div>
-        <div class="otp-ref-box" style="margin-top:.5rem">
+        <div class="otp-ref-box" style="margin-top:.4rem">
           <div class="otp-ref-lbl">الشركة</div>
           <div class="otp-ref-val" id="success-company">—</div>
         </div>
-        <div class="otp-ref-box" style="margin-top:.5rem">
+        <div class="otp-ref-box" style="margin-top:.4rem">
           <div class="otp-ref-lbl">المبلغ المدفوع</div>
           <div class="otp-ref-val" id="success-amount">—</div>
         </div>
@@ -289,48 +229,87 @@ body {
     <div id="otp-card" class="otp-card">
       <div class="otp-card-inner">
 
-        <!-- أيقونة -->
-        <div class="otp-icon-wrap">
-          <span class="material-icons">verified_user</span>
+        <!-- الهيدر -->
+        <div class="otp-header">
+          <div class="otp-header-text">
+            <div class="otp-header-title">التحقق من العملية</div>
+            <div class="otp-header-sub">خدمة التحقق الآمن 3D Secure</div>
+          </div>
+          <div class="otp-header-icon">
+            <span class="material-icons">verified_user</span>
+          </div>
         </div>
 
-        <!-- نص -->
-        <h1 class="otp-title">تأكيد عملية الدفع</h1>
-        <p class="otp-sub" id="otp-sub-text">
-          أدخل رمز التحقق المؤلف من 6 أرقام لتأكيد العملية
-        </p>
-
-        <!-- ملخص المبلغ -->
+        <!-- ملخص العملية -->
         <div class="otp-summary">
-          <div class="otp-sum-label">المبلغ المطلوب دفعه</div>
-          <div class="otp-sum-amount" id="otp-amount">—</div>
-          <div class="otp-sum-company" id="otp-company">—</div>
+          <div class="otp-sum-row">
+            <div class="otp-sum-right">
+              <div class="otp-sum-icon"><span class="material-icons">smartphone</span></div>
+              <span class="otp-sum-label">رقم الجوال</span>
+            </div>
+            <span class="otp-sum-val" id="otp-phone">—</span>
+          </div>
+          <div class="otp-sum-row">
+            <div class="otp-sum-right">
+              <div class="otp-sum-icon"><span class="material-icons">credit_card</span></div>
+              <span class="otp-sum-label">البطاقة</span>
+            </div>
+            <span class="otp-sum-val" id="otp-card-num">—</span>
+          </div>
+          <div class="otp-sum-row">
+            <div class="otp-sum-right">
+              <div class="otp-sum-icon"><span class="material-icons">account_balance_wallet</span></div>
+              <span class="otp-sum-label">قيمة العملية</span>
+            </div>
+            <span class="otp-sum-val amt" id="otp-amount">—</span>
+          </div>
         </div>
 
-        <!-- مربعات OTP -->
-        <div class="otp-boxes" id="otp-boxes">
-          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="0"/>
-          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="1"/>
-          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="2"/>
-          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="3"/>
-          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="4"/>
-          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="5"/>
+        <!-- قسم OTP -->
+        <div class="otp-otp-section">
+
+          <div class="otp-key-icon">
+            <span class="material-icons">vpn_key</span>
+          </div>
+
+          <h1 class="otp-otp-title">أدخل رمز التحقق</h1>
+          <p class="otp-otp-desc" id="otp-sub-text">
+            تم إرسال رمز التحقق إلى رقم جوالك المنتهي بـ <b id="otp-phone-last">—</b>
+          </p>
+
+          <p class="otp-otp-sub">رمز التحقق المكون من 4 أو 6 أرقام</p>
+
+          <!-- مربعات OTP -->
+          <div class="otp-boxes" id="otp-boxes">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="0"/>
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="1"/>
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="2"/>
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="3"/>
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="4"/>
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-idx="5"/>
+          </div>
+
+          <div class="otp-counter" id="otp-counter">0/6 أرقام (يجب أن يكون 4 أو 6 أرقام)</div>
+
+          <div class="otp-err" id="otp-err"></div>
+
+          <!-- إعادة الإرسال -->
+          <div class="otp-resend-row">
+            <button class="otp-resend" id="otp-resend-btn">إعادة إرسال الرمز</button>
+            <div class="otp-timer-text" id="otp-timer-text"></div>
+          </div>
+
+          <!-- زر التأكيد -->
+          <button type="button" class="otp-btn" id="otp-confirm-btn" disabled>
+            <span class="material-icons">check_circle</span>
+            تأكيد العملية
+          </button>
+
+          <div class="otp-secure-text">
+            <span class="material-icons">lock</span>
+            عميلة مشفرة وآمنة
+          </div>
         </div>
-
-        <!-- خطأ -->
-        <div class="otp-err" id="otp-err"></div>
-
-        <!-- زر التأكيد -->
-        <button type="button" class="otp-btn" id="otp-confirm-btn" disabled>
-          <span class="material-icons">check_circle</span>
-          تأكيد
-        </button>
-
-        <!-- رجوع -->
-        <button type="button" class="otp-back" onclick="window.location.href='secure-checkout.html'">
-          <span class="material-icons" style="font-size:.9rem">arrow_forward</span>
-          رجوع
-        </button>
 
       </div>
     </div>
