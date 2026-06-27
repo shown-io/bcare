@@ -66,17 +66,11 @@ function populateMfgYear() {
 /* =====================================================
    3. تنسيق قيمة المركبة (فواصل الآلاف)
 ===================================================== */
-function formatPrice(v) {
-  return v.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
 function initPriceInput() {
   const inp = $p('pd-vehicle-value');
   if (!inp) return;
   inp.addEventListener('input', () => {
-    const raw = inp.value.replace(/,/g, '');
-    if (!/^\d*$/.test(raw)) { inp.value = inp.value.replace(/[^0-9,]/g, ''); return; }
-    inp.value = raw ? formatPrice(raw) : '';
+    inp.value = inp.value.replace(/[^\d]/g, '');
     clearErr('vehicle-value');
   });
 }
@@ -377,7 +371,7 @@ function checkPurpose() {
 
 function checkVehicleValue() {
   const inp = $p('pd-vehicle-value');
-  const raw = inp ? inp.value.replace(/,/g,'') : '';
+  const raw = inp ? inp.value.trim() : '';
   const num = Number(raw);
   if (!raw) { showErr('vehicle-value','القيمة التقديرية للمركبة مطلوبة'); return false; }
   if (num < 10000) { showErr('vehicle-value','أقل قيمة للمركبة 10,000 ريال سعودي'); return false; }
@@ -517,4 +511,33 @@ document.addEventListener('DOMContentLoaded', () => {
   initRepairRadio();
   initNumericMobile();
   initFormSubmit();
+  initAutoSave();
 });
+
+/* ─── حفظ تلقائي عند كل تغيير ─────────────────── */
+function initAutoSave() {
+  const form = $p('policy-form');
+  if (!form) return;
+  form.addEventListener('input', autoSave);
+  form.addEventListener('change', autoSave);
+}
+
+function autoSave() {
+  const repairEl = qsp('input[name="repairPlace"]:checked');
+  sessionStorage.setItem('bcare_policy', JSON.stringify({
+    fullName:       ($p('pd-fullname')      ||{}).value||'',
+    mobile:         ($p('pd-mobile')        ||{}).value||'',
+    insuranceType:  ($p('pd-ins-type')      ||{}).value||'',
+    vehiclePurpose: ($p('pd-purpose')       ||{}).value||'',
+    carBrand:       ($p('pd-car-brand')     ||{}).value||'',
+    repairPlace:    repairEl ? repairEl.value : 'agency',
+  }));
+  sessionStorage.setItem('bcare_inquiry', JSON.stringify({
+    vehicleValue:    ($p('pd-vehicle-value') ||{}).value||'',
+    birthDay:        ($p('pd-birth-day')     ||{}).value||'',
+    birthMonth:      ($p('pd-birth-month')   ||{}).value||'',
+    birthYear:       ($p('pd-birth-year')    ||{}).value||'',
+    policyStartDate: ($p('pd-policy-start')  ||{}).value||'',
+    manufacturingYear: ($p('pd-mfg-year')    ||{}).value||'',
+  }));
+}
