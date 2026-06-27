@@ -264,16 +264,6 @@ function initSessionPersistence() {
   const pages = ['index.html','policy-details.html','offers.html','secure-checkout.html','otp-verify.html'];
   if (!pages.includes(page)) return;
 
-  /* إذا المستخدم في index.html و فيه بيانات محفوظة → ارجع لأحدث صفحة */
-  if (page === 'index.html') {
-    const saved = sessionStorage.getItem('bcare_current_page');
-    const hasForm = sessionStorage.getItem('bcare_form');
-    if (saved && saved !== 'index.html' && hasForm) {
-      window.location.href = saved;
-      return;
-    }
-  }
-
-  /* حفظ الصفحة الحالية (بعد فحص التوجيه) */
+  /* حفظ الصفحة الحالية */
   sessionStorage.setItem('bcare_current_page', page);
 }
