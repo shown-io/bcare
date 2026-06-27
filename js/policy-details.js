@@ -118,10 +118,6 @@ const CDD = {
         });
       }
 
-      /* Prevent page scroll when scrolling inside CDD list on mobile */
-      listEl.addEventListener('touchmove', e => {
-        e.stopPropagation();
-      }, { passive: false });
     });
   },
 
