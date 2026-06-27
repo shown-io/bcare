@@ -171,6 +171,8 @@
 .cdd-panel.hidden { display: none; }
 @keyframes cddSlide { from { opacity:0; transform:translateY(-6px) } to { opacity:1; transform:translateY(0) } }
 
+body.cdd-open { overflow: hidden; position: fixed; width: 100%; }
+
 .cdd-search {
   width: 100%; padding: .45rem .65rem;
   border: none; border-bottom: 1px solid var(--border);

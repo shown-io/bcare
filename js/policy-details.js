@@ -51,11 +51,17 @@ const CDD = {
       /* Toggle panel */
       trigger.addEventListener('click', e => {
         e.stopPropagation();
+        const wasOpen = !panel.classList.contains('hidden');
         this.closeAll();
-        panel.classList.toggle('hidden');
-        trigger.classList.toggle('cdd-open', !panel.classList.contains('hidden'));
-        trigger.setAttribute('aria-expanded', !panel.classList.contains('hidden'));
-        if (!panel.classList.contains('hidden') && search) {
+        if (wasOpen) {
+          document.body.classList.remove('cdd-open');
+          return;
+        }
+        panel.classList.remove('hidden');
+        trigger.classList.add('cdd-open');
+        trigger.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('cdd-open');
+        if (search) {
           search.value = '';
           this.filterList(listEl, '');
           search.focus();
@@ -144,6 +150,7 @@ const CDD = {
       t.classList.remove('cdd-open');
       t.setAttribute('aria-expanded', 'false');
     });
+    document.body.classList.remove('cdd-open');
   },
 
   setValue(wrapId, value) {
