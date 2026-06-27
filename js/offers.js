@@ -352,12 +352,14 @@ function loadSummary() {
     const repairMap  = { agency:'الوكالة', workshop:'الورشة' };
 
     const brand   = document.getElementById('vs-brand');
+    const mfgYear = document.getElementById('vs-mfgyear');
     const value   = document.getElementById('vs-value');
     const purpose = document.getElementById('vs-purpose');
     const repair  = document.getElementById('vs-repair');
 
     if (brand)   brand.textContent   = policy.carBrand      || '—';
-    if (value)   value.textContent   = inquiry.vehicleValue  ? inquiry.vehicleValue + ' ﷼' : '—';
+    if (mfgYear) mfgYear.textContent = inquiry.manufacturingYear || '—';
+    if (value)   value.textContent   = inquiry.vehicleValue  ? Number(inquiry.vehicleValue).toLocaleString('en') + ' ريال' : '—';
     if (purpose) purpose.textContent = purposeMap[policy.vehiclePurpose] || policy.vehiclePurpose || '—';
     if (repair)  repair.textContent  = repairMap[policy.repairPlace]    || '—';
   } catch(e) { /* ignore */ }
@@ -500,7 +502,7 @@ function selectOffer(companyId, tabKey) {
     discount: parseFloat(card.dataset.discount || 0),
   }));
 
-  window.location.href = 'payment.html';
+  window.location.href = 'secure-checkout.html';
 }
 
 /* ─── رسم البطاقات ────────────────────────────────── */

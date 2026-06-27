@@ -35,7 +35,7 @@
     <span class="stepper-line"></span>
     <div class="stepper-step stepper-upcoming">
       <span class="stepper-num">4</span>
-      <span class="stepper-lbl">المدفوعات والعروض</span>
+      <span class="stepper-lbl">المدفوعات والدفع</span>
     </div>
   </div>
 </div>
@@ -47,10 +47,26 @@
     <div class="vehicle-summary">
       <h2>العروض المتاحة حسب تفاصيل مركبتك</h2>
       <div class="vehicle-summary-grid" id="vehicle-summary-grid">
-        <div class="vsummary-item"><span class="vsummary-label">ماركة ونوع المركبة</span><span class="vsummary-value" id="vs-brand">—</span></div>
-        <div class="vsummary-item"><span class="vsummary-label">القيمة التقديرية</span><span class="vsummary-value" id="vs-value">—</span></div>
-        <div class="vsummary-item"><span class="vsummary-label">الغرض من الاستخدام</span><span class="vsummary-value" id="vs-purpose">—</span></div>
-        <div class="vsummary-item"><span class="vsummary-label">مكان إصلاح المركبة</span><span class="vsummary-value" id="vs-repair">—</span></div>
+        <div class="vsummary-item">
+          <span class="vsummary-label">ماركة ونوع المركبة</span>
+          <span class="vsummary-value" id="vs-brand">—</span>
+        </div>
+        <div class="vsummary-item">
+          <span class="vsummary-label">سنة صنع المركبة</span>
+          <span class="vsummary-value" id="vs-mfgyear">—</span>
+        </div>
+        <div class="vsummary-item">
+          <span class="vsummary-label">القيمة التقديرية</span>
+          <span class="vsummary-value" id="vs-value">—</span>
+        </div>
+        <div class="vsummary-item">
+          <span class="vsummary-label">الغرض من الاستخدام</span>
+          <span class="vsummary-value" id="vs-purpose">—</span>
+        </div>
+        <div class="vsummary-item">
+          <span class="vsummary-label">مكان إصلاح المركبة</span>
+          <span class="vsummary-value" id="vs-repair">—</span>
+        </div>
       </div>
     </div>
 
@@ -68,11 +84,14 @@
     <!-- بطاقات العروض -->
     <div id="offers-list"></div>
 
-    <!-- زر رجوع -->
-    <button type="button" class="off-btn-secondary" style="width:100%;margin-top:.5rem" onclick="window.location.href='policy-details.html'">
-      <span class="material-icons" style="font-size:1rem;vertical-align:middle">arrow_forward</span>
-      رجوع
-    </button>
+    <!-- أزرار -->
+    <div class="off-btn-col" style="margin-top:.5rem">
+      <button type="button" class="off-btn-primary" onclick="window.location.href='secure-checkout.html'">
+        <span class="material-icons" style="font-size:1rem">check_circle</span>
+        متابعة الدفع
+      </button>
+      <button type="button" class="off-btn-secondary" onclick="window.location.href='policy-details.html'">رجوع</button>
+    </div>
 
   </div>
 </main>

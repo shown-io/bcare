@@ -261,11 +261,8 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ─── الحفاظ على الصفحة والبيانات عند التحديث ───── */
 function initSessionPersistence() {
   const page = window.location.pathname.split('/').pop() || 'index.html';
-  const pages = ['index.html','policy-details.html','offers.html','payment.html','secure-checkout.html','otp-verify.html'];
+  const pages = ['index.html','policy-details.html','offers.html','secure-checkout.html','otp-verify.html'];
   if (!pages.includes(page)) return;
-
-  /* حفظ الصفحة الحالية */
-  sessionStorage.setItem('bcare_current_page', page);
 
   /* إذا المستخدم في index.html و فيه بيانات محفوظة → ارجع لأحدث صفحة */
   if (page === 'index.html') {
@@ -277,38 +274,6 @@ function initSessionPersistence() {
     }
   }
 
-  /* استعادة بيانات النموذج إذا كانت موجودة */
-  restoreFormData(page);
-}
-
-function restoreFormData(page) {
-  try {
-    const form = JSON.parse(sessionStorage.getItem('bcare_form') || '{}');
-    const inquiry = JSON.parse(sessionStorage.getItem('bcare_inquiry') || '{}');
-    const policy = JSON.parse(sessionStorage.getItem('bcare_policy') || '{}');
-
-    if (page === 'policy-details.html') {
-      setVal('pd-national-id', form.nationalId);
-      setVal('pd-fullname', policy.fullName);
-      setVal('pd-mobile', policy.mobile);
-      setVal('pd-ins-type', policy.insuranceType);
-      setVal('pd-purpose', policy.vehiclePurpose);
-      setVal('pd-vehicle-value', inquiry.vehicleValue);
-      setVal('pd-car-brand', policy.carBrand);
-      setVal('pd-birth-day', inquiry.birthDay);
-      setVal('pd-birth-month', inquiry.birthMonth);
-      setVal('pd-birth-year', inquiry.birthYear);
-      setVal('pd-mfg-year', inquiry.manufacturingYear);
-      setVal('pd-policy-start', inquiry.policyStartDate);
-      if (policy.repairPlace) {
-        const radio = document.querySelector('input[name="repairPlace"][value="' + policy.repairPlace + '"]');
-        if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change')); }
-      }
-    }
-  } catch(e) { /* ignore */ }
-}
-
-function setVal(id, val) {
-  const el = document.getElementById(id);
-  if (el && val) el.value = val;
+  /* حفظ الصفحة الحالية (بعد فحص التوجيه) */
+  sessionStorage.setItem('bcare_current_page', page);
 }

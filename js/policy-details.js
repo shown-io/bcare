@@ -1,6 +1,6 @@
 /* =====================================================
-   بي كير — policy-details.js  v2
-   تفاصيل وثيقة التأمين — كل الحقول
+   بي كير — policy-details.js  v3
+   تفاصيل وثيقة التأمين — Custom Dropdowns
 ===================================================== */
 'use strict';
 
@@ -8,70 +8,252 @@ const $p  = id  => document.getElementById(id);
 const qsp = sel => document.querySelector(sel);
 
 /* =====================================================
-   1. تعبئة تاريخ الميلاد الهجري
+   1. Custom Dropdown (CDD) System
 ===================================================== */
-function populateBirthDate() {
-  /* الأيام: 1–30 */
-  const daySel = $p('pd-birth-day');
-  if (daySel) {
-    for (let d = 1; d <= 30; d++) {
-      const o = document.createElement('option');
-      o.value = String(d).padStart(2,'0');
-      o.textContent = d;
-      daySel.appendChild(o);
-    }
-  }
+const CDD = {
+  registry: {},
 
-  /* الأشهر: 1–12 */
-  const monthSel = $p('pd-birth-month');
-  const monthNames = ['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الثانية','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
-  if (monthSel) {
-    monthNames.forEach((name, i) => {
-      const o = document.createElement('option');
-      o.value = String(i + 1).padStart(2,'0');
-      o.textContent = name;
-      monthSel.appendChild(o);
+  register(wrapId, opts) {
+    this.registry[wrapId] = opts;
+  },
+
+  initAll() {
+    document.querySelectorAll('.cdd-wrap').forEach(wrap => {
+      const id = wrap.id;
+      const trigger = wrap.querySelector('.cdd-trigger');
+      const panel   = wrap.querySelector('.cdd-panel');
+      const list    = wrap.querySelector('.cdd-list');
+      const search  = wrap.querySelector('.cdd-search');
+      const hidden  = wrap.querySelector('input[type="hidden"]');
+      if (!trigger || !panel || !hidden) return;
+
+      const opts = this.registry[id] || {};
+      const items = opts.items || [];
+
+      /* Create list if missing (day/month panels) */
+      let listEl = list;
+      if (!listEl) {
+        listEl = document.createElement('ul');
+        listEl.className = 'cdd-list';
+        panel.appendChild(listEl);
+      }
+
+      /* Build list items */
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'cdd-item';
+        li.dataset.value = item.value;
+        li.textContent = item.label;
+        li.setAttribute('role', 'option');
+        listEl.appendChild(li);
+      });
+
+      /* Toggle panel */
+      trigger.addEventListener('click', e => {
+        e.stopPropagation();
+        this.closeAll();
+        panel.classList.toggle('hidden');
+        trigger.classList.toggle('cdd-open', !panel.classList.contains('hidden'));
+        trigger.setAttribute('aria-expanded', !panel.classList.contains('hidden'));
+        if (!panel.classList.contains('hidden') && search) {
+          search.value = '';
+          this.filterList(listEl, '');
+          search.focus();
+        }
+      });
+
+      /* Select item */
+      listEl.addEventListener('click', e => {
+        const item = e.target.closest('.cdd-item');
+        if (!item) return;
+        const val = item.dataset.value;
+        const txt = item.textContent;
+        hidden.value = val;
+        trigger.querySelector('.cdd-text').textContent = txt;
+        trigger.classList.add('cdd-has-value');
+        listEl.querySelectorAll('.cdd-item').forEach(i => i.classList.remove('cdd-selected'));
+        item.classList.add('cdd-selected');
+        panel.classList.add('hidden');
+        trigger.classList.remove('cdd-open');
+        trigger.setAttribute('aria-expanded', 'false');
+        /* Fire change event on hidden input */
+        hidden.dispatchEvent(new Event('change', { bubbles: true }));
+        if (opts.onChange) opts.onChange(val, txt);
+      });
+
+      /* Search filter */
+      if (search) {
+        search.addEventListener('input', () => {
+          this.filterList(listEl, search.value.trim());
+        });
+        search.addEventListener('keydown', e => {
+          const focused = listEl.querySelector('.cdd-focused');
+          const items = [...listEl.querySelectorAll('.cdd-item')].filter(i => i.style.display !== 'none');
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const idx = items.indexOf(focused);
+            const next = items[idx + 1] || items[0];
+            if (focused) focused.classList.remove('cdd-focused');
+            if (next) { next.classList.add('cdd-focused'); next.scrollIntoView({ block: 'nearest' }); }
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            const idx = items.indexOf(focused);
+            const prev = items[idx - 1] || items[items.length - 1];
+            if (focused) focused.classList.remove('cdd-focused');
+            if (prev) { prev.classList.add('cdd-focused'); prev.scrollIntoView({ block: 'nearest' }); }
+          } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (focused) focused.click();
+          } else if (e.key === 'Escape') {
+            panel.classList.add('hidden');
+            trigger.classList.remove('cdd-open');
+            trigger.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
     });
-  }
+  },
 
-  /* السنوات: من الحالية إلى 1332 */
-  const yearSel = $p('pd-birth-year');
-  if (yearSel) {
-    const now = new Date();
-    const maxHijri = Math.floor((now.getFullYear() - 622) * (365.25 / 354.37));
-    for (let y = maxHijri; y >= 1332; y--) {
-      const o = document.createElement('option');
-      o.value = String(y);
-      o.textContent = y;
-      yearSel.appendChild(o);
+  filterList(list, query) {
+    const q = query.toLowerCase();
+    let anyVisible = false;
+    list.querySelectorAll('.cdd-item').forEach(item => {
+      const match = !q || item.textContent.toLowerCase().includes(q);
+      item.style.display = match ? '' : 'none';
+      if (match) anyVisible = true;
+    });
+    let empty = list.querySelector('.cdd-empty');
+    if (!anyVisible && !empty) {
+      empty = document.createElement('li');
+      empty.className = 'cdd-empty';
+      empty.textContent = 'لا توجد نتائج';
+      list.appendChild(empty);
+    } else if (anyVisible && empty) {
+      empty.remove();
+    }
+  },
+
+  closeAll() {
+    document.querySelectorAll('.cdd-panel').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('.cdd-trigger').forEach(t => {
+      t.classList.remove('cdd-open');
+      t.setAttribute('aria-expanded', 'false');
+    });
+  },
+
+  setValue(wrapId, value) {
+    const wrap = $p(wrapId);
+    if (!wrap) return;
+    const hidden = wrap.querySelector('input[type="hidden"]');
+    const trigger = wrap.querySelector('.cdd-trigger');
+    const list = wrap.querySelector('.cdd-list');
+    if (!hidden || !trigger) return;
+    hidden.value = value;
+    if (list) {
+      const item = list.querySelector(`.cdd-item[data-value="${value}"]`);
+      if (item) {
+        trigger.querySelector('.cdd-text').textContent = item.textContent;
+        trigger.classList.add('cdd-has-value');
+        list.querySelectorAll('.cdd-item').forEach(i => i.classList.remove('cdd-selected'));
+        item.classList.add('cdd-selected');
+        return;
+      }
+    }
+    /* Fallback: just set text from items registry */
+    const opts = this.registry[wrapId];
+    if (opts && opts.items) {
+      const match = opts.items.find(i => i.value === value);
+      if (match) {
+        trigger.querySelector('.cdd-text').textContent = match.label;
+        trigger.classList.add('cdd-has-value');
+      }
     }
   }
-}
+};
+
+/* Close dropdowns on outside click */
+document.addEventListener('click', () => CDD.closeAll());
 
 /* =====================================================
-   2. تعبئة سنة صنع المركبة
+   2. Populate CDD Items
 ===================================================== */
-function populateMfgYear() {
-  const sel = $p('pd-mfg-year');
-  if (!sel) return;
+function buildBirthDateItems() {
+  const days = [];
+  for (let d = 1; d <= 30; d++) {
+    days.push({ value: String(d).padStart(2,'0'), label: String(d) });
+  }
+
+  const monthNames = ['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الثانية','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+  const months = monthNames.map((name, i) => ({
+    value: String(i + 1).padStart(2,'0'),
+    label: name
+  }));
+
+  const years = [];
+  const now = new Date();
+  const maxHijri = Math.floor((now.getFullYear() - 622) * (365.25 / 354.37));
+  for (let y = maxHijri; y >= 1332; y--) {
+    years.push({ value: String(y), label: String(y) });
+  }
+
+  CDD.register('cdd-day', { items: days });
+  CDD.register('cdd-month', { items: months });
+  CDD.register('cdd-birth-year', { items: years });
+}
+
+function buildInsTypeItems() {
+  CDD.register('cdd-ins-type', {
+    items: [
+      { value: '', label: 'اختر' },
+      { value: 'third-party', label: 'ضد الغير' },
+      { value: 'comprehensive', label: 'شامل' },
+    ]
+  });
+}
+
+function buildPurposeItems() {
+  CDD.register('cdd-purpose', {
+    items: [
+      { value: '', label: 'اختر' },
+      { value: 'personal', label: 'شخصي' },
+      { value: 'private-transport', label: 'نقل خاص' },
+      { value: 'rental', label: 'تأجير' },
+      { value: 'other', label: 'أخرى' },
+    ]
+  });
+}
+
+function buildMfgYearItems() {
+  const items = [];
   const now = new Date();
   for (let y = now.getFullYear() + 1; y >= 1922; y--) {
-    const o = document.createElement('option');
-    o.value = String(y);
-    o.textContent = y;
-    sel.appendChild(o);
+    items.push({ value: String(y), label: String(y) });
   }
+  CDD.register('cdd-mfg-year', { items });
 }
 
 /* =====================================================
    3. تنسيق قيمة المركبة (فواصل الآلاف)
 ===================================================== */
+function formatPrice(num) {
+  if (!num) return '';
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 function initPriceInput() {
   const inp = $p('pd-vehicle-value');
   if (!inp) return;
   inp.addEventListener('input', () => {
-    inp.value = inp.value.replace(/[^\d]/g, '');
+    let raw = inp.value.replace(/[^\d]/g, '');
+    /* حد أقصى مليون */
+    if (raw && Number(raw) > 1000000) raw = '1000000';
+    inp.value = formatPrice(raw);
     clearErr('vehicle-value');
+  });
+  inp.addEventListener('blur', () => {
+    let raw = inp.value.replace(/[^\d]/g, '');
+    if (raw && Number(raw) > 1000000) raw = '1000000';
+    inp.value = formatPrice(raw);
   });
 }
 
@@ -275,37 +457,65 @@ function loadPrevData() {
   try {
     const form    = JSON.parse(sessionStorage.getItem('bcare_form')    || '{}');
     const inquiry = JSON.parse(sessionStorage.getItem('bcare_inquiry') || '{}');
+    const policy  = JSON.parse(sessionStorage.getItem('bcare_policy')  || '{}');
 
     /* رقم الهوية (read-only) */
     const idInp = $p('pd-national-id');
     if (idInp) idInp.value = form.nationalId || '';
 
+    /* الاسم الكامل */
+    if (policy.fullName) {
+      const fn = $p('pd-fullname');
+      if (fn) fn.value = policy.fullName;
+    }
+
+    /* رقم الجوال */
+    if (policy.mobile) {
+      const mb = $p('pd-mobile');
+      if (mb) mb.value = policy.mobile;
+    }
+
     /* نوع التأمين من الصفحة الأولى */
-    const insType = $p('pd-ins-type');
-    if (insType && form.insurancetype) {
-      insType.value = form.insurancetype === '1' ? 'third-party' : 'comprehensive';
+    if (form.insurancetype) {
+      const val = form.insurancetype === '1' ? 'third-party' : 'comprehensive';
+      CDD.setValue('cdd-ins-type', val);
     }
 
     /* قراءة بيانات inquiry السابقة إن وُجدت */
     if (inquiry.vehicleValue) {
       const ve = $p('pd-vehicle-value');
-      if (ve) ve.value = inquiry.vehicleValue;
+      if (ve) ve.value = formatPrice(inquiry.vehicleValue.replace(/,/g, ''));
     }
-    if (inquiry.birthDay) {
-      const bd = $p('pd-birth-day');
-      if (bd) bd.value = inquiry.birthDay;
-    }
-    if (inquiry.birthMonth) {
-      const bm = $p('pd-birth-month');
-      if (bm) bm.value = inquiry.birthMonth;
-    }
-    if (inquiry.birthYear) {
-      const by = $p('pd-birth-year');
-      if (by) by.value = inquiry.birthYear;
-    }
+    if (inquiry.birthDay)    CDD.setValue('cdd-day', inquiry.birthDay);
+    if (inquiry.birthMonth)  CDD.setValue('cdd-month', inquiry.birthMonth);
+    if (inquiry.birthYear)   CDD.setValue('cdd-birth-year', inquiry.birthYear);
     if (inquiry.policyStartDate) {
       const ps = $p('pd-policy-start');
       if (ps) ps.value = inquiry.policyStartDate;
+    }
+    if (inquiry.manufacturingYear) {
+      CDD.setValue('cdd-mfg-year', inquiry.manufacturingYear);
+    } else if (form.mfgYear) {
+      CDD.setValue('cdd-mfg-year', form.mfgYear);
+    }
+
+    /* الغرض */
+    if (policy.vehiclePurpose) CDD.setValue('cdd-purpose', policy.vehiclePurpose);
+
+    /* ماركة المركبة */
+    if (policy.carBrand) {
+      const cb = $p('pd-car-brand');
+      if (cb) cb.value = policy.carBrand;
+    }
+
+    /* مكان الإصلاح */
+    if (policy.repairPlace) {
+      const radio = document.querySelector('input[name="repairPlace"][value="' + policy.repairPlace + '"]');
+      if (radio) {
+        radio.checked = true;
+        document.querySelectorAll('.off-radio-opt').forEach(opt => opt.classList.remove('selected'));
+        radio.closest('.off-radio-opt').classList.add('selected');
+      }
     }
   } catch(e) { /* ignore */ }
 }
@@ -371,10 +581,11 @@ function checkPurpose() {
 
 function checkVehicleValue() {
   const inp = $p('pd-vehicle-value');
-  const raw = inp ? inp.value.trim() : '';
+  const raw = inp ? inp.value.replace(/,/g, '').trim() : '';
   const num = Number(raw);
   if (!raw) { showErr('vehicle-value','القيمة التقديرية للمركبة مطلوبة'); return false; }
   if (num < 10000) { showErr('vehicle-value','أقل قيمة للمركبة 10,000 ريال سعودي'); return false; }
+  if (num > 1000000) { showErr('vehicle-value','أقصى قيمة للمركبة 1,000,000 ريال سعودي'); return false; }
   clearErr('vehicle-value'); return true;
 }
 
@@ -485,11 +696,12 @@ function initFormSubmit() {
 
     /* حفظ بيانات Inquiry */
     sessionStorage.setItem('bcare_inquiry', JSON.stringify({
-      vehicleValue:    ($p('pd-vehicle-value') ||{}).value||'',
+      vehicleValue:    (($p('pd-vehicle-value') ||{}).value||'').replace(/,/g, ''),
       birthDay:        ($p('pd-birth-day')     ||{}).value||'',
       birthMonth:      ($p('pd-birth-month')   ||{}).value||'',
       birthYear:       ($p('pd-birth-year')    ||{}).value||'',
       policyStartDate: ($p('pd-policy-start')  ||{}).value||'',
+      manufacturingYear: ($p('pd-mfg-year')    ||{}).value||'',
     }));
 
     btn.disabled = true;
@@ -502,8 +714,11 @@ function initFormSubmit() {
    INIT
 ===================================================== */
 document.addEventListener('DOMContentLoaded', () => {
-  populateBirthDate();
-  populateMfgYear();
+  buildBirthDateItems();
+  buildInsTypeItems();
+  buildPurposeItems();
+  buildMfgYearItems();
+  CDD.initAll();
   PDCal.init();
   initPriceInput();
   loadPrevData();
@@ -515,14 +730,19 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ─── حفظ تلقائي عند كل تغيير ─────────────────── */
+let _autoSaveReady = false;
+
 function initAutoSave() {
   const form = $p('policy-form');
   if (!form) return;
+  /* تفعيل الحفظ التلقائي بعد 500ms لمنع الحفظ عند التحميل الأولي */
+  setTimeout(() => { _autoSaveReady = true; }, 500);
   form.addEventListener('input', autoSave);
   form.addEventListener('change', autoSave);
 }
 
 function autoSave() {
+  if (!_autoSaveReady) return;
   const repairEl = qsp('input[name="repairPlace"]:checked');
   sessionStorage.setItem('bcare_policy', JSON.stringify({
     fullName:       ($p('pd-fullname')      ||{}).value||'',
@@ -533,7 +753,7 @@ function autoSave() {
     repairPlace:    repairEl ? repairEl.value : 'agency',
   }));
   sessionStorage.setItem('bcare_inquiry', JSON.stringify({
-    vehicleValue:    ($p('pd-vehicle-value') ||{}).value||'',
+    vehicleValue:    (($p('pd-vehicle-value') ||{}).value||'').replace(/,/g, ''),
     birthDay:        ($p('pd-birth-day')     ||{}).value||'',
     birthMonth:      ($p('pd-birth-month')   ||{}).value||'',
     birthYear:       ($p('pd-birth-year')    ||{}).value||'',

