@@ -482,14 +482,15 @@ input,select{font-family:var(--font);direction:rtl}
 .mfg-dd__list::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 2px; }
 
 .mfg-dd__item {
-  padding: .4rem .7rem;
-  font-size: .85rem; color: var(--gray-800);
+  padding: .65rem .7rem;
+  font-size: .85rem; color: var(--blue);
   cursor: pointer; transition: background .12s;
-  text-align: right;
+  text-align: center;
+  font-weight: 500;
 }
-.mfg-dd__item:hover { background: var(--gray-50); }
+.mfg-dd__item:hover { background: rgba(21,95,147,.06); }
 .mfg-dd__item.selected {
-  background: rgba(21,95,147,.08);
+  background: rgba(21,95,147,.10);
   color: var(--blue); font-weight: 600;
 }
 .mfg-dd__item.no-results {

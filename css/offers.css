@@ -179,22 +179,23 @@
 .cdd-search::placeholder { color: var(--gray-400); }
 
 .cdd-list {
-  list-style: none; margin: 0; padding: 0;
+  list-style: none; margin: 0; padding: .2rem 0;
   overflow-y: auto;
   max-height: 200px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
 .cdd-item {
-  padding: .55rem .75rem;
-  font-size: .8rem; color: var(--gray-700);
+  padding: .65rem .75rem;
+  font-size: .85rem; color: var(--blue);
   cursor: pointer; transition: background .12s;
-  border-bottom: 1px solid var(--gray-100);
-  text-align: right; font-family: var(--font);
+  text-align: center; font-family: var(--font);
+  font-weight: 500;
+  border-bottom: 1px solid rgba(21,95,147,.08);
 }
 .cdd-item:last-child { border-bottom: none; }
-.cdd-item:hover { background: rgba(21,95,147,.06); color: var(--blue); }
-.cdd-item.cdd-selected { background: rgba(21,95,147,.10); color: var(--blue); font-weight: 700; }
+.cdd-item:hover { background: rgba(21,95,147,.06); }
+.cdd-item.cdd-selected { background: rgba(21,95,147,.10); font-weight: 700; }
 .cdd-item.cdd-focused { background: rgba(21,95,147,.08); }
 .cdd-empty {
   padding: .6rem .75rem; font-size: .78rem;
