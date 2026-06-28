@@ -191,7 +191,7 @@ input,select{font-family:var(--font);direction:rtl}
 /* ── البطاقة البيضاء ── */
 .hero-card-wrap{
   position:relative;
-  margin-top:clamp(-4rem,-8vw,-5rem);
+  margin-top:clamp(-6rem,-12vw,-7.5rem);
   padding-bottom:clamp(1.5rem,4vw,2.5rem);
   z-index:2;
 }
@@ -841,7 +841,7 @@ input,select{font-family:var(--font);direction:rtl}
   .btn-user{width:32px;height:32px}
   .hero-deco{opacity:.3}
   .hero-blue-box{padding-bottom:clamp(5rem,12vw,7rem)}
-  .hero-card-wrap{margin-top:clamp(-4rem,-10vw,-5rem)}
+  .hero-card-wrap{margin-top:clamp(-6rem,-15vw,-7.5rem)}
   .service-tab{padding:.6rem .5rem;font-size:.72rem}
   .stab-icon{width:20px;height:20px}
   .form-row{grid-template-columns:1fr 1fr;gap:.5rem}
