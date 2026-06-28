@@ -319,13 +319,13 @@ input,select{font-family:var(--font);direction:rtl}
   border:1.5px solid var(--border);
   border-radius:var(--r-sm);
   font-size:.85rem;
-  color:var(--gray-500);background:var(--white);
+  color:var(--blue);background:var(--white);
   outline:none;transition:border-color .2s,box-shadow .2s;
   direction:rtl;text-align:right;
   -webkit-appearance:none;appearance:none;
   line-height:1.4;
 }
-.form-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,95,147,.10);color:var(--gray-800)}
+.form-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,95,147,.10);color:var(--blue)}
 .form-input.input-error{border-color:var(--red)!important;background:var(--red-bg)}
 .form-input::placeholder{color:var(--gray-400);font-size:.875rem}
 
@@ -424,7 +424,7 @@ input,select{font-family:var(--font);direction:rtl}
   color: var(--gray-400); text-align: right;
   line-height: 1.4;
 }
-.mfg-dd__trigger.has-value { color: var(--gray-800); }
+.mfg-dd__trigger.has-value { color: var(--blue); }
 .mfg-dd__trigger.open,
 .mfg-dd__trigger:focus {
   border-color: var(--blue);
@@ -463,7 +463,7 @@ input,select{font-family:var(--font);direction:rtl}
   border-bottom: 1.5px solid var(--border);
   font-size: max(.8rem,14px);
   font-family: var(--font);
-  color: var(--gray-800);
+  color: var(--blue);
   outline: none;
   direction: rtl; text-align: right;
   background: var(--gray-50);
