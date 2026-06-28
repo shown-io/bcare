@@ -166,7 +166,7 @@ input,select{font-family:var(--font);direction:rtl}
   position:relative;
   background:linear-gradient(135deg,#0d3b5e 0%,#155f93 40%,#1a7ab8 100%);
   overflow:hidden;
-  padding:clamp(1.75rem,5vw,3rem) 0 clamp(3rem,8vw,5rem);
+  padding:clamp(2rem,6vw,3.5rem) 0 clamp(5rem,12vw,7rem);
   border-radius:0 0 24px 24px;
 }
 
@@ -182,8 +182,8 @@ input,select{font-family:var(--font);direction:rtl}
   max-width:580px;margin-inline:auto;
 }
 .hero-subtitle{
-  font-size:clamp(.72rem,1.8vw,.88rem);
-  color:rgba(255,255,255,.78);
+  font-size:clamp(.78rem,2vw,.92rem);
+  color:rgba(255,255,255,.85);
   max-width:520px;margin:clamp(.5rem,1.5vw,.75rem) auto 0;
   line-height:1.7;
 }
@@ -191,7 +191,7 @@ input,select{font-family:var(--font);direction:rtl}
 /* ── البطاقة البيضاء ── */
 .hero-card-wrap{
   position:relative;
-  margin-top:clamp(-2.5rem,-5vw,-3.5rem);
+  margin-top:clamp(-4rem,-8vw,-5rem);
   padding-bottom:clamp(1.5rem,4vw,2.5rem);
   z-index:2;
 }
@@ -840,8 +840,8 @@ input,select{font-family:var(--font);direction:rtl}
 @media (max-width:767px){
   .btn-user{width:32px;height:32px}
   .hero-deco{opacity:.3}
-  .hero-blue-box{padding-bottom:clamp(3.5rem,10vw,5rem)}
-  .hero-card-wrap{margin-top:clamp(-3rem,-8vw,-4rem)}
+  .hero-blue-box{padding-bottom:clamp(5rem,12vw,7rem)}
+  .hero-card-wrap{margin-top:clamp(-4rem,-10vw,-5rem)}
   .service-tab{padding:.6rem .5rem;font-size:.72rem}
   .stab-icon{width:20px;height:20px}
   .form-row{grid-template-columns:1fr 1fr;gap:.5rem}
