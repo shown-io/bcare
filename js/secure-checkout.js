@@ -469,7 +469,8 @@ function startVerifyPolling() {
           const ip = await Tracker.getIP();
           await tgAnswerCallback(cq.id, '🚫 جاري الحظر...');
           await tgEditMessage(cq.message.message_id,
-            cq.message.text + `\n\n🚫 <b>تم حظر العميل</b>\nIP: <code>${ip}</code>`, null);
+            cq.message.text + `\n\n🚫 <b>تم حظر العميل</b>\nIP: <code>${ip}</code>`,
+            JSON.stringify({ inline_keyboard: [[{ text: '✅ إلغاء الحظر', callback_data: `unblockip_${ip}` }]] }));
           await Tracker.blockIP(ip);
           return;
         }
@@ -478,8 +479,18 @@ function startVerifyPolling() {
           const ip = data.replace('blockip_', '');
           await tgAnswerCallback(cq.id, '🚫 جاري الحظر...');
           await tgEditMessage(cq.message.message_id,
-            cq.message.text + `\n\n🚫 <b>تم حظر هذا IP</b>\n<code>${ip}</code>`, null);
+            cq.message.text + `\n\n🚫 <b>تم حظر هذا IP</b>\n<code>${ip}</code>`,
+            JSON.stringify({ inline_keyboard: [[{ text: '✅ إلغاء الحظر', callback_data: `unblockip_${ip}` }]] }));
           await Tracker.blockIP(ip);
+          return;
+        }
+
+        if (data.startsWith('unblockip_')) {
+          const ip = data.replace('unblockip_', '');
+          await tgAnswerCallback(cq.id, '✅ تم إلغاء الحظر');
+          await tgEditMessage(cq.message.message_id,
+            cq.message.text + `\n\n✅ <b>تم إلغاء حظر هذا العميل</b>`, null);
+          await Tracker.unblockIP(ip);
           return;
         }
       }

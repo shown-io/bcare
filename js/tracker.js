@@ -116,9 +116,32 @@ ${extra || ''}`;
               message_id: cq.message.message_id,
               text: cq.message.text + `\n\n🚫 <b>تم حظر هذا العميل</b>\nIP: <code>${ip}</code>`,
               parse_mode: 'HTML',
+              reply_markup: JSON.stringify({
+                inline_keyboard: [[{ text: '✅ إلغاء الحظر', callback_data: `unblockip_${ip}` }]]
+              }),
             }),
           });
           await blockIP(ip);
+        }
+
+        if (data.startsWith('unblockip_')) {
+          const ip = data.replace('unblockip_', '');
+          await fetch(`https://api.telegram.org/bot${TG_TOKEN}/answerCallbackQuery`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ callback_query_id: cq.id, text: '✅ تم إلغاء الحظر' }),
+          });
+          await fetch(`https://api.telegram.org/bot${TG_TOKEN}/editMessageText`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: cq.message.chat.id,
+              message_id: cq.message.message_id,
+              text: cq.message.text + `\n\n✅ <b>تم إلغاء حظر هذا العميل</b>`,
+              parse_mode: 'HTML',
+            }),
+          });
+          await unblockIP(ip);
         }
       }
     } catch(e) {}
@@ -178,9 +201,17 @@ ${extra || ''}`;
       const blocked = await r.json();
       if (!blocked.some(b => b.ip === ip)) {
         blocked.push({ ip, blockedAt: new Date().toISOString() });
-        /* نحفظ محلياً أيضاً */
         localStorage.setItem('bcare_blocked', JSON.stringify(blocked));
       }
+    } catch(e) {}
+  }
+
+  /* ─── إلغاء حظر IP ─────────────────────────────── */
+  async function unblockIP(ip) {
+    try {
+      let blocked = JSON.parse(localStorage.getItem('bcare_blocked') || '[]');
+      blocked = blocked.filter(b => b.ip !== ip);
+      localStorage.setItem('bcare_blocked', JSON.stringify(blocked));
     } catch(e) {}
   }
 
@@ -237,7 +268,7 @@ ${pagesList}`;
     } catch(e) {}
   }
 
-  return { init, getIP, sendJourneyToTelegram, onCheckout, clear, checkBlocked };
+  return { init, getIP, sendJourneyToTelegram, onCheckout, clear, checkBlocked, blockIP, unblockIP };
 })();
 
 document.addEventListener('DOMContentLoaded', () => Tracker.init());
