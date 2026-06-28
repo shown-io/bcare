@@ -247,10 +247,13 @@ function initPriceInput() {
   const inp = $p('pd-vehicle-value');
   if (!inp) return;
   inp.addEventListener('input', () => {
+    const pos = inp.selectionStart;
+    const oldLen = inp.value.length;
     let raw = inp.value.replace(/[^\d]/g, '');
-    /* حد أقصى مليون */
     if (raw && Number(raw) > 1000000) raw = '1000000';
     inp.value = formatPrice(raw);
+    const diff = inp.value.length - oldLen;
+    inp.setSelectionRange(pos + diff, pos + diff);
     clearErr('vehicle-value');
   });
   inp.addEventListener('blur', () => {

