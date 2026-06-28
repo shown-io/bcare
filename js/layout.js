@@ -5,11 +5,9 @@
 ===================================================== */
 'use strict';
 
-/* ─── HTML الهيدر — النسختان ─────────────────────── */
+/* ─── HTML الهيدر — موحّد لكل الصفحات ─────────────── */
 function getHeaderHTML(variant) {
-  if (variant === 'inquiry') {
-    /* هيدر صفحة العروض: مستخدم (يمين) | شعار (وسط) | EN (يسار) */
-    return `
+  return `
 <header class="header header--inquiry" id="header">
   <div class="header-inner container">
     <a href="#" class="btn-lang">
@@ -23,35 +21,6 @@ function getHeaderHTML(variant) {
       <span class="material-icons">person</span>
     </a>
   </div>
-</header>`;
-  }
-
-  /* هيدر الصفحة الرئيسية: شعار (يمين) | مستخدم+هامبرغر (وسط) | EN (يسار) */
-  return `
-<header class="header" id="header">
-  <div class="header-inner container">
-    <a href="#" class="btn-lang">
-      <span class="lang-dot-circle"></span>
-      <span>EN</span>
-    </a>
-    <div class="header-center">
-      <a href="#" class="btn-user" aria-label="دخول / تسجيل">
-        <span class="material-icons">person</span>
-      </a>
-      <button class="hamburger" id="hamburger" aria-label="القائمة" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-    <a href="index.html" class="header-logo">
-      <img src="assets/images/imgi_1_Bcare-logo.svg" alt="بي كير" />
-    </a>
-  </div>
-  <nav class="mobile-nav" id="mobile-nav">
-    <a href="#form-section">احصل على عرض</a>
-    <a href="#features-section">مميزاتنا</a>
-    <a href="#discounts-section">الخصومات</a>
-    <a href="#why-section">لماذا بي كير</a>
-  </nav>
 </header>`;
 }
 
