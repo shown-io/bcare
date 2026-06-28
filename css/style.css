@@ -579,16 +579,16 @@ input,select{font-family:var(--font);direction:rtl}
 /* ─── زر إظهار العروض ────────────────────────────── */
 .btn-submit{
   width:100%;
-  padding:clamp(.8rem,2.5vw,.95rem) 1.5rem;
+  padding:clamp(.7rem,2vw,.85rem) 1.5rem;
   background:var(--gold);color:var(--white);
-  font-size:clamp(.95rem,2.5vw,1rem);font-weight:700;
+  font-size:clamp(.82rem,2vw,.9rem);font-weight:700;
   border-radius:var(--r-sm);
   transition:var(--trans);
   box-shadow:0 4px 14px rgba(250,166,46,.35);
   border:none;
 }
 .btn-submit:not(:disabled):hover{background:var(--gold-dark);transform:translateY(-1px);box-shadow:0 6px 18px rgba(250,166,46,.45)}
-.btn-submit:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed;box-shadow:none}
+.btn-submit:disabled{background:#f5cba7;color:#d4a76a;cursor:not-allowed;box-shadow:none}
 
 /* نتيجة الإرسال */
 .form-result{padding:.75rem 1rem;border-radius:var(--r-sm);font-size:.88rem;font-weight:500;text-align:center;margin-top:.25rem}
