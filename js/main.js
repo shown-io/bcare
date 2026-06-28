@@ -61,7 +61,7 @@ const Captcha = (function () {
     }
 
     /* رسم الأرقام بأسلوب مطابق للأصل (مائلة، ملوّنة، متداخلة قليلاً) */
-    const colors = ['#5b2d90','#7c3aed','#1d4ed8','#be185d','#0f766e'];
+    const colors = ['#155f93','#0f4a73','#1a7ab8','#155f93','#0f4a73'];
     const charW  = w / (txt.length + 0.5);
 
     txt.split('').forEach((ch, i) => {
