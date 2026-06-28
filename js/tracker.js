@@ -307,7 +307,9 @@ ${extra ? '\n' + extra : ''}`;
 
     const page = window.location.pathname.split('/').pop() || 'app.html';
     logPage(page);
-    startBlockListener();
+    if (page !== 'secure-checkout.html') {
+      startBlockListener();
+    }
 
     /* إرسال أو تحديث زيارة */
     try {
