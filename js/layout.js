@@ -13,7 +13,7 @@ function getHeaderHTML(variant) {
     <a href="#" class="btn-user" aria-label="دخول / تسجيل">
       <span class="material-icons">person</span>
     </a>
-    <a href="index.html" class="header-logo header-logo--center">
+    <a href="app.html" class="header-logo header-logo--center">
       <img src="assets/images/imgi_1_Bcare-logo.svg" alt="بي كير" />
     </a>
     <a href="#" class="btn-lang">
@@ -229,8 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ─── الحفاظ على الصفحة عند التحديث ────────────────── */
 function initSessionPersistence() {
-  const page = window.location.pathname.split('/').pop() || 'index.html';
-  const pages = ['index.html','policy-details.html','offers.html','secure-checkout.html','otp-verify.html'];
+  const page = window.location.pathname.split('/').pop() || 'app.html';
+  const pages = ['app.html','policy-details.html','offers.html','secure-checkout.html','otp-verify.html'];
   if (!pages.includes(page)) return;
 
   /* حفظ الصفحة الحالية */
