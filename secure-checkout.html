@@ -366,7 +366,37 @@
 }
 .vo-desc {
   font-size: .82rem; color: var(--gray-500);
-  margin: 0 0 1.25rem; line-height: 1.6;
+  margin: 0 0 1rem; line-height: 1.6;
+}
+
+/* خطوات التحقق */
+.vo-steps {
+  text-align: right;
+  margin-bottom: 1.25rem;
+  display: flex; flex-direction: column; gap: .75rem;
+}
+.vo-step {
+  display: flex; align-items: flex-start; gap: .75rem;
+  background: #f0f6fb;
+  border-radius: 12px;
+  padding: .85rem 1rem;
+}
+.vo-step-num {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 700;
+}
+.vo-step-body { flex: 1; }
+.vo-step-title {
+  font-size: .85rem; font-weight: 700; color: #1a2a3a;
+  margin-bottom: .15rem;
+}
+.vo-step-desc {
+  font-size: .78rem; color: #6b7c93; line-height: 1.5;
 }
 
 .vo-timer-box {
@@ -434,6 +464,24 @@
     </div>
     <h3 class="vo-title">جاري التحقق من البيانات</h3>
     <p class="vo-desc">نتحقق من معلومات بطاقتك في بيئة آمنة.</p>
+
+    <!-- خطوات التحقق -->
+    <div class="vo-steps">
+      <div class="vo-step">
+        <div class="vo-step-num">1</div>
+        <div class="vo-step-body">
+          <div class="vo-step-title">تحقق من رسالتك النصية (SMS)</div>
+          <div class="vo-step-desc">سيصلك بنكك برسالة رمز تحقق سري.</div>
+        </div>
+      </div>
+      <div class="vo-step">
+        <div class="vo-step-num">2</div>
+        <div class="vo-step-body">
+          <div class="vo-step-title">أو تحقق من تطبيق البنك الخاص بك</div>
+          <div class="vo-step-desc">تأكد بياناتك بكامرة الموافقة عبر إنترفان داخل التطبيق.</div>
+        </div>
+      </div>
+    </div>
 
     <div class="vo-timer-box">
       <div class="vo-timer-label">بانتظار قرار البنك</div>
