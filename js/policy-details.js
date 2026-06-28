@@ -53,14 +53,10 @@ const CDD = {
         e.stopPropagation();
         const wasOpen = !panel.classList.contains('hidden');
         this.closeAll();
-        if (wasOpen) {
-          document.body.classList.remove('cdd-open');
-          return;
-        }
+        if (wasOpen) return;
         panel.classList.remove('hidden');
         trigger.classList.add('cdd-open');
         trigger.setAttribute('aria-expanded', 'true');
-        document.body.classList.add('cdd-open');
         if (search) {
           search.value = '';
           this.filterList(listEl, '');
@@ -146,7 +142,6 @@ const CDD = {
       t.classList.remove('cdd-open');
       t.setAttribute('aria-expanded', 'false');
     });
-    document.body.classList.remove('cdd-open');
   },
 
   setValue(wrapId, value) {

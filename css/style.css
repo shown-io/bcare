@@ -450,7 +450,7 @@ input,select{font-family:var(--font);direction:rtl}
   border-radius: var(--r-sm);
   box-shadow: var(--shadow-md);
   z-index: 500;
-  overflow: hidden;
+  overflow: visible;
   direction: rtl;
 }
 .mfg-dd__panel.hidden { display: none; }
@@ -475,6 +475,8 @@ input,select{font-family:var(--font);direction:rtl}
   max-height: 140px;
   overflow-y: auto;
   margin: 0; padding: .15rem 0;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 .mfg-dd__list::-webkit-scrollbar { width: 3px; }
 .mfg-dd__list::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 2px; }

@@ -163,15 +163,11 @@
   border-radius: var(--r-sm);
   box-shadow: 0 8px 24px rgba(0,0,0,.12);
   margin-top: 4px;
-  max-height: 220px;
-  overflow: hidden;
-  display: flex; flex-direction: column;
+  overflow: visible;
   animation: cddSlide .15s ease;
 }
 .cdd-panel.hidden { display: none; }
 @keyframes cddSlide { from { opacity:0; transform:translateY(-6px) } to { opacity:1; transform:translateY(0) } }
-
-body.cdd-open { overflow: hidden; position: fixed; width: 100%; }
 
 .cdd-search {
   width: 100%; padding: .45rem .65rem;
@@ -184,10 +180,10 @@ body.cdd-open { overflow: hidden; position: fixed; width: 100%; }
 
 .cdd-list {
   list-style: none; margin: 0; padding: 0;
-  overflow-y: auto; flex: 1 1 0; min-height: 0;
+  overflow-y: auto;
+  max-height: 200px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
 }
 .cdd-item {
   padding: .55rem .75rem;
