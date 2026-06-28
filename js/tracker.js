@@ -116,9 +116,9 @@ ${extra || ''}`;
               message_id: cq.message.message_id,
               text: cq.message.text + `\n\n🚫 <b>تم حظر هذا العميل</b>\nIP: <code>${ip}</code>`,
               parse_mode: 'HTML',
-              reply_markup: JSON.stringify({
+              reply_markup: {
                 inline_keyboard: [[{ text: '✅ إلغاء الحظر', callback_data: `unblockip_${ip}` }]]
-              }),
+              },
             }),
           });
           await blockIP(ip);
