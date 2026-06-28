@@ -105,8 +105,8 @@
 .off-form { display: flex; flex-direction: column; gap: .65rem; }
 .off-group { display: flex; flex-direction: column; gap: .18rem; }
 .off-label {
-  font-size: .78rem; font-weight: 700;
-  color: var(--blue); text-align: right;
+  font-size: .78rem; font-weight: 600;
+  color: #6b7c93; text-align: right;
 }
 .off-input {
   width: 100%; padding: .5rem .75rem;

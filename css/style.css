@@ -307,7 +307,7 @@ input,select{font-family:var(--font);direction:rtl}
 
 .form-group{display:flex;flex-direction:column;gap:.3rem}
 .form-label{
-  font-size:.82rem;font-weight:700;color:#155f93;
+  font-size:.82rem;font-weight:600;color:#6b7c93;
   display:flex;align-items:center;gap:.3rem;
   text-align:right;
 }
