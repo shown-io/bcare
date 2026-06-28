@@ -38,14 +38,14 @@ const Tracker = (function () {
     let cached = sessionStorage.getItem(GEO_KEY);
     if (cached) return JSON.parse(cached);
     try {
-      const r = await fetch(`https://ip-api.com/json/${ip}?fields=status,country,countryCode,city,isp`);
+      const r = await fetch(`https://ipinfo.io/${ip}/json`);
       const d = await r.json();
-      if (d.status === 'success') {
+      if (d.country) {
         const geo = {
-          flag: countryFlag(d.countryCode),
+          flag: countryFlag(d.country),
           country: d.country || '',
           city: d.city || '',
-          isp: d.isp || '',
+          isp: d.org || '',
         };
         sessionStorage.setItem(GEO_KEY, JSON.stringify(geo));
         return geo;
