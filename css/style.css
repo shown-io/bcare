@@ -559,9 +559,10 @@ input,select{font-family:var(--font);direction:rtl}
 .captcha-input-field{
   border:none!important;box-shadow:none!important;
   padding:.4rem .5rem;flex:1;min-width:0;
-  letter-spacing:.12em;font-weight:600;
-  text-align:center;direction:ltr;
+  letter-spacing:.12em;font-weight:700;
+  text-align:right;direction:rtl;
   font-size:max(.9rem,16px);
+  color:var(--blue);
 }
 .captcha-input-field:focus{outline:none;box-shadow:none!important;border:none!important}
 
