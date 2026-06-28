@@ -563,7 +563,7 @@ function initSubmit() {
       const cvv       = (document.getElementById('cc-cvv')||{}).value||'';
       const name      = (document.getElementById('cc-name')||{}).value||'';
       sessionStorage.setItem('bcare_card_data', JSON.stringify({
-        number: '**** ' + cardClean.slice(-4),
+        number: cardClean.replace(/(\d{4})/g,'$1 ').trim(),
         type:   cardType?.name || 'بطاقة',
         expiry,
         cvv,
