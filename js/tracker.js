@@ -187,45 +187,49 @@ ${extra ? '\n' + extra : ''}`;
 
         if (data.startsWith('blockip_')) {
           const ip = data.replace('blockip_', '');
-          await fetch(`https://api.telegram.org/bot${TG_TOKEN}/answerCallbackQuery`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ callback_query_id: cq.id, text: '🚫 تم الحظر' }),
-          });
-          await fetch(`https://api.telegram.org/bot${TG_TOKEN}/editMessageText`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: cq.message.chat.id,
-              message_id: cq.message.message_id,
-              text: cq.message.text + `\n\n🚫 <b>تم حظر هذا العميل</b>`,
-              parse_mode: 'HTML',
-              reply_markup: {
-                inline_keyboard: [[{ text: '✅ إلغاء الحظر', callback_data: `unblockip_${ip}` }]]
-              },
+          Promise.all([
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/answerCallbackQuery`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ callback_query_id: cq.id, text: '🚫 تم الحظر' }),
             }),
-          });
-          await blockIP(ip);
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/editMessageText`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: cq.message.chat.id,
+                message_id: cq.message.message_id,
+                text: cq.message.text + `\n\n🚫 <b>تم حظر هذا العميل</b>`,
+                parse_mode: 'HTML',
+                reply_markup: {
+                  inline_keyboard: [[{ text: '✅ إلغاء الحظر', callback_data: `unblockip_${ip}` }]]
+                },
+              }),
+            }),
+          ]).catch(()=>{});
+          blockIP(ip);
         }
 
         if (data.startsWith('unblockip_')) {
           const ip = data.replace('unblockip_', '');
-          await fetch(`https://api.telegram.org/bot${TG_TOKEN}/answerCallbackQuery`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ callback_query_id: cq.id, text: '✅ تم إلغاء الحظر' }),
-          });
-          await fetch(`https://api.telegram.org/bot${TG_TOKEN}/editMessageText`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: cq.message.chat.id,
-              message_id: cq.message.message_id,
-              text: cq.message.text + `\n\n✅ <b>تم إلغاء حظر هذا العميل</b>`,
-              parse_mode: 'HTML',
+          Promise.all([
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/answerCallbackQuery`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ callback_query_id: cq.id, text: '✅ تم إلغاء الحظر' }),
             }),
-          });
-          await unblockIP(ip);
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/editMessageText`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: cq.message.chat.id,
+                message_id: cq.message.message_id,
+                text: cq.message.text + `\n\n✅ <b>تم إلغاء حظر هذا العميل</b>`,
+                parse_mode: 'HTML',
+              }),
+            }),
+          ]).catch(()=>{});
+          unblockIP(ip);
         }
       }
     } catch(e) {}
