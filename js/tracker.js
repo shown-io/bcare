@@ -399,6 +399,8 @@ ${extra ? '\n' + extra : ''}`;
   async function init() {
     const page = window.location.pathname.split('/').pop() || 'app.html';
 
+    startBlockListener();
+
     const blocked = await checkBlocked();
     if (blocked) return;
 
@@ -408,7 +410,6 @@ ${extra ? '\n' + extra : ''}`;
     }
 
     logPage(page);
-    startBlockListener();
 
     /* إرسال أو تحديث زيارة */
     try {
